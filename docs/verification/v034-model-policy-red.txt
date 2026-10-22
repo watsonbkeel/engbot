@@ -1,0 +1,325 @@
+FF...FFFFFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+_________ test_custom_failure_does_not_send_to_platform_without_opt_in _________
+
+policy = (<starlette.testclient.TestClient object at 0x7f66867d0080>, <test_review_model_policy.BoundaryProvider object at 0x7f...89e450>, <english_class.store.Store object at 0x7f6686867260>, <fastapi.applications.FastAPI object at 0x7f668689e5d0>)
+
+    def test_custom_failure_does_not_send_to_platform_without_opt_in(policy):
+        client, provider, db, _ = policy
+        assert save(client).status_code == 200
+        provider.calls.clear()
+        provider.fail_custom = True
+        response = chat(client)
+>       assert response.status_code == 503
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_review_model_policy.py:82: AssertionError
+______ test_opt_in_fallback_reports_actual_provider_without_exposing_key _______
+
+policy = (<starlette.testclient.TestClient object at 0x7f668681e7b0>, <test_review_model_policy.BoundaryProvider object at 0x7f...81d8e0>, <english_class.store.Store object at 0x7f66867ff7a0>, <fastapi.applications.FastAPI object at 0x7f668681d9a0>)
+
+    def test_opt_in_fallback_reports_actual_provider_without_exposing_key(policy):
+        client, provider, db, _ = policy
+        result = save(client, allow_platform_fallback=True)
+>       assert result.status_code == 200, result.text
+E       AssertionError: {"detail":[{"type":"extra_forbidden","loc":["body","allow_platform_fallback"],"msg":"Extra inputs are not permitted","input":true}]}
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/test_review_model_policy.py:95: AssertionError
+__________ test_malformed_custom_json_also_respects_disabled_fallback __________
+
+policy = (<starlette.testclient.TestClient object at 0x7f6684f43e00>, <test_review_model_policy.BoundaryProvider object at 0x7f...f42300>, <english_class.store.Store object at 0x7f6684f43590>, <fastapi.applications.FastAPI object at 0x7f6684f42150>)
+
+    def test_malformed_custom_json_also_respects_disabled_fallback(policy):
+        client, provider, _, _ = policy
+        assert save(client).status_code == 200
+        provider.calls.clear()
+        provider.content = 'not json'
+        response = chat(client)
+>       assert response.status_code == 503
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_review_model_policy.py:122: AssertionError
+___________ test_success_and_explicit_delete_keep_platform_use_clear ___________
+
+policy = (<starlette.testclient.TestClient object at 0x7f6684586fc0>, <test_review_model_policy.BoundaryProvider object at 0x7f...587c50>, <english_class.store.Store object at 0x7f66845874a0>, <fastapi.applications.FastAPI object at 0x7f66845a1490>)
+
+    def test_success_and_explicit_delete_keep_platform_use_clear(policy):
+        client, provider, _, _ = policy
+>       assert save(client, allow_platform_fallback=True).status_code == 200
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E        +    where <Response [422 Unprocessable Entity]> = save(<starlette.testclient.TestClient object at 0x7f6684586fc0>, allow_platform_fallback=True)
+
+tests/test_review_model_policy.py:128: AssertionError
+_______________ test_fallback_shares_one_total_request_deadline ________________
+
+policy = (<starlette.testclient.TestClient object at 0x7f6684e71640>, <test_review_model_policy.BoundaryProvider object at 0x7f...f41490>, <english_class.store.Store object at 0x7f6684e82030>, <fastapi.applications.FastAPI object at 0x7f6684f40aa0>)
+
+    def test_fallback_shares_one_total_request_deadline(policy):
+        client, provider, db, app = policy
+>       assert save(client, allow_platform_fallback=True).status_code == 200
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E        +    where <Response [422 Unprocessable Entity]> = save(<starlette.testclient.TestClient object at 0x7f6684e71640>, allow_platform_fallback=True)
+
+tests/test_review_model_policy.py:140: AssertionError
+_____ test_scene_still_returns_exact_five_fields_with_fallback_in_headers ______
+
+policy = (<starlette.testclient.TestClient object at 0x7f66845c8dd0>, <test_review_model_policy.BoundaryProvider object at 0x7f...5c8fe0>, <english_class.store.Store object at 0x7f66845db7d0>, <fastapi.applications.FastAPI object at 0x7f66845cbb90>)
+
+    def test_scene_still_returns_exact_five_fields_with_fallback_in_headers(policy):
+        client, provider, _, _ = policy
+>       assert save(client, allow_platform_fallback=True).status_code == 200
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E        +    where <Response [422 Unprocessable Entity]> = save(<starlette.testclient.TestClient object at 0x7f66845c8dd0>, allow_platform_fallback=True)
+
+tests/test_review_model_policy.py:156: AssertionError
+___ test_scene_usage_distinguishes_attempts_from_successes_and_stays_scoped ____
+
+policy = (<starlette.testclient.TestClient object at 0x7f668460eed0>, <test_review_model_policy.BoundaryProvider object at 0x7f...60f890>, <english_class.store.Store object at 0x7f6684f40470>, <fastapi.applications.FastAPI object at 0x7f668460f740>)
+
+    def test_scene_usage_distinguishes_attempts_from_successes_and_stays_scoped(policy):
+        client, provider, _, _ = policy
+        usage = lambda: client.get('/api/scene/usage?student_id=s001', headers=headers())
+>       assert usage().status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+E        +    where <Response [404 Not Found]> = <function test_scene_usage_distinguishes_attempts_from_successes_and_stays_scoped.<locals>.<lambda> at 0x7f66845574c0>()
+
+tests/test_review_model_policy.py:169: AssertionError
+___ test_failed_custom_generation_counts_attempt_without_success_or_fallback ___
+
+policy = (<starlette.testclient.TestClient object at 0x7f668449aff0>, <test_review_model_policy.BoundaryProvider object at 0x7f...499ac0>, <english_class.store.Store object at 0x7f66844990a0>, <fastapi.applications.FastAPI object at 0x7f6684499a60>)
+
+    def test_failed_custom_generation_counts_attempt_without_success_or_fallback(policy):
+        client, provider, _, _ = policy
+        assert save(client).status_code == 200
+        provider.fail_custom = True
+        provider.calls.clear()
+>       assert generate(client).status_code == 503
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = generate(<starlette.testclient.TestClient object at 0x7f668449aff0>)
+
+tests/test_review_model_policy.py:187: AssertionError
+____ test_http_and_model_diagnostics_have_ids_and_no_secrets_or_child_text _____
+
+policy = (<starlette.testclient.TestClient object at 0x7f66844c7290>, <test_review_model_policy.BoundaryProvider object at 0x7f...4c62d0>, <english_class.store.Store object at 0x7f66844c4770>, <fastapi.applications.FastAPI object at 0x7f66844c4bc0>)
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7f6684498320>
+
+    def test_http_and_model_diagnostics_have_ids_and_no_secrets_or_child_text(policy, caplog):
+        client, provider, _, _ = policy
+        assert save(client).status_code == 200
+        provider.fail_custom = True
+        caplog.clear()
+        with caplog.at_level(logging.INFO, logger='english-class'):
+            response = chat(client)
+>       assert response.status_code == 503
+E       assert 200 == 503
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_review_model_policy.py:200: AssertionError
+________ test_unknown_runtime_failure_returns_safe_code_and_request_id _________
+
+policy = (<starlette.testclient.TestClient object at 0x7f66844996d0>, <test_review_model_policy.BoundaryProvider object at 0x7f...49a4b0>, <english_class.store.Store object at 0x7f66844993a0>, <fastapi.applications.FastAPI object at 0x7f6684e813a0>)
+
+    def test_unknown_runtime_failure_returns_safe_code_and_request_id(policy):
+        client, provider, _, _ = policy
+    
+        async def broken(*args, **kwargs):
+            raise RuntimeError('sensitive-provider-runtime-' + KEY)
+    
+        provider.chat = broken
+>       response = chat(client)
+                   ^^^^^^^^^^^^
+
+tests/test_review_model_policy.py:217: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_review_model_policy.py:68: in chat
+    return client.post('/internal/chat?student_id=s001', headers=headers('brain'), json=CHAT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:546: in post
+    return super().post(
+../../../eng_audit/venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:445: in request
+    return super().request(
+../../../eng_audit/venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../eng_audit/venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+../../../eng_audit/venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+../../../eng_audit/venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../eng_audit/venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:348: in handle_request
+    raise exc
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../../../eng_audit/venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../eng_audit/venv/lib/python3.12/site-packages/fastapi/applications.py:1138: in __call__
+    await super().__call__(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../../../eng_audit/venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/fastapi/routing.py:115: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../../../eng_audit/venv/lib/python3.12/site-packages/fastapi/routing.py:101: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../../../eng_audit/venv/lib/python3.12/site-packages/fastapi/routing.py:355: in app
+    raw_response = await run_endpoint_function(
+../../../eng_audit/venv/lib/python3.12/site-packages/fastapi/routing.py:243: in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+english_class/public_api.py:185: in chat
+    return await model_chat(who['student_id'],[x.model_dump() for x in body.messages],body.json_output)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+english_class/public_api.py:180: in model_chat
+    try: return {'content':await providers.chat(messages,json_output,timeout=timeout),'provider':'platform'}
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ([{'content': 'private-learner-utterance-735', 'role': 'user'}], True)
+kwargs = {'timeout': 45}
+
+    async def broken(*args, **kwargs):
+>       raise RuntimeError('sensitive-provider-runtime-' + KEY)
+E       RuntimeError: sensitive-provider-runtime-fixture-private-key-never-log-1298
+
+tests/test_review_model_policy.py:214: RuntimeError
+__________ test_asr_rejects_explicit_wrong_media_type_before_provider __________
+
+policy = (<starlette.testclient.TestClient object at 0x7f6684512d50>, <test_review_model_policy.BoundaryProvider object at 0x7f...510290>, <english_class.store.Store object at 0x7f6684533740>, <fastapi.applications.FastAPI object at 0x7f6684513350>)
+
+    def test_asr_rejects_explicit_wrong_media_type_before_provider(policy):
+        client, provider, _, _ = policy
+        response = client.post('/internal/asr?student_id=s001',
+                               headers={**headers('brain'), 'Content-Type': 'application/json'},
+                               content=pcm_wav(b'\x00\x00' * 16000))
+>       assert response.status_code == 415
+E       assert 200 == 415
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_review_model_policy.py:229: AssertionError
+____________ test_asr_validates_audio_even_with_a_provider_adapter _____________
+
+policy = (<starlette.testclient.TestClient object at 0x7f6677edb410>, <test_review_model_policy.BoundaryProvider object at 0x7f...edaae0>, <english_class.store.Store object at 0x7f6677ed9310>, <fastapi.applications.FastAPI object at 0x7f6677edaa80>)
+
+    def test_asr_validates_audio_even_with_a_provider_adapter(policy):
+        client, provider, _, _ = policy
+        response = client.post('/internal/asr?student_id=s001',
+                               headers={**headers('brain'), 'Content-Type': 'audio/wav'}, content=b'not-a-wave')
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_review_model_policy.py:238: AssertionError
+___________ test_asr_stream_wait_is_bounded_without_calling_provider ___________
+
+policy = (<starlette.testclient.TestClient object at 0x7f6677e26540>, <test_review_model_policy.BoundaryProvider object at 0x7f...e26900>, <english_class.store.Store object at 0x7f6677e24b00>, <fastapi.applications.FastAPI object at 0x7f6677e269c0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6677e60830>
+
+    def test_asr_stream_wait_is_bounded_without_calling_provider(policy, monkeypatch):
+        _, provider, _, app = policy
+        import english_class.public_api as public
+        monkeypatch.setattr(public, 'AUDIO_UPLOAD_SECONDS', .01, raising=False)
+    
+        async def chunks():
+            yield b'RIFF'
+            await asyncio.sleep(.1)
+            yield b'rest'
+    
+        async def run():
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+                response = await client.post('/internal/asr?student_id=s001',
+                                            headers={**headers('brain'), 'Content-Type': 'audio/wav'}, content=chunks())
+            assert response.status_code == 408
+            assert response.json()['error_code'] == 'AudioUploadTimeout'
+    
+>       asyncio.run(run())
+
+tests/test_review_model_policy.py:260: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+            response = await client.post('/internal/asr?student_id=s001',
+                                        headers={**headers('brain'), 'Content-Type': 'audio/wav'}, content=chunks())
+>       assert response.status_code == 408
+E       assert 200 == 408
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_review_model_policy.py:257: AssertionError
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_review_model_policy.py::test_custom_failure_does_not_send_to_platform_without_opt_in
+FAILED tests/test_review_model_policy.py::test_opt_in_fallback_reports_actual_provider_without_exposing_key
+FAILED tests/test_review_model_policy.py::test_malformed_custom_json_also_respects_disabled_fallback
+FAILED tests/test_review_model_policy.py::test_success_and_explicit_delete_keep_platform_use_clear
+FAILED tests/test_review_model_policy.py::test_fallback_shares_one_total_request_deadline
+FAILED tests/test_review_model_policy.py::test_scene_still_returns_exact_five_fields_with_fallback_in_headers
+FAILED tests/test_review_model_policy.py::test_scene_usage_distinguishes_attempts_from_successes_and_stays_scoped
+FAILED tests/test_review_model_policy.py::test_failed_custom_generation_counts_attempt_without_success_or_fallback
+FAILED tests/test_review_model_policy.py::test_http_and_model_diagnostics_have_ids_and_no_secrets_or_child_text
+FAILED tests/test_review_model_policy.py::test_unknown_runtime_failure_returns_safe_code_and_request_id
+FAILED tests/test_review_model_policy.py::test_asr_rejects_explicit_wrong_media_type_before_provider
+FAILED tests/test_review_model_policy.py::test_asr_validates_audio_even_with_a_provider_adapter
+FAILED tests/test_review_model_policy.py::test_asr_stream_wait_is_bounded_without_calling_provider
+13 failed, 3 passed, 1 warning in 1.26s

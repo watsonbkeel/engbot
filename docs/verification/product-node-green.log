@@ -1,0 +1,14 @@
+✔ tests_js/frontend.test.js (110.418484ms)
+✔ tests_js/listening.test.js (142.583225ms)
+✔ tests_js/listening_assets.test.js (6115.79258ms)
+✔ tests_js/navigation.test.js (72.920407ms)
+✔ tests_js/pages.test.js (124.750869ms)
+✔ tests_js/status.test.js (71.431754ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6142.296077

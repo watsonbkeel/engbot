@@ -1,0 +1,291 @@
+{
+  "case": {
+    "id": "g4_student_shopkeeper",
+    "grade": 4,
+    "difficulty": "basic",
+    "chinese_help": true,
+    "description": "这次我要自己当文具店的小店员，机器人来当顾客。我先欢迎它，问它想买什么和要几个，告诉它价格，再问要不要袋子，收好钱说再见。问题由我来问。",
+    "probe_note": "真实角色反转、由孩子主动带领交易；观察生成器是否保留孩子店员身份，以及对话是否允许孩子发问并由顾客作答，而不是把孩子改成顾客或不断由机器人主导。"
+  },
+  "scope": "Real local public/brain HTTP; GPT file actor at provider boundary; no microphone, external provider, or latency verification",
+  "steps": [
+    {
+      "step": "Save own model settings (declared local probe)",
+      "status": 200
+    },
+    {
+      "step": "Generate actual scene card",
+      "status": 200
+    },
+    {
+      "step": "Read config",
+      "status": 200
+    },
+    {
+      "step": "Save generated scene and select scene mode",
+      "status": 200
+    },
+    {
+      "step": "Turn start",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Read saved progress",
+      "status": 200
+    },
+    {
+      "step": "Read own-model status",
+      "status": 200
+    }
+  ],
+  "scene": {
+    "name": "我的文具小店",
+    "robot_role": "来买文具的顾客（a customer）",
+    "student_role": "主动招待顾客的小店员（a shopkeeper）",
+    "goal": "1.欢迎顾客，主动问想买什么；2.问需要几个；3.拿出文具并告诉顾客价格；4.问是否需要袋子，接过钱并交给顾客物品；5.道谢并告别。孩子负责发问和引导，顾客回答。练习文具、数量、价格和礼貌问句。",
+    "opening": "Welcome! What would you like?"
+  },
+  "transcript": [
+    {
+      "action": "start",
+      "student": "",
+      "note": "",
+      "robot": [
+        {
+          "text": "现在进入场景「我的文具小店」。你是主动招待顾客的小店员（a shopkeeper），我是来买文具的顾客（a customer）。请先说开场白：",
+          "language": "zh"
+        },
+        {
+          "text": "Welcome! What would you like?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "f177cc471d1f41f7b111285fdbeb395c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "现在进入场景「我的文具小店」。你是主动招待顾客的小店员（a shopkeeper），我是来买文具的顾客（a customer）。请先说开场白：",
+            "language": "zh"
+          },
+          {
+            "text": "Welcome! What would you like?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": true,
+        "evidence_incomplete": false,
+        "request_id": "ddd8dcd84f2b4b8a998fd2f3714e8adc",
+        "question_id": "2549b1ab1e5f44ef896f85a4aa4af8ae"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Welcome! What would you like?",
+      "note": "Student says the generated opening",
+      "robot": [
+        {
+          "text": "I'd like some pencils, please.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "f177cc471d1f41f7b111285fdbeb395c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "I'd like some pencils, please.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "a1810b092e1d409bb167f92309c5d00c",
+        "question_id": "074d8c175f7d42a4ba6fbed7ae30c5f8"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "How many pencils do you want?",
+      "note": "Learner shopkeeper leads the quantity step after the customer names the item.",
+      "robot": [
+        {
+          "text": "Three, please.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "f177cc471d1f41f7b111285fdbeb395c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Three, please.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "c97c39e98ae84d8db877237aea3b2e20",
+        "question_id": "33827628a37d4ef89ddfa29d276f7ba3"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Here are three pencils. Six yuan. Do you need a bag?",
+      "note": "Learner sets the price and asks the next shopkeeper question.",
+      "robot": [
+        {
+          "text": "Yes, please. Here are six yuan.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 2,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "f177cc471d1f41f7b111285fdbeb395c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Yes, please. Here are six yuan.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 2,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "2293846b040f41928e73fb14e11d13e7",
+        "question_id": "d393a79ad7294e59bab29fd8f0c49ea9"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Thank you. Here is your bag. Goodbye!",
+      "note": "Acknowledges payment, hands over the bag, and closes the learner-led sale.",
+      "robot": [
+        {
+          "text": "Thank you for the pencils. Goodbye!",
+          "language": "en"
+        },
+        {
+          "text": "你主动询问铅笔数量和是否要袋子，清楚报出“Six yuan.”，还礼貌地完成了交付和告别。",
+          "language": "zh"
+        },
+        {
+          "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+          "language": "zh"
+        }
+      ],
+      "phase": "done",
+      "dialog_count": 3,
+      "result": {
+        "ok": true,
+        "active": false,
+        "phase": "done",
+        "session_id": "f177cc471d1f41f7b111285fdbeb395c",
+        "expected_language": "zh",
+        "segments": [
+          {
+            "text": "Thank you for the pencils. Goodbye!",
+            "language": "en"
+          },
+          {
+            "text": "你主动询问铅笔数量和是否要袋子，清楚报出“Six yuan.”，还礼貌地完成了交付和告别。",
+            "language": "zh"
+          },
+          {
+            "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+            "language": "zh"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 3,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "a28f7af225ad48648f025641f13e2d0c",
+        "question_id": "8411e74bb54a4e6fbb1ea3533240d8a1"
+      }
+    }
+  ],
+  "progress": {
+    "today": "2026-10-21",
+    "words": []
+  },
+  "model_status": {
+    "mode": "custom",
+    "base_url": "https://gpt-actor.invalid/v1",
+    "model": "g4_student_shopkeeper",
+    "thinking": false,
+    "last_status": "ok",
+    "last_error": "",
+    "last_used_at": "2026-10-21T13:45:29+08:00",
+    "platform_model": "NO_PLATFORM_MODEL_IN_THIS_SIMULATION"
+  },
+  "passed": true,
+  "final_dialog_count": 3
+}

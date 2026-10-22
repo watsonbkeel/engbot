@@ -12,7 +12,7 @@ test('today filter and cumulative labels', () => {
     {word_id:'a',status:2,last_practiced_date:'2026-09-29',unclear_count:1},
     {word_id:'b',status:1,last_practiced_date:'2026-09-28',unclear_count:3}]});
   assert.equal(result.todayWords.length,1);
-  assert.equal(result.todayWords[0].stateText,'会说了');
+  assert.equal(result.todayWords[0].stateText,'曾独立说出');
   assert.equal(result.todayWords[0].unclearText,'系统累计没听清 1 次');
   assert.equal(result.speakingCount,1);
 });
@@ -51,6 +51,6 @@ test('report shows imitation separately from independent use', () => {
     {word_id:'a',status:1,last_practiced_date:'2026-09-29',unclear_count:0,valid_count:2,used_word_count:2,imitated_count:2},
     {word_id:'b',status:2,last_practiced_date:'2026-09-29',unclear_count:0},
   ]});
-  assert.equal(r.todayWords[0].evidenceText,'说出目标词 2 次；跟读/模仿 2 次（跟读不算会说）');
+  assert.equal(r.todayWords[0].evidenceText,'累计回答含目标词 2 次；累计跟读/模仿记录 2 次（不代表独立表达）');
   assert.equal(r.todayWords[1].evidenceText,'');
 });

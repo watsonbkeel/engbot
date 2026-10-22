@@ -2,15 +2,22 @@
 from __future__ import annotations
 import hashlib
 import json
+import os
 import re
 import sqlite3
-from datetime import datetime
+from contextlib import contextmanager
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from .dictionary import Dictionary
 from .models import LearningConfig
+from .migrations import migrate, migration_lock
+from .secret_store import private_directory, secure_database_files
 
 class Conflict(ValueError):
+    pass
+
+class RateLimit(ValueError):
     pass
 
 # 每次练习的附加证据 → 累计次数字段。只用于展示“回答有效/用了目标词/模仿跟读”，不影响 status 规则。
@@ -20,31 +27,30 @@ def token_hash(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
 
 class Store:
-    def __init__(self, path: str | Path, dictionary: Dictionary, timezone: str = 'Asia/Shanghai'):
+    def __init__(self, path: str | Path, dictionary: Dictionary, timezone: str = 'Asia/Shanghai',
+                 credential_key_path: str | Path | None = None):
         self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.credential_key_path = Path(credential_key_path or os.environ.get('LLM_SECRET_KEY_FILE') or str(self.path) + '.key')
+        private_directory(self.path.parent)
         self.dictionary = dictionary
         self.timezone = ZoneInfo(timezone)
-        with self.connect() as con:
-            con.executescript('''
-            PRAGMA journal_mode=WAL;
-            CREATE TABLE IF NOT EXISTS students (id TEXT PRIMARY KEY, config TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS credentials (hash TEXT PRIMARY KEY, student_id TEXT NOT NULL REFERENCES students(id), role TEXT NOT NULL CHECK(role IN ('parent','brain')));
-            CREATE TABLE IF NOT EXISTS progress (student_id TEXT NOT NULL REFERENCES students(id), word_id TEXT NOT NULL, status INTEGER NOT NULL DEFAULT 0 CHECK(status BETWEEN 0 AND 2), unclear_count INTEGER NOT NULL DEFAULT 0, last_practiced_date TEXT NOT NULL, updated_at TEXT NOT NULL, PRIMARY KEY(student_id,word_id));
-            CREATE TABLE IF NOT EXISTS student_llm (student_id TEXT PRIMARY KEY REFERENCES students(id), base_url TEXT NOT NULL, model TEXT NOT NULL, api_key TEXT NOT NULL, updated_at TEXT NOT NULL, last_status TEXT NOT NULL DEFAULT '', last_error TEXT NOT NULL DEFAULT '', last_used_at TEXT NOT NULL DEFAULT '');
-            CREATE TABLE IF NOT EXISTS events (student_id TEXT NOT NULL REFERENCES students(id), event_key TEXT NOT NULL, fingerprint TEXT NOT NULL, result TEXT NOT NULL, PRIMARY KEY(student_id,event_key));
-            ''')
-            # 只追加字段（老库原地升级），不删除、不改写已有进度。
-            have={r['name'] for r in con.execute('PRAGMA table_info(progress)')}
-            for col in EVIDENCE_COLUMNS.values():
-                if col not in have: con.execute(f'ALTER TABLE progress ADD COLUMN {col} INTEGER NOT NULL DEFAULT 0')
+        with migration_lock(self.path):
+            secure_database_files(self.path)
+            with self.connect() as con:
+                self._credential_cipher = migrate(con, self.credential_key_path)
 
+    @contextmanager
     def connect(self):
         con = sqlite3.connect(self.path, timeout=15)
-        con.row_factory = sqlite3.Row
-        con.execute('PRAGMA foreign_keys=ON')
-        con.execute('PRAGMA busy_timeout=15000')
-        return con
+        try:
+            con.row_factory = sqlite3.Row
+            con.execute('PRAGMA foreign_keys=ON')
+            con.execute('PRAGMA busy_timeout=15000')
+            con.execute('PRAGMA secure_delete=ON')
+            with con:
+                yield con
+        finally:
+            con.close()
 
     def add_student(self, student_id: str, parent_token: str, brain_token: str):
         if not re.fullmatch(r'[a-z][a-z0-9_-]{1,31}', student_id):
@@ -55,7 +61,7 @@ class Store:
         cfg = LearningConfig(grade=g, semester=s).model_dump_json()
         try:
             with self.connect() as con:
-                con.execute('INSERT INTO students VALUES (?,?)', (student_id,cfg))
+                con.execute('INSERT INTO students(id,config) VALUES (?,?)', (student_id,cfg))
                 con.executemany('INSERT INTO credentials VALUES (?,?,?)',[(token_hash(parent_token),student_id,'parent'),(token_hash(brain_token),student_id,'brain')])
         except sqlite3.IntegrityError as exc:
             raise ValueError('学生ID或凭证已经存在；未覆盖原有数据') from exc
@@ -83,14 +89,20 @@ class Store:
     def llm(self, student_id: str) -> dict | None:
         with self.connect() as con:
             row=con.execute('SELECT * FROM student_llm WHERE student_id=?',(student_id,)).fetchone()
-        return dict(row) if row else None
+        if not row: return None
+        result=dict(row); result['thinking']=bool(result['thinking'])
+        result['allow_platform_fallback']=bool(result['allow_platform_fallback'])
+        result['api_key']=self._credential_cipher.decrypt(student_id, result['api_key'])
+        return result
 
-    def save_llm(self, student_id: str, base_url: str, model: str, api_key: str):
+    def save_llm(self, student_id: str, base_url: str, model: str, api_key: str, thinking: bool=False,
+                 allow_platform_fallback: bool=False):
         now=datetime.now(self.timezone).isoformat(timespec='seconds')
+        encrypted=self._credential_cipher.encrypt(student_id, api_key)
         with self.connect() as con:
-            con.execute('''INSERT INTO student_llm(student_id,base_url,model,api_key,updated_at,last_status,last_error,last_used_at) VALUES (?,?,?,?,?,'ok','',?)
-            ON CONFLICT(student_id) DO UPDATE SET base_url=excluded.base_url,model=excluded.model,api_key=excluded.api_key,updated_at=excluded.updated_at,last_status='ok',last_error='',last_used_at=excluded.last_used_at''',
-                        (student_id,base_url,model,api_key,now,now))
+            con.execute('''INSERT INTO student_llm(student_id,base_url,model,api_key,updated_at,last_status,last_error,last_used_at,thinking,allow_platform_fallback) VALUES (?,?,?,?,?,'ok','',?,?,?)
+            ON CONFLICT(student_id) DO UPDATE SET base_url=excluded.base_url,model=excluded.model,api_key=excluded.api_key,updated_at=excluded.updated_at,last_status='ok',last_error='',last_used_at=excluded.last_used_at,thinking=excluded.thinking,allow_platform_fallback=excluded.allow_platform_fallback''',
+                        (student_id,base_url,model,encrypted,now,now,int(thinking),int(allow_platform_fallback)))
 
     def clear_llm(self, student_id: str):
         with self.connect() as con: con.execute('DELETE FROM student_llm WHERE student_id=?',(student_id,))
@@ -102,6 +114,57 @@ class Store:
 
     def today(self) -> str:
         return datetime.now(self.timezone).date().isoformat()
+
+    def student_ids(self) -> list[str]:
+        with self.connect() as con: return [r['id'] for r in con.execute('SELECT id FROM students')]
+
+    def status(self,student_id:str) -> dict:
+        with self.connect() as con:
+            row=con.execute('SELECT pi_last_seen,brain_last_seen,pi_ssh_ok,pi_ssh_checked_at FROM students WHERE id=?',(student_id,)).fetchone()
+        if row is None: raise ValueError('学生不存在')
+        item=dict(row)
+        if item['pi_ssh_ok'] is not None: item['pi_ssh_ok']=bool(item['pi_ssh_ok'])
+        return {**item,'server_time':datetime.now(self.timezone).isoformat(timespec='seconds')}
+
+    def heartbeat(self,student_id:str,pi:bool=False) -> dict:
+        now=datetime.now(self.timezone).isoformat(timespec='seconds')
+        with self.connect() as con:
+            if pi:
+                cur=con.execute('UPDATE students SET brain_last_seen=?,pi_last_seen=? WHERE id=?',(now,now,student_id))
+            else: cur=con.execute('UPDATE students SET brain_last_seen=? WHERE id=?',(now,student_id))
+            if not cur.rowcount: raise ValueError('学生不存在')
+        return self.status(student_id)
+
+    def mark_pi_ssh(self,student_id:str,ok:bool):
+        with self.connect() as con:
+            con.execute('UPDATE students SET pi_ssh_ok=?,pi_ssh_checked_at=? WHERE id=?',
+                        (int(ok),datetime.now(self.timezone).isoformat(timespec='seconds'),student_id))
+
+    def reserve_scene_generation(self,student_id:str,limit:int=20) -> str:
+        day=self.today()
+        with self.connect() as con:
+            con.execute('BEGIN IMMEDIATE')
+            row=con.execute('SELECT count FROM scene_generation_usage WHERE student_id=? AND day=?',(student_id,day)).fetchone()
+            if row and row['count']>=limit: raise RateLimit(f'今天已请求{limit}次场景（包含失败尝试），请明天再试，也可以手动填写')
+            con.execute('INSERT INTO scene_generation_usage(student_id,day,count) VALUES (?,?,1) ON CONFLICT(student_id,day) DO UPDATE SET count=count+1',(student_id,day))
+            # Keep yesterday until requests started just before midnight have
+            # returned; their success belongs to the reserved day's attempts.
+            oldest=(date.fromisoformat(day)-timedelta(days=1)).isoformat()
+            con.execute('DELETE FROM scene_generation_usage WHERE day<?',(oldest,))
+        return day
+
+    def mark_scene_generation_success(self,student_id:str,day:str):
+        with self.connect() as con:
+            result=con.execute('UPDATE scene_generation_usage SET success_count=success_count+1 WHERE student_id=? AND day=? AND success_count<count',(student_id,day))
+            if result.rowcount!=1: raise Conflict('场景生成次数记录不匹配，未增加成功次数')
+
+    def scene_generation_usage(self,student_id:str,limit:int=20) -> dict:
+        day=self.today()
+        with self.connect() as con:
+            row=con.execute('SELECT count,success_count FROM scene_generation_usage WHERE student_id=? AND day=?',(student_id,day)).fetchone()
+        attempts=row['count'] if row else 0
+        return {'day':day,'attempts':attempts,'successes':row['success_count'] if row else 0,
+                'limit':limit,'remaining':max(0,limit-attempts),'successes_since_version':'0.3.4'}
 
     def _decorate(self,row) -> dict:
         item=dict(row)

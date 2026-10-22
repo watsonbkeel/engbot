@@ -1,0 +1,29 @@
+.....................................................................F.F [ 80%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_miniprogram_merge_preserves_original ___________________
+tests/test_tools.py:34: in test_miniprogram_merge_preserves_original
+    merge_miniprogram(src,overlay,dest)
+english_class/sources.py:116: in merge_miniprogram
+    shutil.copytree(overlay/'pages'/name,dest/'pages'/name,dirs_exist_ok=False)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/shutil.py:598: in copytree
+    with os.scandir(src) as itr:
+         ^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/d3b03e9e7aea/eng_fixed/Eng/aienglishhelper/miniprogram/pages/english-config'
+________________ test_pi_command_and_vad_no_training_on_silence ________________
+tests/test_tools.py:62: in test_pi_command_and_vad_no_training_on_silence
+    assert control_action('我 不 会')=='help'
+E   AssertionError: assert 'howtosay' == 'help'
+E     
+E     - help
+E     + howtosay
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_tools.py::test_miniprogram_merge_preserves_original - FileN...
+FAILED tests/test_tools.py::test_pi_command_and_vad_no_training_on_silence - ...
+2 failed, 87 passed, 1 warning in 3.29s

@@ -1,0 +1,49 @@
+<view class="page">
+  <view class="eyebrow">首次使用 · 三步完成</view>
+  <view class="title">连接孩子的英语陪练</view>
+
+  <view class="steps card">
+    <view class="step-item {{step >= 1 ? 'done' : ''}}"><text class="no">1</text> 连接课堂</view>
+    <view class="step-item {{step >= 2 ? 'done' : ''}}"><text class="no">2</text> 大模型</view>
+    <view class="step-item {{step >= 3 ? 'done' : ''}}"><text class="no">3</text> 完成</view>
+  </view>
+
+  <!-- 第 1 步：课堂连接 -->
+  <block wx:if="{{step === 1}}">
+    <view class="card">
+      <view class="card-title">课堂连接</view>
+      <view class="input-row"><view class="row-label">服务地址</view><input placeholder="https://class.example" value="{{connection.baseUrl}}" data-field="baseUrl" disabled="{{busy}}" bindinput="onConnInput" /></view>
+      <view class="input-row"><view class="row-label">学生编号</view><input placeholder="s001" value="{{connection.studentId}}" data-field="studentId" disabled="{{busy}}" bindinput="onConnInput" /></view>
+      <view class="input-row"><view class="row-label">家长凭证</view><input password placeholder="老师分配的凭证" value="{{connection.token}}" data-field="token" disabled="{{busy}}" bindinput="onConnInput" /></view>
+      <view class="note footnote">请向老师获取服务地址、学生编号和本人凭证。</view>
+    </view>
+    <view class="error" wx:if="{{error}}">{{error}}</view>
+    <button class="primary" loading="{{busy}}" disabled="{{busy}}" bindtap="onTestConnection">验证并继续</button>
+  </block>
+
+  <!-- 第 2 步：大模型 -->
+  <block wx:if="{{step === 2}}">
+    <view class="card">
+      <view class="card-title">自己的大模型（可跳过）</view>
+      <view class="note">可以使用老师配置的平台模型，或填入自己的兼容接口。推理模式可能增加等待时间。</view>
+      <view class="input-row"><view class="row-label">接口地址</view><input placeholder="https://api.example/v1" value="{{llmForm.base_url}}" data-field="base_url" disabled="{{llmBusy}}" bindinput="onLlmInput" /></view>
+      <view class="input-row"><view class="row-label">模型名</view><input placeholder="服务商提供的模型名" value="{{llmForm.model}}" data-field="model" disabled="{{llmBusy}}" bindinput="onLlmInput" /></view>
+      <view class="input-row"><view class="row-label">API Key</view><input password placeholder="sk-..." value="{{llmForm.api_key}}" data-field="api_key" disabled="{{llmBusy}}" bindinput="onLlmInput" /></view>
+      <view class="picker-row"><view class="row-label">深度推理</view><switch checked="{{thinking}}" disabled="{{llmBusy}}" bindchange="onThinking" color="#2F6FED" /></view>
+      <view class="note footnote">推理开关默认关。开启后的效果和等待时间取决于模型服务。</view>
+    </view>
+    <view class="error" wx:if="{{llmError}}">{{llmError}}</view>
+    <view class="empty" wx:if="{{llmOk}}">{{llmOk}}</view>
+    <button class="primary" loading="{{llmBusy}}" disabled="{{llmBusy}}" bindtap="onSaveLlm">测试并保存</button>
+    <button class="secondary" disabled="{{llmBusy}}" loading="{{llmBusy}}" bindtap="onSkipLlm">跳过，用平台模型</button>
+  </block>
+
+  <!-- 第 3 步：完成 -->
+  <block wx:if="{{step === 3}}">
+    <view class="card">
+      <view class="card-title">课堂连接已保存 ✓</view>
+      <view class="note">{{llmOk}}。进入后请在「设置」确认大脑服务、树莓派和练习程序状态，再进行第一次语音练习。</view>
+    </view>
+    <button class="primary" bindtap="onFinish">进入「今日练习」</button>
+  </block>
+</view>

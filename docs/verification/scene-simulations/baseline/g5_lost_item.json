@@ -1,0 +1,516 @@
+{
+  "case": {
+    "id": "g5_lost_item",
+    "grade": 5,
+    "difficulty": "standard",
+    "chinese_help": true,
+    "description": "我在故事里的学校把蓝色水杯弄丢了，想去失物招领处问问。机器人是值班老师，我告诉它水杯的样子和最后见到的地方，再确认是不是我的。",
+    "probe_note": "日常求助与物品描述；观察颜色、位置和确认步骤是否连贯，是否追问已回答的信息，是否把一处语法错误自然重述。"
+  },
+  "scope": "Real local public/brain HTTP; GPT file actor at provider boundary; no microphone, external provider, or latency verification",
+  "steps": [
+    {
+      "step": "Save own model settings (declared local probe)",
+      "status": 200
+    },
+    {
+      "step": "Generate actual scene card",
+      "status": 200
+    },
+    {
+      "step": "Read config",
+      "status": 200
+    },
+    {
+      "step": "Save generated scene and select scene mode",
+      "status": 200
+    },
+    {
+      "step": "Turn start",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Read saved progress",
+      "status": 200
+    },
+    {
+      "step": "Read own-model status",
+      "status": 200
+    }
+  ],
+  "scene": {
+    "name": "寻找蓝色水杯",
+    "robot_role": "失物招领处的值班老师（a teacher）",
+    "student_role": "寻找水杯的学生（a student）",
+    "goal": "1.向老师求助，说明丢了水杯；2.描述水杯的颜色、大小和一个特征；3.说出最后见到水杯的地方；4.回答老师的问题，确认找到的是自己的水杯；5.领回水杯并道谢。练习物品、颜色、大小、地点和礼貌求助，不提供真实个人信息。",
+    "opening": "Hello, can you help me?"
+  },
+  "transcript": [
+    {
+      "action": "start",
+      "student": "",
+      "note": "",
+      "robot": [
+        {
+          "text": "现在进入场景「寻找蓝色水杯」。你是寻找水杯的学生（a student），我是失物招领处的值班老师（a teacher）。请先说开场白：",
+          "language": "zh"
+        },
+        {
+          "text": "Hello, can you help me?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "现在进入场景「寻找蓝色水杯」。你是寻找水杯的学生（a student），我是失物招领处的值班老师（a teacher）。请先说开场白：",
+            "language": "zh"
+          },
+          {
+            "text": "Hello, can you help me?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": true,
+        "evidence_incomplete": false,
+        "request_id": "a7ad5df0dfec485bad828a847b4eaddf",
+        "question_id": "e0352b2d84cd40b4aee6d955ca05befd"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Hello, can you help me?",
+      "note": "Student says the generated opening",
+      "robot": [
+        {
+          "text": "Of course. What did you lose?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Of course. What did you lose?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "32fc05f6c5074f4ea27b0244145f1ee1",
+        "question_id": "db9599d323de4e3681e87e816e79532e"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "My blue water bottle.",
+      "note": "Natural object phrase supplies both lost item and color.",
+      "robot": [
+        {
+          "text": "A blue water bottle. Is it big or small?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "A blue water bottle. Is it big or small?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "74983dd1841a4cf2b738dc06ae9e277c",
+        "question_id": "073c4fece34642809af120a55dc64c6d"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "It small, with a funny cat.",
+      "note": "One plausible missing-is error, plus a consistent identifying picture.",
+      "robot": [
+        {
+          "text": "It's small, with a funny cat. Where did you last see it?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 2,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "It's small, with a funny cat. Where did you last see it?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 2,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "9fff4c67662c4fa08a7e5d3e031884c5",
+        "question_id": "ba9c9876fbac458fa7034637b5061e99"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "On my desk in the classroom.",
+      "note": "Supplies the last-seen location without repeating already known appearance.",
+      "robot": [
+        {
+          "text": "I have a small blue bottle with a funny cat. Is this yours?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 3,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "I have a small blue bottle with a funny cat. Is this yours?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 3,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "0ec0f299296b4718b631dddb07147293",
+        "question_id": "96fae9561c7d4f878301fcfdb4218597"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Yes, it's mine. Thank you!",
+      "note": "Confirms ownership of the matching fictional bottle and thanks the teacher.",
+      "robot": [
+        {
+          "text": "You're welcome. Please take your bottle.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 4,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "You're welcome. Please take your bottle.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 4,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "02783ddac7cf4c76ad822eb4911ac8fe",
+        "question_id": "b43ad36ca00c4036a412a1df5d7e17eb"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "I've got it. Goodbye!",
+      "note": "Acknowledges receiving the bottle and closes the completed lost-item scene.",
+      "robot": [
+        {
+          "text": "Goodbye! Take care of your bottle.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 5,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Goodbye! Take care of your bottle.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 5,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "6769121ffdb34dc8970a87e72a9b25e1",
+        "question_id": "3aac60f443244e5098aef4aa13dfc3f2"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "I will. Bye!",
+      "note": "Acknowledges the teacher's reminder without inventing another lost item.",
+      "robot": [
+        {
+          "text": "Goodbye. Have a nice day!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 6,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Goodbye. Have a nice day!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 6,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "e2f961af1be54460b5cd8b98ff8b1494",
+        "question_id": "2e87ee86a25343ec8e8850d141963881"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "You too!",
+      "note": "Natural farewell response after the lost-item task has finished.",
+      "robot": [
+        {
+          "text": "Thank you. Take care!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 7,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Thank you. Take care!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 7,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "12202d456ff44dfdbc3ed01ffa095b8e",
+        "question_id": "eb167979dd4f4c339966743378373ccf"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Goodbye!",
+      "note": "Final natural farewell after repeated closing exchanges.",
+      "robot": [
+        {
+          "text": "Goodbye! I'm glad you have your bottle back.",
+          "language": "en"
+        },
+        {
+          "text": "你说清了水杯的颜色、大小、猫咪图案和最后见到的地方，还用“Yes, it's mine.”确认了水杯。",
+          "language": "zh"
+        },
+        {
+          "text": "“It small”要加is：“It is small.”。",
+          "language": "zh"
+        },
+        {
+          "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+          "language": "zh"
+        }
+      ],
+      "phase": "done",
+      "dialog_count": 8,
+      "result": {
+        "ok": true,
+        "active": false,
+        "phase": "done",
+        "session_id": "baafae12f804443f99d3bf7d5026437c",
+        "expected_language": "zh",
+        "segments": [
+          {
+            "text": "Goodbye! I'm glad you have your bottle back.",
+            "language": "en"
+          },
+          {
+            "text": "你说清了水杯的颜色、大小、猫咪图案和最后见到的地方，还用“Yes, it's mine.”确认了水杯。",
+            "language": "zh"
+          },
+          {
+            "text": "“It small”要加is：“It is small.”。",
+            "language": "zh"
+          },
+          {
+            "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+            "language": "zh"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 8,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "0b967d1b93b04d78a9337d848ff01282",
+        "question_id": "5521a37a59624f61aa46be0ad15f4651"
+      }
+    }
+  ],
+  "progress": {
+    "today": "2026-10-21",
+    "words": [
+      {
+        "word_id": "5a_003",
+        "status": 2,
+        "unclear_count": 0,
+        "last_practiced_date": "2026-10-21",
+        "valid_count": 1,
+        "used_word_count": 1,
+        "imitated_count": 0,
+        "word": "funny",
+        "meaning": "滑稽的；有趣的"
+      }
+    ]
+  },
+  "model_status": {
+    "mode": "custom",
+    "base_url": "https://gpt-actor.invalid/v1",
+    "model": "g5_lost_item",
+    "thinking": false,
+    "last_status": "ok",
+    "last_error": "",
+    "last_used_at": "2026-10-21T13:41:08+08:00",
+    "platform_model": "NO_PLATFORM_MODEL_IN_THIS_SIMULATION"
+  },
+  "passed": true,
+  "final_dialog_count": 8
+}

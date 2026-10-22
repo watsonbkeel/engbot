@@ -1,0 +1,28 @@
+..FF...F..                                                               [100%]
+=================================== FAILURES ===================================
+_ test_pi_v3_help_and_stop_commands[\u8fd9\u662f\u4ec0\u4e48\u610f\u601d-explain] _
+tests/test_v3_reliability.py:278: in test_pi_v3_help_and_stop_commands
+    assert control_action(spoken) == action
+E   AssertionError: assert None == 'explain'
+E    +  where None = <function control_action at 0x7f7ac2a8af20>('这是什么意思')
+_ test_pi_v3_help_and_stop_commands[\u8fd9\u4e2a\u8bcd\u4ec0\u4e48\u610f\u601d-explain] _
+tests/test_v3_reliability.py:278: in test_pi_v3_help_and_stop_commands
+    assert control_action(spoken) == action
+E   AssertionError: assert None == 'explain'
+E    +  where None = <function control_action at 0x7f7ac2a8af20>('这个词什么意思')
+_____ test_pi_v3_help_and_stop_commands[\u6211\u4e0d\u4f1a\u8bf4-howtosay] _____
+tests/test_v3_reliability.py:278: in test_pi_v3_help_and_stop_commands
+    assert control_action(spoken) == action
+E   AssertionError: assert None == 'howtosay'
+E    +  where None = <function control_action at 0x7f7ac2a8af20>('我不会说')
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_pi_v3_help_and_stop_commands[\u8fd9\u662f\u4ec0\u4e48\u610f\u601d-explain]
+FAILED tests/test_v3_reliability.py::test_pi_v3_help_and_stop_commands[\u8fd9\u4e2a\u8bcd\u4ec0\u4e48\u610f\u601d-explain]
+FAILED tests/test_v3_reliability.py::test_pi_v3_help_and_stop_commands[\u6211\u4e0d\u4f1a\u8bf4-howtosay]
+3 failed, 7 passed, 19 deselected, 1 warning in 0.33s

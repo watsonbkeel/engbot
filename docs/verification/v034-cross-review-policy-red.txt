@@ -1,0 +1,102 @@
+................FFFF                                                     [100%]
+=================================== FAILURES ===================================
+______ test_scene_timeout_updates_model_status_usage_and_correlated_error ______
+
+policy = (<starlette.testclient.TestClient object at 0x7fd2c8203f50>, <test_review_model_policy.BoundaryProvider object at 0x7f...1b20f0>, <english_class.store.Store object at 0x7fd2c81c2630>, <fastapi.applications.FastAPI object at 0x7fd2c8175010>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd2c824f710>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7fd2c824f830>
+
+    def test_scene_timeout_updates_model_status_usage_and_correlated_error(policy, monkeypatch, caplog):
+        client, provider, db, _ = policy
+        assert save(client).status_code == 200
+        import english_class.public_api as public
+        monkeypatch.setattr(public, 'SCENE_GENERATION_SECONDS', .015)
+        provider.delay = .2
+        with caplog.at_level(logging.INFO, logger='english-class'):
+            response = generate(client)
+        assert response.status_code == 503
+>       assert response.json()['error_code'] == 'Timeout'
+E       AssertionError: assert 'ServiceUnavailable' == 'Timeout'
+E         
+E         - Timeout
+E         + ServiceUnavailable
+
+tests/test_review_model_policy.py:273: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     english-class.requests:diagnostics.py:28 {"event":"model_request","request_id":"96acb8302c7844129dbac4c5d4d323c2","latency_ms":15.8,"student":"4e17b5dc2c825b6c","provider":"student","fallback_used":false,"fallback_code":null,"result":"error","error_code":"Cancelled"}
+INFO     english-class.requests:diagnostics.py:28 {"event":"http_request","request_id":"96acb8302c7844129dbac4c5d4d323c2","latency_ms":22.11,"route":"/api/scene/generate","method":"POST","status":503,"student":"4e17b5dc2c825b6c","result":"error","error_code":"ServiceUnavailable","exception_type":null}
+_ test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics[invalid0] _
+
+policy = (<starlette.testclient.TestClient object at 0x7fd2c93e9c70>, <test_review_model_policy.BoundaryProvider object at 0x7f...24ebd0>, <english_class.store.Store object at 0x7fd2c824ec00>, <fastapi.applications.FastAPI object at 0x7fd2c824e930>)
+invalid = {'api_key': 'fixture-private-key-never-log-1298fixture-private-key-never-log-1298fixture-private-key-never-log-1298fix...-never-log-1298fixture-private-key-never-log-1298fixture-private-key-never-log-1298fixture-private-key-never-log-1298'}
+
+    @pytest.mark.parametrize('invalid', [
+        {'api_key': KEY * 20},
+        {'api_key': {'secret': KEY}},
+        {'allow_platform_fallback': 'true'},
+    ])
+    def test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics(policy, invalid):
+        client, _, _, _ = policy
+        response = save(client, **invalid)
+        assert response.status_code == 422
+>       assert KEY not in response.text
+E       assert 'fixture-pri...ver-log-1298' not in '{"detail":[...gth":400}}]}'
+E         
+E         'fixture-private-key-never-log-1298' is contained here:
+E           r-log-1298fixture-private-key-never-log-1298","ctx":{"max_length":400}}]}
+
+tests/test_review_model_policy.py:292: AssertionError
+_ test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics[invalid1] _
+
+policy = (<starlette.testclient.TestClient object at 0x7fd2c8068a10>, <test_review_model_policy.BoundaryProvider object at 0x7f...27ae10>, <english_class.store.Store object at 0x7fd2c82ad3d0>, <fastapi.applications.FastAPI object at 0x7fd2c806b020>)
+invalid = {'api_key': {'secret': 'fixture-private-key-never-log-1298'}}
+
+    @pytest.mark.parametrize('invalid', [
+        {'api_key': KEY * 20},
+        {'api_key': {'secret': KEY}},
+        {'allow_platform_fallback': 'true'},
+    ])
+    def test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics(policy, invalid):
+        client, _, _, _ = policy
+        response = save(client, **invalid)
+        assert response.status_code == 422
+>       assert KEY not in response.text
+E       assert 'fixture-pri...ver-log-1298' not in '{"detail":[...og-1298"}}]}'
+E         
+E         'fixture-private-key-never-log-1298' is contained here:
+E           "secret":"fixture-private-key-never-log-1298"}}]}
+
+tests/test_review_model_policy.py:292: AssertionError
+_ test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics[invalid2] _
+
+policy = (<starlette.testclient.TestClient object at 0x7fd2c80d5ee0>, <test_review_model_policy.BoundaryProvider object at 0x7f...096570>, <english_class.store.Store object at 0x7fd2c80965a0>, <fastapi.applications.FastAPI object at 0x7fd2c8096b10>)
+invalid = {'allow_platform_fallback': 'true'}
+
+    @pytest.mark.parametrize('invalid', [
+        {'api_key': KEY * 20},
+        {'api_key': {'secret': KEY}},
+        {'allow_platform_fallback': 'true'},
+    ])
+    def test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics(policy, invalid):
+        client, _, _, _ = policy
+        response = save(client, **invalid)
+        assert response.status_code == 422
+        assert KEY not in response.text
+        value = response.json()
+>       assert value['error_code'] == 'InvalidRequest'
+               ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error_code'
+
+tests/test_review_model_policy.py:294: KeyError
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_review_model_policy.py::test_scene_timeout_updates_model_status_usage_and_correlated_error
+FAILED tests/test_review_model_policy.py::test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics[invalid0]
+FAILED tests/test_review_model_policy.py::test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics[invalid1]
+FAILED tests/test_review_model_policy.py::test_request_validation_does_not_echo_keys_and_preserves_safe_diagnostics[invalid2]
+4 failed, 16 passed, 1 warning in 1.50s

@@ -1,0 +1,414 @@
+{
+  "case": {
+    "id": "g4_student_shopkeeper",
+    "grade": 4,
+    "difficulty": "basic",
+    "chinese_help": true,
+    "description": "这次我要自己当文具店的小店员，机器人来当顾客。我先欢迎它，问它想买什么和要几个，告诉它价格，再问要不要袋子，收好钱说再见。问题由我来问。",
+    "probe_note": "真实角色反转、由孩子主动带领交易；观察生成器是否保留孩子店员身份，以及对话是否允许孩子发问并由顾客作答，而不是把孩子改成顾客或不断由机器人主导。"
+  },
+  "scope": "Real local public/brain HTTP; GPT file actor at provider boundary; no microphone, external provider, or latency verification",
+  "steps": [
+    {
+      "step": "Save own model settings (declared local probe)",
+      "status": 200
+    },
+    {
+      "step": "Generate actual scene card",
+      "status": 200
+    },
+    {
+      "step": "Read config",
+      "status": 200
+    },
+    {
+      "step": "Save generated scene and select scene mode",
+      "status": 200
+    },
+    {
+      "step": "Turn start",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Read saved progress",
+      "status": 200
+    },
+    {
+      "step": "Read own-model status",
+      "status": 200
+    }
+  ],
+  "scene": {
+    "name": "我当文具店员",
+    "robot_role": "来买文具的顾客（a customer）",
+    "student_role": "小文具店员（a shopkeeper）",
+    "goal": "1.欢迎顾客并问想买什么；2.询问数量，回答顾客关于颜色的提问；3.拿出文具并告诉顾客价格；4.询问是否需要袋子，收钱并道谢；5.向顾客告别。练习文具、颜色、数量、价格和礼貌问句，孩子主动引导购物过程。",
+    "opening": "Hello! Welcome to my shop!"
+  },
+  "transcript": [
+    {
+      "action": "start",
+      "student": "",
+      "note": "",
+      "robot": [
+        {
+          "text": "现在进入场景「我当文具店员」。你是小文具店员（a shopkeeper），我是来买文具的顾客（a customer）。请先说开场白：",
+          "language": "zh"
+        },
+        {
+          "text": "Hello! Welcome to my shop!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "现在进入场景「我当文具店员」。你是小文具店员（a shopkeeper），我是来买文具的顾客（a customer）。请先说开场白：",
+            "language": "zh"
+          },
+          {
+            "text": "Hello! Welcome to my shop!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": true,
+        "evidence_incomplete": false,
+        "request_id": "d61f9a327e354b3ea5016cb2a5622986",
+        "question_id": "97ca3b1326504a189604dd70d0a49a7d"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Hello! Welcome to my shop!",
+      "note": "Student says the generated opening",
+      "robot": [
+        {
+          "text": "Hello! Do you have pencils?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Hello! Do you have pencils?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "fb98ab39f663496b82f7e858decba066",
+        "question_id": "29c819ec6dd0409bb03e3c6045bab427"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Yes. How many do you want?",
+      "note": "Learner stays shopkeeper and leads by asking quantity.",
+      "robot": [
+        {
+          "text": "Two, please. Do you have blue ones?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Two, please. Do you have blue ones?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "6967612ff4c5477a80e0de5d82f40b7d",
+        "question_id": "6dde04237c4440da8f4933e9279507df"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Yes. Here are two blue pencils. Four yuan. Do you need a bag?",
+      "note": "Learner provides items and price, then leads the bag step.",
+      "robot": [
+        {
+          "text": "Yes, please. Here are four yuan. Please put the pencils in the bag.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 2,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Yes, please. Here are four yuan. Please put the pencils in the bag.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 2,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "75d15aa0c1184eb484cc9e560f2b9399",
+        "question_id": "3bd4fac1fa8241c19c5bd08810975eca"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Here is your bag. Thank you. Goodbye!",
+      "note": "Completes packing after receiving payment and naturally closes the transaction.",
+      "robot": [
+        {
+          "text": "Thank you! Have a nice day!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 3,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Thank you! Have a nice day!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 3,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "5434fbfd809143dcb1d6bf88bdfb31c8",
+        "question_id": "15b95307512649058159850c7bc3d8fe"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "You too!",
+      "note": "Natural reciprocal farewell after the completed purchase; no new transaction invented.",
+      "robot": [
+        {
+          "text": "Take care. Goodbye!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 4,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Take care. Goodbye!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 4,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "4241629406cb4b288f7643e9a491b0e8",
+        "question_id": "a94d9fbb4ae84a2e94bcf47884f7c13b"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Bye!",
+      "note": "Responds to the extra farewell after the shop transaction is already complete.",
+      "robot": [
+        {
+          "text": "Bye! Have a good day!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 5,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Bye! Have a good day!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 5,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "c0fc77caeae64cc18d4f8cb085876457",
+        "question_id": "d927f07818834472a2bc69978ffdeeaf"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Thanks. Bye!",
+      "note": "Another brief farewell; all shopkeeper tasks were already completed.",
+      "robot": [
+        {
+          "text": "Thank you for the pencils. Goodbye!",
+          "language": "en"
+        },
+        {
+          "text": "你主动用“How many do you want?”和“Do you need a bag?”引导了购物过程，还清楚地报出了价格。",
+          "language": "zh"
+        },
+        {
+          "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+          "language": "zh"
+        }
+      ],
+      "phase": "done",
+      "dialog_count": 6,
+      "result": {
+        "ok": true,
+        "active": false,
+        "phase": "done",
+        "session_id": "e933a1db65d34b3a88296c6ba2b1bfc6",
+        "expected_language": "zh",
+        "segments": [
+          {
+            "text": "Thank you for the pencils. Goodbye!",
+            "language": "en"
+          },
+          {
+            "text": "你主动用“How many do you want?”和“Do you need a bag?”引导了购物过程，还清楚地报出了价格。",
+            "language": "zh"
+          },
+          {
+            "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+            "language": "zh"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 6,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "5cd28a2f62424af194246ae854d1d74b",
+        "question_id": "dbd25ac797db4e92913d92b425291512"
+      }
+    }
+  ],
+  "progress": {
+    "today": "2026-10-21",
+    "words": []
+  },
+  "model_status": {
+    "mode": "custom",
+    "base_url": "https://gpt-actor.invalid/v1",
+    "model": "g4_student_shopkeeper",
+    "thinking": false,
+    "last_status": "ok",
+    "last_error": "",
+    "last_used_at": "2026-10-21T13:40:04+08:00",
+    "platform_model": "NO_PLATFORM_MODEL_IN_THIS_SIMULATION"
+  },
+  "passed": true,
+  "final_dialog_count": 6
+}

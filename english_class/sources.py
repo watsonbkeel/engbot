@@ -101,28 +101,46 @@ def download_upstreams(root:Path):
 
 
 def merge_miniprogram(source:Path,overlay:Path,destination:Path):
+    """Add the canonical six-page app to a new copy; never replace host routes/files."""
     src=Path(source).resolve();overlay=Path(overlay).resolve();dest=Path(destination).resolve()
-    if dest.exists() or dest==src or src in dest.parents: raise ValueError('输出目录须为原项目之外的新目录；不覆盖原文件')
+    if dest.exists() or dest==src or src in dest.parents or overlay==dest or overlay in dest.parents:
+        raise ValueError('输出目录须为原项目和陪练源码之外的新目录；不覆盖原文件')
     cfg_path=src/'app.json'
     if not cfg_path.is_file(): raise ValueError('原项目目录中找不到app.json；请选择小程序根目录')
     cfg=json.loads(cfg_path.read_text(encoding='utf-8'))
     original_pages=list(cfg.get('pages',[]))
     if not original_pages: raise ValueError('原项目没有pages配置')
-    additions=['pages/english-config/index','pages/english-result/index']
+    additions=json.loads((overlay/'app.json').read_text(encoding='utf-8')).get('pages',[])
+    if not additions: raise ValueError('陪练源码没有pages配置')
+    page_dirs=[]
     for page in additions:
-        if (src/page).with_suffix('.js').exists(): raise ValueError('原项目已有英语陪练页面；请使用干净的原项目副本或手工合并')
-    shutil.copytree(src,dest,ignore=shutil.ignore_patterns('.git','node_modules','.DS_Store','project.private.config.json','.env','.venv'))
-    for name in ('english-config','english-result'):
-        shutil.copytree(overlay/'pages'/name,dest/'pages'/name,dirs_exist_ok=False)
-    (dest/'utils').mkdir(exist_ok=True)
-    for f in (overlay/'utils').glob('english-*.js'):
-        shutil.copy2(f,dest/'utils'/f.name)
-    cfg['pages']=additions+[p for p in original_pages if p not in additions]
-    (dest/'app.json').write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n')
+        rel=Path(page)
+        if not isinstance(page,str) or rel.is_absolute() or '..' in rel.parts or rel.parts[0]!='pages':
+            raise ValueError('陪练页面路由不合法')
+        folder=rel.parent
+        if page in original_pages or (src/folder).exists():
+            raise ValueError(f'页面同名冲突：{folder}；请使用干净副本，或手工改名后合并')
+        if not (overlay/rel).with_suffix('.js').is_file(): raise ValueError(f'陪练页面缺少脚本：{page}')
+        if folder not in page_dirs: page_dirs.append(folder)
+    helpers=[f for f in (overlay/'utils').rglob('*') if f.is_file() and not f.name.endswith('.local.js')]
+    for helper in helpers:
+        rel=helper.relative_to(overlay)
+        if (src/rel).exists(): raise ValueError(f'工具文件同名冲突：{rel}；未复制任何文件')
+    # Do not follow links into files outside either input project.
+    if any(p.is_symlink() for tree in (src,overlay) for p in tree.rglob('*')):
+        raise ValueError('输入项目含符号链接，请先提供不含链接的完整副本')
+    ignore=shutil.ignore_patterns('.git','node_modules','.DS_Store','project.private.config.json','.env','.env.*','.venv','__pycache__','*.local.js')
+    shutil.copytree(src,dest,ignore=ignore)
+    for folder in page_dirs: shutil.copytree(overlay/folder,dest/folder,ignore=ignore)
+    for helper in helpers:
+        target=dest/helper.relative_to(overlay);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(helper,target)
+    cfg['pages']=additions+original_pages
+    (dest/'app.json').write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     tabs=[x['pagePath'] for x in cfg.get('tabBar',{}).get('list',[])]
     home=tabs[0] if tabs else original_pages[0]
-    (dest/'utils'/'english-origin.js').write_text('module.exports = '+json.dumps({'home':home,'isTab':home in tabs})+'\n')
+    origin={'home':home,'isTab':home in tabs,'embedded':True,'tabPages':tabs}
+    (dest/'utils'/'english-origin.js').write_text('module.exports = '+json.dumps(origin,ensure_ascii=False)+'\n',encoding='utf-8')
     profile=dest/'pages'/'profile'/'index.wxml'
     if profile.exists():
         with profile.open('a',encoding='utf-8') as f:
-            f.write('\n<!-- English Class additive entry -->\n<navigator url="/pages/english-config/index" style="margin:24rpx;padding:24rpx;background:#eaf0fa;border-radius:12rpx;">我的英语陪练 →</navigator>\n')
+            f.write('\n<!-- English Class additive entry -->\n<navigator url="/pages/today/index" style="margin:24rpx;padding:24rpx;background:#eaf0fa;border-radius:12rpx;">我的英语陪练 →</navigator>\n')

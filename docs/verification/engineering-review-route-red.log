@@ -1,0 +1,54 @@
+FFFFF...                                                                 [100%]
+=================================== FAILURES ===================================
+_ test_route_stop_reaches_brain_when_first_start_is_unconfirmed[lost-first-start-reply] _
+tests/test_v3_reliability.py:521: in test_route_stop_reaches_brain_when_first_start_is_unconfirmed
+    assert route(edge, chat, '结束练习', .99, b'') == 'stop'
+E   AssertionError: assert None == 'stop'
+E    +  where None = <function route at 0x7f674a880720>(<pi.english_voice.Edge object at 0x7f674a89dbb0>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f674a8c2340>), '结束练习', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:282 test: first start committed but response lost
+_ test_route_stop_reaches_brain_when_first_start_is_unconfirmed[restored-pending-start] _
+tests/test_v3_reliability.py:521: in test_route_stop_reaches_brain_when_first_start_is_unconfirmed
+    assert route(edge, chat, '结束练习', .99, b'') == 'stop'
+E   AssertionError: assert None == 'stop'
+E    +  where None = <function route at 0x7f674a880720>(<pi.english_voice.Edge object at 0x7f674a83a570>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f674a829300>), '结束练习', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:282 test: first start committed but response lost
+_ test_route_repeated_start_does_not_create_another_unconfirmed_event[queued] __
+tests/test_v3_reliability.py:548: in test_route_repeated_start_does_not_create_another_unconfirmed_event
+    assert edge.queue.qsize() == 1
+E   assert 2 == 1
+E    +  where 2 = qsize()
+E    +    where qsize = <queue.Queue object at 0x7f674a83ac90>.qsize
+E    +      where <queue.Queue object at 0x7f674a83ac90> = <pi.english_voice.Edge object at 0x7f674a83a690>.queue
+_ test_route_repeated_start_does_not_create_another_unconfirmed_event[pending] _
+tests/test_v3_reliability.py:550: in test_route_repeated_start_does_not_create_another_unconfirmed_event
+    assert edge.queue.empty()
+E   assert False
+E    +  where False = empty()
+E    +    where empty = <queue.Queue object at 0x7f6749700140>.empty
+E    +      where <queue.Queue object at 0x7f6749700140> = <pi.english_voice.Edge object at 0x7f6749702bd0>.queue
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:282 test: start outcome unknown
+_ test_route_repeated_start_does_not_create_another_unconfirmed_event[restored] _
+tests/test_v3_reliability.py:550: in test_route_repeated_start_does_not_create_another_unconfirmed_event
+    assert edge.queue.empty()
+E   assert False
+E    +  where False = empty()
+E    +    where empty = <queue.Queue object at 0x7f6749702090>.empty
+E    +      where <queue.Queue object at 0x7f6749702090> = <pi.english_voice.Edge object at 0x7f6749701f70>.queue
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:282 test: start outcome unknown
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_route_stop_reaches_brain_when_first_start_is_unconfirmed[lost-first-start-reply]
+FAILED tests/test_v3_reliability.py::test_route_stop_reaches_brain_when_first_start_is_unconfirmed[restored-pending-start]
+FAILED tests/test_v3_reliability.py::test_route_repeated_start_does_not_create_another_unconfirmed_event[queued]
+FAILED tests/test_v3_reliability.py::test_route_repeated_start_does_not_create_another_unconfirmed_event[pending]
+FAILED tests/test_v3_reliability.py::test_route_repeated_start_does_not_create_another_unconfirmed_event[restored]
+5 failed, 3 passed, 30 deselected, 1 warning in 0.42s

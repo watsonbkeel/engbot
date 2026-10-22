@@ -1,10 +1,41 @@
 """Small, shared API contracts. Extra fields are rejected to catch classroom bugs."""
 from __future__ import annotations
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator
+import re
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator, field_validator
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra='forbid')
+
+class SceneConfig(StrictModel):
+    name: str = Field(min_length=1, max_length=40)
+    robot_role: str = Field(min_length=1, max_length=40)
+    student_role: str = Field(min_length=1, max_length=40)
+    goal: str = Field(min_length=1, max_length=200)
+    opening: str = Field(min_length=1, max_length=60)
+
+    @field_validator('name','robot_role','student_role','goal','opening',mode='before')
+    @classmethod
+    def trim(cls, value):
+        return value.strip() if isinstance(value,str) else value
+
+    @field_validator('opening')
+    @classmethod
+    def english_opening(cls,value):
+        if not re.search(r'[A-Za-z]',value) or re.search(r"[^A-Za-z0-9\s.,!?;:'\"’\-]",value):
+            raise ValueError('开场白须为英文短句')
+        return value
+
+class SceneDraftInput(StrictModel):
+    description: str = Field(min_length=5,max_length=200)
+    grade: StrictInt = Field(default=1,ge=1,le=12)
+
+    @field_validator('description',mode='before')
+    @classmethod
+    def trim(cls,value): return value.strip() if isinstance(value,str) else value
+
+class HeartbeatInput(StrictModel):
+    pi: StrictBool = False
 
 class LearningConfig(StrictModel):
     grade: StrictInt = Field(default=1, ge=1, le=12)
@@ -14,11 +45,15 @@ class LearningConfig(StrictModel):
     practice_words: StrictInt = Field(default=3, ge=1, le=10)
     chinese_help: StrictBool = True
     difficulty: Literal['basic', 'standard', 'challenge'] = 'basic'
+    mode: Literal['full','en2zh','zh2en','scene'] = 'full'
+    scene: SceneConfig | None = None
 
 class LlmSettings(StrictModel):
     base_url: str = Field(min_length=8, max_length=300)
     model: str = Field(min_length=1, max_length=100, pattern=r'^[A-Za-z0-9._:/@+-]+$')
     api_key: str | None = Field(default=None, max_length=400)
+    thinking: StrictBool = False
+    allow_platform_fallback: StrictBool = False
 
 class Evidence(StrictModel):
     """一次练习的附加证据；可选，旧客户端不传也可以。"""
@@ -55,10 +90,26 @@ class Segment(StrictModel):
 class SpeechInput(StrictModel):
     segments: list[Segment] = Field(min_length=1, max_length=8)
     slow: bool = False
+    speed: Literal['elementary','middle','high'] = 'middle'
+
+class ChatTurnInput(StrictModel):
+    action: Literal['enter','answer','stop'] = 'answer'
+    text: str = Field(default='', max_length=1000)
+    request_id: str = Field(min_length=8, max_length=128)
+    session_id: str = Field(min_length=8, max_length=64)
+
 
 class TurnInput(StrictModel):
     text: str = Field(default='', max_length=2000)
     confidence: float | None = Field(default=None, ge=0, le=1)
     unclear: bool = False
     request_id: str = Field(min_length=8, max_length=128)
-    action: Literal['answer', 'start', 'stop', 'pause', 'resume', 'repeat', 'slow', 'help', 'tick', 'played'] = 'answer'
+    action: Literal['answer', 'start', 'stop', 'pause', 'resume', 'repeat', 'slow', 'help', 'explain', 'howtosay', 'tick', 'played'] = 'answer'
+    session_id: str | None = Field(default=None,max_length=64)
+    question_id: str | None = Field(default=None,max_length=64)
+
+    @model_validator(mode='after')
+    def paired_identity(self):
+        if (self.session_id is None)!=(self.question_id is None):
+            raise ValueError('session_id 和 question_id 必须同时传入')
+        return self

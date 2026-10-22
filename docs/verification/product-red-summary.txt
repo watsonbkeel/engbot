@@ -1,0 +1,81 @@
+首轮真实页面:
+✖ shipped today page loads and saves the complete v3 contract only after success (3.538078ms)
+✖ failed candidate connection leaves the prior working connection unchanged (2.391554ms)
+✖ successful connection commits only after verification and ignores success after hiding (0.524839ms)
+✖ onboarding does not commit an invalid candidate or advance on a hidden response (0.670578ms)
+✖ scene navigation preserves unsaved plan fields and merges newly saved scene (2.41484ms)
+✖ draft plan never crosses classroom connection boundaries (0.815887ms)
+✖ late today status and save responses have no hidden-page effects (0.592741ms)
+✖ late settings model response cannot change a hidden page (0.633973ms)
+✖ late scene generation does not replace a hidden scene (1.113714ms)
+✖ scene template failure still loads the saved scene for editing (0.65857ms)
+✖ scene form rejects oversized and blank values before writing config (0.490417ms)
+✖ listening differentiates network, authentication, missing API, server failure, and empty content (0.797459ms)
+✖ real tap filter selects story and dialogue without an exception (0.619561ms)
+✖ late audio download is aborted and cannot play after hiding (1.019162ms)
+✖ newer audio choice wins when older downloads complete last (1.067003ms)
+✖ unload destroys audio and stops late events from touching the page (0.626272ms)
+✖ pending grade lookup does not update or fetch another list after hiding (0.423877ms)
+✖ next track uses identifiers when titles are duplicated (0.539151ms)
+✖ brain expires after sixty seconds, including settings row (0.810829ms)
+✖ future and malformed heartbeat timestamps never report online (0.554364ms)
+✖ SSH results expire and stale success does not claim the Pi is on (0.337448ms)
+✖ fresh active edge proves Pi power even when SSH is not configured (0.228213ms)
+ℹ tests 37
+ℹ pass 15
+ℹ fail 22
+✖ failing tests:
+✖ shipped today page loads and saves the complete v3 contract only after success (3.538078ms)
+✖ failed candidate connection leaves the prior working connection unchanged (2.391554ms)
+✖ successful connection commits only after verification and ignores success after hiding (0.524839ms)
+✖ onboarding does not commit an invalid candidate or advance on a hidden response (0.670578ms)
+✖ scene navigation preserves unsaved plan fields and merges newly saved scene (2.41484ms)
+✖ draft plan never crosses classroom connection boundaries (0.815887ms)
+✖ late today status and save responses have no hidden-page effects (0.592741ms)
+✖ late settings model response cannot change a hidden page (0.633973ms)
+✖ late scene generation does not replace a hidden scene (1.113714ms)
+✖ scene template failure still loads the saved scene for editing (0.65857ms)
+✖ scene form rejects oversized and blank values before writing config (0.490417ms)
+✖ listening differentiates network, authentication, missing API, server failure, and empty content (0.797459ms)
+✖ real tap filter selects story and dialogue without an exception (0.619561ms)
+✖ late audio download is aborted and cannot play after hiding (1.019162ms)
+✖ newer audio choice wins when older downloads complete last (1.067003ms)
+✖ unload destroys audio and stops late events from touching the page (0.626272ms)
+✖ pending grade lookup does not update or fetch another list after hiding (0.423877ms)
+✖ next track uses identifiers when titles are duplicated (0.539151ms)
+✖ brain expires after sixty seconds, including settings row (0.810829ms)
+✖ future and malformed heartbeat timestamps never report online (0.554364ms)
+✖ SSH results expire and stale success does not claim the Pi is on (0.337448ms)
+✖ fresh active edge proves Pi power even when SSH is not configured (0.228213ms)
+附加页面边界:
+✖ skip model explicitly switches to platform and cannot advance after failure or hide (0.446611ms)
+✖ editing model configuration while its load is pending keeps typed input (1.100615ms)
+✖ editing scene while initial load is pending keeps the typed form (0.71233ms)
+ℹ tests 23
+ℹ pass 20
+ℹ fail 3
+✖ failing tests:
+✖ skip model explicitly switches to platform and cannot advance after failure or hide (0.446611ms)
+✖ editing model configuration while its load is pending keeps typed input (1.100615ms)
+✖ editing scene while initial load is pending keeps the typed form (0.71233ms)
+合并/构建:
+FAILED tests/test_tools.py::test_miniprogram_merge_preserves_original - FileN...
+FAILED tests/test_tools.py::test_miniprogram_merge_conflicts_fail_before_copy
+FAILED tests/test_tools.py::test_miniprogram_standalone_build_has_six_pages_and_no_local_credentials
+3 failed, 20 deselected in 0.20s
+路由:
+✖ standalone and merged app choose navigation supported by their actual tabBar (0.935657ms)
+ℹ tests 1
+ℹ pass 0
+ℹ fail 1
+✖ failing tests:
+✖ standalone and merged app choose navigation supported by their actual tabBar (0.935657ms)
+素材生成器:
+✖ delivered listening assets pass independent manifest, digest, and ffprobe verification (17.944577ms)
+✖ verification never rewrites the delivered manifest or audio (17.236323ms)
+ℹ tests 4
+ℹ pass 2
+ℹ fail 2
+✖ failing tests:
+✖ delivered listening assets pass independent manifest, digest, and ffprobe verification (17.944577ms)
+✖ verification never rewrites the delivered manifest or audio (17.236323ms)

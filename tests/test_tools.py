@@ -33,7 +33,12 @@ def test_miniprogram_merge_preserves_original(tmp_path):
     overlay=Path(__file__).resolve().parents[1]/'miniprogram'
     merge_miniprogram(src,overlay,dest)
     cfg=json.loads((dest/'app.json').read_text())
-    assert cfg['pages'][0]=='pages/english-config/index'
+    assert cfg['pages'][0]=='pages/today/index'
+    assert set(json.loads((overlay/'app.json').read_text())['pages']).issubset(cfg['pages'])
+    assert (dest/'utils/page-state.js').exists()
+    assert (dest/'utils/pi-status.js').exists()
+    assert (dest/'pages/today/index.wxss').read_text().startswith('@import')
+    assert 'tabPages' in (dest/'utils/english-origin.js').read_text()
     assert 'pages/learn/index' in cfg['pages']
     assert cfg['tabBar']['list'][0]['text']=='学习'
     assert (dest/'app.js').read_text()=='App({original: true})'
@@ -59,7 +64,7 @@ def test_pi_command_and_vad_no_training_on_silence():
     assert v.feed(b'\x00'*3200) is None
     wav=v.feed(b'\x00'*3200)
     assert wav and wav.startswith(b'RIFF')
-    assert control_action('我 不 会')=='help'
+    assert control_action('我 不 会')=='howtosay'
     assert control_action('do not stop') is None
 
 
@@ -87,6 +92,36 @@ def _idle_edge(monkeypatch):
     edge=Edge(play_audio=False,start_worker=False)
     edge.stop_audio=lambda:None
     return edge
+
+
+def test_local_notice_uses_configured_audio_route(monkeypatch):
+    import subprocess
+    from pi import english_voice
+    edge=_idle_edge(monkeypatch)
+    edge.audio_enabled=True
+    played=[]
+    monkeypatch.setattr(edge,'play',played.append)
+    def synth(args,**kwargs):
+        assert '--stdout' in args
+        assert kwargs['check'] is True
+        return subprocess.CompletedProcess(args,0,stdout=b'RIFF-test',stderr=b'')
+    monkeypatch.setattr(english_voice.subprocess,'run',synth)
+    edge.local_message('测试')
+    assert played==[b'RIFF-test']
+    assert edge.playing is False
+
+
+def test_missing_chat_bridge_gives_local_notice(monkeypatch):
+    from pi.english_voice import Chat,route
+    edge=_idle_edge(monkeypatch)
+    notices=[]
+    edge.local_message=notices.append
+    def unavailable(*args):
+        raise ConnectionRefusedError('bridge unavailable')
+    chat=Chat(poll=unavailable)
+    assert route(edge,chat,'小陈同学',.99,b'')=='chat'
+    assert not chat.active
+    assert len(notices)==1 and '普通聊天服务尚未连接' in notices[0]
 
 
 def _chat(calls):
@@ -292,3 +327,38 @@ def test_pi_dialog_unclear_keeps_queued_answer_but_next_turn_discards_it(monkeyp
     edge.process({'generation':edge.generation,'action':'answer','text':'I like bananas','wav':None,'request_id':'dlg-000003','spoken':edge.spoken})
     calls.clear();edge.process(queued)
     assert '/voice/audio' not in calls              # 对话进入下一轮，旧录音不再送去判
+
+
+def test_miniprogram_merge_conflicts_fail_before_copy(tmp_path):
+    from english_class.sources import merge_miniprogram
+    src=tmp_path/'original';src.mkdir()
+    (src/'app.json').write_text(json.dumps({'pages':['pages/learn/index']}))
+    (src/'utils').mkdir();(src/'utils/page-state.js').write_text('original helper')
+    dest=tmp_path/'merged'
+    overlay=Path(__file__).resolve().parents[1]/'miniprogram'
+    with pytest.raises(ValueError,match='冲突|同名'): merge_miniprogram(src,overlay,dest)
+    assert not dest.exists()
+    assert (src/'utils/page-state.js').read_text()=='original helper'
+
+def test_miniprogram_standalone_build_has_six_pages_and_no_local_credentials(tmp_path):
+    import subprocess,sys
+    from fnmatch import fnmatchcase
+    root=Path(__file__).resolve().parents[1];out=tmp_path/'standalone'
+    result=subprocess.run([sys.executable,str(root/'scripts/build_miniprogram.py'),'--output',str(out)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+    source=root/'miniprogram'
+    # A default standalone build copies every canonical file byte for byte,
+    # excluding only the builder's documented local/private/tool artifacts.
+    excluded=('.git','node_modules','__pycache__','.DS_Store','project.private.config.json','*.local.js','.env','.env.*')
+    expected={path.relative_to(source) for path in source.rglob('*')
+              if path.is_file() and not any(fnmatchcase(part,pattern)
+              for part in path.relative_to(source).parts for pattern in excluded)}
+    actual={path.relative_to(out) for path in out.rglob('*') if path.is_file()}
+    assert actual==expected
+    for relative in sorted(expected):
+        assert (out/relative).read_bytes()==(source/relative).read_bytes(),str(relative)
+    assert len(json.loads((out/'app.json').read_text())['pages'])==6
+    assert not (out/'utils/english-env.local.js').exists()
+    assert json.loads((out/'project.config.json').read_text())['setting']['urlCheck'] is True
+    second=subprocess.run([sys.executable,str(root/'scripts/build_miniprogram.py'),'--output',str(out)],capture_output=True,text=True)
+    assert second.returncode!=0

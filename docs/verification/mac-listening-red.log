@@ -1,0 +1,85 @@
+Captured 2026-10-21T15:13:05.374926+00:00
+Platform: Linux; simulated a symlinked temporary-directory ancestor (not a native macOS run).
+Baseline: b0a85e54c3b3815306b717fcaaa4980a5b433ce9
+TMPDIR=/tmp/listening-baseline-gq8hrni5/alias
+PYTHON=/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python
+Command: node -e <Module._compile unchanged tests_js/listening_assets.test.js>
+SHA256 scripts/make_listening.py: 9930c0aca567f1d4eb629010fae7ebc814c7b74d2685728e4216ff1835cd2990
+SHA256 tests_js/listening_assets.test.js: e32bd9008134e5d6c44d48560c92b9ee8aeffce3303a93165769d9e069580914
+Exit status: 1
+
+✔ delivered listening assets pass independent manifest, digest, and ffprobe verification (2457.831822ms)
+✔ curated listening contains nine grades with five original texts and both types (2.065605ms)
+✔ generation rejects traversal in curated source before making any output (104.958396ms)
+✔ verification never rewrites the delivered manifest or audio (2206.566206ms)
+✖ missing real voice model produces a failure record without substitute audio (86.622018ms)
+✖ asset validation rejects tampered audio and atomic metadata preserves explicit permissions (97.122505ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 4
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4961.815398
+
+✖ failing tests:
+
+test at tests_js/listening_assets.test.js:28:1
+✖ missing real voice model produces a failure record without substitute audio (86.622018ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:32:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/listening_assets.test.js:39:1
+✖ asset validation rejects tampered audio and atomic metadata preserves explicit permissions (97.122505ms)
+  AssertionError [ERR_ASSERTION]: Traceback (most recent call last):
+    File "<string>", line 8, in <module>
+    File "/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/scripts/make_listening.py", line 111, in validate_asset
+      target = safe_asset(root, entry['file'])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/scripts/make_listening.py", line 81, in safe_asset
+      ensure_no_links(target)
+    File "/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/scripts/make_listening.py", line 74, in ensure_no_links
+      if part.is_symlink(): raise BuildError('素材输出路径不能经过符号链接')
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  make_listening.BuildError: 素材输出路径不能经过符号链接
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "<string>", line 9, in <module>
+  AssertionError
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:53:96)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

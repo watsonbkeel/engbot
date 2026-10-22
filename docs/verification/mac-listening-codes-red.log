@@ -1,0 +1,708 @@
+FFFFFFFFFFFFFFFFF                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_missing_audio_has_stable_code ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_missing_audio_has_stable_0')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+
+    def test_missing_audio_has_stable_code(tmp_path, asset_entry):
+        entry, original = asset_entry
+>       error = assert_code('ASSET_MISSING', lambda: listening.validate_asset(entry, original, tmp_path.resolve()))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_listening_paths.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'ASSET_MISSING'
+action = <function test_missing_audio_has_stable_code.<locals>.<lambda> at 0x7fb1293f39c0>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'ASSET_MISSING'
+E        +  where None = getattr(BuildError('g1_story_01 音频缺失'), 'code', None)
+E        +    where BuildError('g1_story_01 音频缺失') = <ExceptionInfo BuildError('g1_story_01 音频缺失') tblen=3>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_____________________ test_tampered_audio_has_stable_code ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_tampered_audio_has_stable0')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+
+    def test_tampered_audio_has_stable_code(tmp_path, asset_entry):
+        entry, original = asset_entry
+        root = tmp_path.resolve()
+        target = root / entry['file']
+        target.parent.mkdir()
+        target.write_bytes(b'corrupt')
+>       error = assert_code('ASSET_DIGEST_MISMATCH', lambda: listening.validate_asset(entry, original, root))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_listening_paths.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'ASSET_DIGEST_MISMATCH'
+action = <function test_tampered_audio_has_stable_code.<locals>.<lambda> at 0x7fb1293f94e0>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'ASSET_DIGEST_MISMATCH'
+E        +  where None = getattr(BuildError('g1_story_01 音频摘要不一致'), 'code', None)
+E        +    where BuildError('g1_story_01 音频摘要不一致') = <ExceptionInfo BuildError('g1_story_01 音频摘要不一致') tblen=3>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_____________ test_only_trusted_temporary_fixture_is_canonicalized _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_only_trusted_temporary_fi0')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+
+    def test_only_trusted_temporary_fixture_is_canonicalized(tmp_path, asset_entry):
+        """The alias stays forbidden to production; its newly created fixture is resolved."""
+        entry, original = asset_entry
+        base = tmp_path.resolve()
+        physical = base / 'physical'
+        physical.mkdir()
+        alias = base / 'system-temp-alias'
+        alias.symlink_to(physical, target_is_directory=True)
+        with tempfile.TemporaryDirectory(dir=alias) as temporary:
+            raw_root = Path(temporary)
+            root = raw_root.resolve()
+            target = root / entry['file']
+            target.parent.mkdir()
+            target.write_bytes(b'corrupt')
+>           assert_code('PATH_SYMLINK', lambda: listening.safe_asset(raw_root, entry['file']))
+
+tests/test_listening_paths.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_only_trusted_temporary_fixture_is_canonicalized.<locals>.<lambda> at 0x7fb1293f98a0>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_____________ test_asset_symbolic_links_are_rejected[inside-root] ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_0')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'root', destination = 'inside'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293f9c60>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+___________ test_asset_symbolic_links_are_rejected[inside-directory] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_1')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'directory', destination = 'inside'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb12939a8e0>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_____________ test_asset_symbolic_links_are_rejected[inside-audio] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_2')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'audio', destination = 'inside'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293f9a80>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_____________ test_asset_symbolic_links_are_rejected[outside-root] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_3')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'root', destination = 'outside'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293f94e0>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+__________ test_asset_symbolic_links_are_rejected[outside-directory] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_4')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'directory', destination = 'outside'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293fa520>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+____________ test_asset_symbolic_links_are_rejected[outside-audio] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_5')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'audio', destination = 'outside'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293fa700>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+____________ test_asset_symbolic_links_are_rejected[dangling-root] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_6')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'root', destination = 'dangling'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293fa980>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+__________ test_asset_symbolic_links_are_rejected[dangling-directory] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_7')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'directory', destination = 'dangling'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293fac00>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+____________ test_asset_symbolic_links_are_rejected[dangling-audio] ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_asset_symbolic_links_are_8')
+asset_entry = ({'duration_seconds': 82.416, 'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', ...}, {'file': 'g1/g1_story_01.mp3', 'grade': 1, 'id': 'g1_story_01', 'title': 'Lily and the Red Bag', ...})
+kind = 'audio', destination = 'dangling'
+
+    @pytest.mark.parametrize('kind', ['root', 'directory', 'audio'])
+    @pytest.mark.parametrize('destination', ['inside', 'outside', 'dangling'])
+    def test_asset_symbolic_links_are_rejected(tmp_path, asset_entry, kind, destination):
+        entry, _ = asset_entry
+        base = tmp_path.resolve()
+        root = base / 'assets'
+        root.mkdir()
+        outside = base / 'outside'
+        outside.mkdir()
+        if kind == 'root':
+            link = base / 'asset-link'
+            target = root if destination == 'inside' else outside
+            if destination == 'dangling':
+                target = base / 'absent-root'
+            link.symlink_to(target, target_is_directory=True)
+            root = link
+        elif kind == 'directory':
+            target = (root if destination == 'inside' else outside) / 'actual-grade'
+            if destination != 'dangling':
+                target.mkdir()
+            (root / 'g1').symlink_to(target, target_is_directory=True)
+        else:
+            (root / 'g1').mkdir()
+            target = (root if destination == 'inside' else outside) / 'actual.mp3'
+            if destination != 'dangling':
+                target.write_bytes(b'unchanged')
+            (root / entry['file']).symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.safe_asset(root, entry['file']))
+
+tests/test_listening_paths.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_asset_symbolic_links_are_rejected.<locals>.<lambda> at 0x7fb1293fae80>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_ test_atomic_metadata_rejects_symbolic_links_without_touching_target[False-index.json] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_atomic_metadata_rejects_s0')
+filename = 'index.json', dangling = False
+
+    @pytest.mark.parametrize('filename', ['index.json', 'failures.json'])
+    @pytest.mark.parametrize('dangling', [False, True])
+    def test_atomic_metadata_rejects_symbolic_links_without_touching_target(tmp_path, filename, dangling):
+        root = tmp_path.resolve()
+        target = root / 'original.json'
+        if not dangling:
+            target.write_bytes(b'{"unchanged": true}')
+        metadata = root / filename
+        metadata.symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.atomic_json(metadata, {'items': []}))
+
+tests/test_listening_paths.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_atomic_metadata_rejects_symbolic_links_without_touching_target.<locals>.<lambda> at 0x7fb1293fb100>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_ test_atomic_metadata_rejects_symbolic_links_without_touching_target[False-failures.json] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_atomic_metadata_rejects_s1')
+filename = 'failures.json', dangling = False
+
+    @pytest.mark.parametrize('filename', ['index.json', 'failures.json'])
+    @pytest.mark.parametrize('dangling', [False, True])
+    def test_atomic_metadata_rejects_symbolic_links_without_touching_target(tmp_path, filename, dangling):
+        root = tmp_path.resolve()
+        target = root / 'original.json'
+        if not dangling:
+            target.write_bytes(b'{"unchanged": true}')
+        metadata = root / filename
+        metadata.symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.atomic_json(metadata, {'items': []}))
+
+tests/test_listening_paths.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_atomic_metadata_rejects_symbolic_links_without_touching_target.<locals>.<lambda> at 0x7fb1293fb240>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_ test_atomic_metadata_rejects_symbolic_links_without_touching_target[True-index.json] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_atomic_metadata_rejects_s2')
+filename = 'index.json', dangling = True
+
+    @pytest.mark.parametrize('filename', ['index.json', 'failures.json'])
+    @pytest.mark.parametrize('dangling', [False, True])
+    def test_atomic_metadata_rejects_symbolic_links_without_touching_target(tmp_path, filename, dangling):
+        root = tmp_path.resolve()
+        target = root / 'original.json'
+        if not dangling:
+            target.write_bytes(b'{"unchanged": true}')
+        metadata = root / filename
+        metadata.symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.atomic_json(metadata, {'items': []}))
+
+tests/test_listening_paths.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_atomic_metadata_rejects_symbolic_links_without_touching_target.<locals>.<lambda> at 0x7fb1293fb560>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+_ test_atomic_metadata_rejects_symbolic_links_without_touching_target[True-failures.json] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_atomic_metadata_rejects_s3')
+filename = 'failures.json', dangling = True
+
+    @pytest.mark.parametrize('filename', ['index.json', 'failures.json'])
+    @pytest.mark.parametrize('dangling', [False, True])
+    def test_atomic_metadata_rejects_symbolic_links_without_touching_target(tmp_path, filename, dangling):
+        root = tmp_path.resolve()
+        target = root / 'original.json'
+        if not dangling:
+            target.write_bytes(b'{"unchanged": true}')
+        metadata = root / filename
+        metadata.symlink_to(target)
+>       assert_code('PATH_SYMLINK', lambda: listening.atomic_json(metadata, {'items': []}))
+
+tests/test_listening_paths.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+expected = 'PATH_SYMLINK'
+action = <function test_atomic_metadata_rejects_symbolic_links_without_touching_target.<locals>.<lambda> at 0x7fb1293fbb00>
+
+    def assert_code(expected, action):
+        with pytest.raises(listening.BuildError) as caught:
+            action()
+>       assert getattr(caught.value, 'code', None) == expected
+E       AssertionError: assert None == 'PATH_SYMLINK'
+E        +  where None = getattr(BuildError('素材输出路径不能经过符号链接'), 'code', None)
+E        +    where BuildError('素材输出路径不能经过符号链接') = <ExceptionInfo BuildError('素材输出路径不能经过符号链接') tblen=4>.value
+
+tests/test_listening_paths.py:24: AssertionError
+________ test_cli_rejects_alias_before_creating_output_with_stable_code ________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-110/test_cli_rejects_alias_before_0')
+
+    def test_cli_rejects_alias_before_creating_output_with_stable_code(tmp_path):
+        base = tmp_path.resolve()
+        physical = base / 'physical'
+        physical.mkdir()
+        alias = base / 'alias'
+        alias.symlink_to(physical, target_is_directory=True)
+        output = alias / 'assets'
+        result = subprocess.run(
+            [sys.executable, str(listening.ROOT / 'scripts/make_listening.py'),
+             '--backend', 'piper', '--piper-model', str(base / 'missing.onnx'),
+             '--output', str(output), '--limit', '1'],
+            cwd=listening.ROOT, text=True, capture_output=True, timeout=30,
+        )
+        assert result.returncode == 2
+>       assert '[PATH_SYMLINK]' in result.stderr
+E       AssertionError: assert '[PATH_SYMLINK]' in '素材输出路径不能经过符号链接\n'
+E        +  where '素材输出路径不能经过符号链接\n' = CompletedProcess(args=['/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python', '/workspace/scratch/d3b03e9e7aea/e...110/test_cli_rejects_alias_before_0/alias/assets', '--limit', '1'], returncode=2, stdout='', stderr='素材输出路径不能经过符号链接\n').stderr
+
+tests/test_listening_paths.py:123: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_listening_paths.py::test_missing_audio_has_stable_code - As...
+FAILED tests/test_listening_paths.py::test_tampered_audio_has_stable_code - A...
+FAILED tests/test_listening_paths.py::test_only_trusted_temporary_fixture_is_canonicalized
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[inside-root]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[inside-directory]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[inside-audio]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[outside-root]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[outside-directory]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[outside-audio]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[dangling-root]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[dangling-directory]
+FAILED tests/test_listening_paths.py::test_asset_symbolic_links_are_rejected[dangling-audio]
+FAILED tests/test_listening_paths.py::test_atomic_metadata_rejects_symbolic_links_without_touching_target[False-index.json]
+FAILED tests/test_listening_paths.py::test_atomic_metadata_rejects_symbolic_links_without_touching_target[False-failures.json]
+FAILED tests/test_listening_paths.py::test_atomic_metadata_rejects_symbolic_links_without_touching_target[True-index.json]
+FAILED tests/test_listening_paths.py::test_atomic_metadata_rejects_symbolic_links_without_touching_target[True-failures.json]
+FAILED tests/test_listening_paths.py::test_cli_rejects_alias_before_creating_output_with_stable_code
+17 failed in 0.22s

@@ -1,0 +1,179 @@
+✖ settings waits for settlement before the next ten-second status delay (7.133223ms)
+✖ settings backs off 20/40/60 seconds, caps failures, and recovers to ten seconds (1.045541ms)
+✔ settings ignores an in-flight completion after hide and does not restart timers (0.897288ms)
+✔ settings clears a scheduled status timer on onHide (1.266264ms)
+✔ settings clears a scheduled status timer on onUnload (0.629527ms)
+✖ settings reopening resets failures and an older classroom cannot write or schedule (1.526955ms)
+✖ settings an identity change invalidates the old scheduled poll until the next show (0.635365ms)
+✖ today waits for settlement before the next ten-second status delay (1.823542ms)
+✖ today backs off 20/40/60 seconds, caps failures, and recovers to ten seconds (0.669106ms)
+✔ today ignores an in-flight completion after hide and does not restart timers (1.041195ms)
+✔ today clears a scheduled status timer on onHide (0.586431ms)
+✔ today clears a scheduled status timer on onUnload (0.547062ms)
+✖ today reopening resets failures and an older classroom cannot write or schedule (1.092662ms)
+✖ today an identity change invalidates the old scheduled poll until the next show (0.797859ms)
+✖ settings connection commit clears old backoff and immediately polls the new classroom (1.738783ms)
+✔ settings connection commit during a request rejects the old completion and keeps one new timer (0.538279ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 7
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28.573203
+
+✖ failing tests:
+
+test at tests_js/status-poller.test.js:55:3
+✖ settings waits for settlement before the next ten-second status delay (7.133223ms)
+  AssertionError [ERR_ASSERTION]: an unresolved request must not overlap another poll
+  
+  4 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:60:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:67:3
+✖ settings backs off 20/40/60 seconds, caps failures, and recovers to ten seconds (1.045541ms)
+  AssertionError [ERR_ASSERTION]: no poll before the current backoff expires
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:75:14)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:105:3
+✖ settings reopening resets failures and an older classroom cannot write or schedule (1.526955ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 4
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:118:39)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:123:3
+✖ settings an identity change invalidates the old scheduled poll until the next show (0.635365ms)
+  AssertionError [ERR_ASSERTION]: the old page generation must not poll a different classroom
+  
+  7 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:128:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 7,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:55:3
+✖ today waits for settlement before the next ten-second status delay (1.823542ms)
+  AssertionError [ERR_ASSERTION]: an unresolved request must not overlap another poll
+  
+  4 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:60:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:67:3
+✖ today backs off 20/40/60 seconds, caps failures, and recovers to ten seconds (0.669106ms)
+  AssertionError [ERR_ASSERTION]: no poll before the current backoff expires
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:75:14)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:105:3
+✖ today reopening resets failures and an older classroom cannot write or schedule (1.092662ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 4
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:118:39)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:123:3
+✖ today an identity change invalidates the old scheduled poll until the next show (0.797859ms)
+  AssertionError [ERR_ASSERTION]: the old page generation must not poll a different classroom
+  
+  7 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:128:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 7,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/status-poller.test.js:134:1
+✖ settings connection commit clears old backoff and immediately polls the new classroom (1.738783ms)
+  AssertionError [ERR_ASSERTION]: neither the old timer nor old backoff survives a commit
+  
+  4 !== 2
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/status-poller.test.js:141:37)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,66 @@
+<view class="page">
+  <view class="eyebrow">为今天的练习做好安排</view>
+  <view class="title">今日练习</view>
+
+  <!-- 在线状态条（每 10 秒自动刷新） -->
+  <view class="status-bar st-{{statusLevel}}">
+    <view class="dot"></view>
+    <view>{{statusText}}</view>
+  </view>
+
+  <view class="error" wx:if="{{error}}">{{error}}</view>
+  <view class="notice-bar" wx:if="{{notice}}">{{notice}}</view>
+  <view class="loading-hint" wx:if="{{loading}}">正在读取当前安排…</view>
+
+  <block wx:if="{{ready && !loading}}">
+    <!-- 学习范围 -->
+    <view class="card">
+      <view class="card-title">学习范围</view>
+      <picker range="{{grades}}" value="{{form.grade - 1}}" disabled="{{saving}}" bindchange="onGrade"><view class="picker-row"><view class="row-label">年级</view><view class="row-value">{{grades[form.grade - 1]}}<text class="picker-arrow">›</text></view></view></picker>
+      <picker range="{{semesters}}" value="{{form.semester - 1}}" disabled="{{saving}}" bindchange="onSemester"><view class="picker-row"><view class="row-label">学期</view><view class="row-value">{{semesters[form.semester - 1]}}<text class="picker-arrow">›</text></view></view></picker>
+      <picker range="{{groups}}" range-key="label" value="{{groupIndex}}" disabled="{{saving}}" bindchange="onGroup"><view class="picker-row"><view class="row-label">练习组</view><view class="row-value">{{groups[groupIndex].label || '请选择'}}<text class="picker-arrow">›</text></view></view></picker>
+      <view class="note footnote" wx:if="{{wordPreview}}">本练习组词例：{{wordPreview}}</view>
+    </view>
+
+    <!-- 练习方式 -->
+    <view class="card">
+      <view class="card-title">练习方式</view>
+      <picker range="{{durations}}" value="{{durationIndex}}" disabled="{{saving}}" bindchange="onDuration"><view class="picker-row"><view class="row-label">时长</view><view class="row-value">{{form.duration_minutes}} 分钟<text class="picker-arrow">›</text></view></view></picker>
+      <picker range="{{wordCounts}}" value="{{wordCountIndex}}" disabled="{{saving}}" bindchange="onWordCount"><view class="picker-row"><view class="row-label">本次词数</view><view class="row-value">{{form.practice_words}} 个<text class="picker-arrow">›</text></view></view></picker>
+      <picker range="{{difficulties}}" value="{{difficultyIndex}}" disabled="{{saving}}" bindchange="onDifficulty"><view class="picker-row"><view class="row-label">难度</view><view class="row-value">{{difficulties[difficultyIndex]}}<text class="picker-arrow">›</text></view></view></picker>
+      <view class="picker-row"><view class="row-label">中文辅助</view><switch checked="{{form.chinese_help}}" disabled="{{saving}}" bindchange="onChinese" color="#2F6FED" /></view>
+    </view>
+
+    <!-- 模式四选一 -->
+    <view class="card">
+      <view class="card-title">模式</view>
+      <view class="mode-item {{form.mode === item.value ? 'active' : ''}} {{saving ? 'saving-disabled' : ''}}" aria-disabled="{{saving}}" wx:for="{{modes}}" wx:key="value" data-value="{{item.value}}" bindtap="onMode">
+        <view class="mode-name">{{item.name}}</view>
+        <view class="mode-desc">{{item.desc}}</view>
+      </view>
+    </view>
+
+    <!-- 场景 -->
+    <view class="card">
+      <view class="card-title">自己设计场景</view>
+      <view class="note">自己写下想法，让 AI 帮你完善，再和机器人扮演角色练英语。</view>
+      <view class="picker-row {{saving ? 'saving-disabled' : ''}}" aria-disabled="{{saving}}" bindtap="goScenes">
+        <view class="row-label">已保存场景</view>
+        <view class="row-value">{{form.scene ? form.scene.name : '未设置'}}<text class="picker-arrow">›</text></view>
+      </view>
+      <button class="secondary" disabled="{{saving}}" bindtap="goScenes">创建 / 修改我的场景</button>
+      <view class="note footnote" wx:if="{{form.scene}}">换场景后，上次的练习断点会作废，下次从头开始。</view>
+      <view class="note footnote" wx:else>设置场景后，可以选「场景对话」模式或并入完整练习。</view>
+    </view>
+
+    <button class="primary" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">保存安排</button>
+    <view class="empty">保存后，孩子对机器人说“小陈同学，学英语”就会按这份安排开课。</view>
+  </block>
+
+  <view class="card" wx:if="{{unconfigured}}">
+    <view class="card-title">还没配置课堂连接</view>
+    <view class="note">请先完成首次引导。</view>
+    <button class="secondary" bindtap="goOnboard">去引导页</button>
+  </view>
+  <include src="../../utils/english-nav.wxml" />
+</view>

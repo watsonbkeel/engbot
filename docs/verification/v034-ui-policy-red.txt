@@ -1,0 +1,160 @@
+✖ model fallback starts disabled and only an explicit switch is submitted (9.777243ms)
+✖ saved fallback choice and recent failed routing are shown in settings (1.508148ms)
+✖ late model load cannot undo a newly selected fallback preference (0.510778ms)
+✖ clearing own model resets fallback choice and clears its status (0.71814ms)
+✖ scene generation displays the actual fallback while preserving the five-field form (2.083243ms)
+✖ failed scene generation refreshes usage but leaves the edited scene intact (0.622406ms)
+✖ unavailable usage does not look like zero used or prevent manual scene editing (1.408568ms)
+✖ late usage response cannot cross classroom identity or hidden page (0.440733ms)
+✖ public API errors retain a safe support request id and stable code (0.800463ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 0
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.239444
+
+✖ failing tests:
+
+test at tests_js/review-policy.test.js:7:1
+✖ model fallback starts disabled and only an explicit switch is submitted (9.777243ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - false
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:10:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:20:1
+✖ saved fallback choice and recent failed routing are shown in settings (1.508148ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:24:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:29:1
+✖ late model load cannot undo a newly selected fallback preference (0.510778ms)
+  TypeError: p.onFallback is not a function
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:31:31)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests_js/review-policy.test.js:37:1
+✖ clearing own model resets fallback choice and clears its status (0.71814ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:41:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:45:1
+✖ scene generation displays the actual fallback while preserving the five-field form (2.083243ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /平台/. Input:
+  
+  '已生成，请检查内容后保存。'
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:54:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '已生成，请检查内容后保存。',
+    expected: /平台/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:60:1
+✖ failed scene generation refreshes usage but leaves the edited scene intact (0.622406ms)
+  TypeError: Cannot read properties of undefined (reading 'attempts')
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:65:29)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests_js/review-policy.test.js:69:1
+✖ unavailable usage does not look like zero used or prevent manual scene editing (1.408568ms)
+  TypeError: p.refreshUsage is not a function
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:72:11)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests_js/review-policy.test.js:79:1
+✖ late usage response cannot cross classroom identity or hidden page (0.440733ms)
+  TypeError: p.refreshUsage is not a function
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:81:19)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests_js/review-policy.test.js:88:1
+✖ public API errors retain a safe support request id and stable code (0.800463ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 模型暂不可用
+      at async TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:91:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 模型暂不可用
+        at responseError (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/miniprogram/utils/english-api.js:20:17)
+        at Object.success (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/miniprogram/utils/english-api.js:33:16)
+        at /workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:89:20
+        at Object.request (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/helpers.cjs:16:56)
+        at /workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/miniprogram/utils/english-api.js:28:8
+        at new Promise (<anonymous>)
+        at call (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/miniprogram/utils/english-api.js:23:10)
+        at Object.sceneGenerate (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/miniprogram/utils/english-api.js:60:42)
+        at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:91:28)
+        at Test.runInAsyncScope (node:async_hooks:227:14),
+    operator: 'rejects',
+    diff: 'simple'
+  }

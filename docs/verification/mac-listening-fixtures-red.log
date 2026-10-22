@@ -1,0 +1,107 @@
+✖ listening fixtures work with a symlinked system temporary directory (235.89197ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 243.470393
+
+✖ failing tests:
+
+test at tests_js/listening_assets.test.js:55:1
+✖ listening fixtures work with a symlinked system temporary directory (235.89197ms)
+  AssertionError [ERR_ASSERTION]: TAP version 13
+  # Subtest: missing real voice model produces a failure record without substitute audio
+  not ok 1 - missing real voice model produces a failure record without substitute audio
+    ---
+    duration_ms: 91.602928
+    type: 'test'
+    location: '/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:28:1'
+    failureType: 'testCodeFailure'
+    error: |-
+      Expected values to be strictly equal:
+      
+      2 !== 1
+      
+    code: 'ERR_ASSERTION'
+    name: 'AssertionError'
+    expected: 1
+    actual: 2
+    operator: 'strictEqual'
+    stack: |-
+      TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:32:12)
+      Test.runInAsyncScope (node:async_hooks:227:14)
+      Test.run (node:internal/test_runner/test:1382:25)
+      Test.start (node:internal/test_runner/test:1242:17)
+      startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+    ...
+  # Subtest: asset validation rejects tampered audio and atomic metadata preserves explicit permissions
+  not ok 2 - asset validation rejects tampered audio and atomic metadata preserves explicit permissions
+    ---
+    duration_ms: 90.910287
+    type: 'test'
+    location: '/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:39:1'
+    failureType: 'testCodeFailure'
+    error: |-
+      Traceback (most recent call last):
+        File "<string>", line 8, in <module>
+        File "/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/scripts/make_listening.py", line 111, in validate_asset
+          target = safe_asset(root, entry['file'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/scripts/make_listening.py", line 81, in safe_asset
+          ensure_no_links(target)
+        File "/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/scripts/make_listening.py", line 74, in ensure_no_links
+          if part.is_symlink(): raise BuildError('素材输出路径不能经过符号链接')
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      make_listening.BuildError: 素材输出路径不能经过符号链接
+      
+      During handling of the above exception, another exception occurred:
+      
+      Traceback (most recent call last):
+        File "<string>", line 9, in <module>
+      AssertionError
+      
+      
+      1 !== 0
+      
+    code: 'ERR_ASSERTION'
+    name: 'AssertionError'
+    expected: 0
+    actual: 1
+    operator: 'strictEqual'
+    stack: |-
+      TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:53:96)
+      Test.runInAsyncScope (node:async_hooks:227:14)
+      Test.run (node:internal/test_runner/test:1382:25)
+      Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      Test.postRun (node:internal/test_runner/test:1522:19)
+      Test.run (node:internal/test_runner/test:1447:12)
+      async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+    ...
+  1..2
+  # tests 2
+  # suites 0
+  # pass 0
+  # fail 2
+  # cancelled 0
+  # skipped 0
+  # todo 0
+  # duration_ms 191.570612
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/listening_assets.test.js:69:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

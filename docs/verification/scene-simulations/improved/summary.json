@@ -1,0 +1,22 @@
+[
+  {
+    "case_id": "g5_lost_item",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "case_id": "g4_student_shopkeeper",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "case_id": "g6_space_puzzle",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "case_id": "g3_lunch",
+    "passed": true,
+    "error": ""
+  }
+]

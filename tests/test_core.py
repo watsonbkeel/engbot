@@ -48,8 +48,9 @@ def test_credentials_must_match_student(client):
 
 def test_config_roundtrip_and_validation(client):
     c={'grade':1,'semester':1,'unit':1,'duration_minutes':5,'chinese_help':False,'difficulty':'challenge','practice_words':3}
-    assert client.put('/api/config?student_id=s001',json=c,headers=headers()).json()==c
-    assert client.get('/api/config?student_id=s001',headers=headers('brain')).json()==c
+    expected={**c,'mode':'full','scene':None}
+    assert client.put('/api/config?student_id=s001',json=c,headers=headers()).json()==expected
+    assert client.get('/api/config?student_id=s001',headers=headers('brain')).json()==expected
     assert client.get('/api/config?student_id=s002',headers=headers(student='B')).json()['unit']==0
     assert client.put('/api/config?student_id=s001',json={**c,'difficulty':'magic'},headers=headers()).status_code==422
     assert client.put('/api/config?student_id=s001',json={**c,'unit':999},headers=headers()).status_code==422
@@ -145,12 +146,12 @@ def llm_client(db):
     with TestClient(create_app(db,fake)) as c: yield c,fake,db
 
 
-def test_student_llm_is_preferred_masked_and_falls_back(llm_client):
+def test_student_llm_is_preferred_masked_and_falls_back_with_consent(llm_client):
     c,fake,db=llm_client
     chat=lambda: c.post('/internal/chat?student_id=s001',json={'messages':[{'role':'user','content':'hi'}],'json_output':True},headers=headers('brain'))
     assert c.get('/api/llm?student_id=s001',headers=headers()).json()['mode']=='platform'
     assert chat().json()['provider']=='platform'
-    body={'base_url':'https://api.example.com/v1/chat/completions','model':'gpt-4o-mini','api_key':'sk-student-secret-9876'}
+    body={'base_url':'https://api.example.com/v1/chat/completions','model':'gpt-4o-mini','api_key':'sk-student-secret-9876','allow_platform_fallback':True}
     r=c.put('/api/llm?student_id=s001',json=body,headers=headers())
     assert r.status_code==200 and r.json()['mode']=='custom' and r.json()['base_url']=='https://api.example.com/v1'
     assert 'sk-student-secret-9876' not in r.text and r.json()['key_hint'].endswith('9876')

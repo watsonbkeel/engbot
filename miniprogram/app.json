@@ -1,6 +1,30 @@
 {
-  "pages": ["pages/english-config/index", "pages/english-result/index"],
-  "window": {"navigationBarTitleText": "我的英语陪练", "navigationBarBackgroundColor": "#F5F7FB", "navigationBarTextStyle": "black", "backgroundColor": "#F5F7FB"},
+  "pages": [
+    "pages/today/index",
+    "pages/listening/index",
+    "pages/english-result/index",
+    "pages/settings/index",
+    "pages/onboarding/index",
+    "pages/scenes/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "英语陪练",
+    "navigationBarBackgroundColor": "#F5F7FB",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F5F7FB"
+  },
+  "tabBar": {
+    "color": "#8A94A6",
+    "selectedColor": "#2F6FED",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/today/index", "text": "今日练习" },
+      { "pagePath": "pages/listening/index", "text": "磨耳朵" },
+      { "pagePath": "pages/english-result/index", "text": "练习记录" },
+      { "pagePath": "pages/settings/index", "text": "设置" }
+    ]
+  },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

@@ -1,2 +1,2 @@
-// 合并脚本会填入原小程序的学习主页；独立两页版保持空字符串。
-module.exports = { home: '', isTab: false }
+// 独立版使用自己的四个 Tab；合并脚本在输出副本中写入原项目导航。
+module.exports = {home:'',isTab:false,embedded:false,tabPages:[]}

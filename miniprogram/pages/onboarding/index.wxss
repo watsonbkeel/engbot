@@ -1,0 +1,10 @@
+@import "../../utils/english-shared.wxss";
+.steps { display: flex; justify-content: space-between; }
+.step-item { font-size: 26rpx; color: #8A94A6; display: flex; align-items: center; }
+.step-item .no {
+  width: 36rpx; height: 36rpx; border-radius: 50%; background: #EEF1F6;
+  color: #8A94A6; font-size: 22rpx; display: inline-flex; align-items: center;
+  justify-content: center; margin-right: 10rpx;
+}
+.step-item.done { color: #1F7A3D; font-weight: 600; }
+.step-item.done .no { background: #2FA65A; color: #FFFFFF; }

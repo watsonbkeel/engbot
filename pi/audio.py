@@ -27,9 +27,11 @@ def control_action(text:str):
     had_wake,s=split_wake(text)
     if had_wake and not s: return 'chat'
     if s in START_PHRASES: return 'start'
-    return {'结束':'stop','结束练习':'stop','停止练习':'stop','暂停':'pause','暂停练习':'pause','继续':'resume',
+    return {'结束':'stop','结束练习':'stop','停止练习':'stop','iwanttostop':'stop','暂停':'pause','暂停练习':'pause','继续':'resume',
             '继续练习':'resume','再说一次':'repeat','再读一次':'repeat','慢一点':'slow','说慢一点':'slow',
-            '我不会':'help','给我提示':'help','用中文解释':'help'}.get(s)
+            '听不懂':'explain','什么意思':'explain','这是什么意思':'explain','这个词什么意思':'explain',
+            '用中文解释':'explain','给我提示':'explain',
+            '我不会':'howtosay','怎么说':'howtosay','不会说':'howtosay','我不会说':'howtosay'}.get(s)
 
 
 def wav_bytes(pcm:bytes):

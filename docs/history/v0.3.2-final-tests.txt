@@ -1,0 +1,83 @@
+........................................................................ [ 22%]
+........................................................................ [ 44%]
+........................................................................ [ 66%]
+........................................................................ [ 88%]
+.....................................                                    [100%]
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+325 passed, 1 warning in 10.62s
+✔ progress 0 practiced is not never practiced (1.83587ms)
+✔ today filter and cumulative labels (0.336717ms)
+✔ connection refuses provider placeholders and mismatched base (0.630197ms)
+✔ request failure is rejected, not empty report (1.345613ms)
+✔ request adds student id and credential header (0.415945ms)
+✔ tracked example connection file is empty and safe (0.661224ms)
+✔ isConfigured distinguishes empty connection from filled one (0.138468ms)
+✔ report shows imitation separately from independent use (0.165869ms)
+✔ listening differentiates network, authentication, missing API, server failure, and empty content (12.81208ms)
+✔ real tap filter selects story and dialogue without an exception (1.309218ms)
+✔ late audio download is aborted and cannot play after hiding (0.679462ms)
+✔ newer audio choice wins when older downloads complete last (0.785791ms)
+✔ unload destroys audio and stops late events from touching the page (2.213006ms)
+✔ pending grade lookup does not update or fetch another list after hiding (0.724348ms)
+✔ next track uses identifiers when titles are duplicated (0.480021ms)
+✔ delivered listening assets pass independent manifest, digest, and ffprobe verification (2140.795911ms)
+✔ curated listening contains nine grades with five original texts and both types (5.195084ms)
+✔ generation rejects traversal in curated source before making any output (73.41614ms)
+✔ verification never rewrites the delivered manifest or audio (2305.186289ms)
+✔ missing real voice model produces a failure record without substitute audio (83.010905ms)
+✔ asset validation rejects tampered audio and atomic metadata preserves explicit permissions (73.803496ms)
+✔ standalone and merged app choose navigation supported by their actual tabBar (2.668702ms)
+✔ shipped today page loads and saves the complete v3 contract only after success (7.784692ms)
+✔ shipped grade picker has nine grades and maps index eight to grade nine (0.899171ms)
+✔ settings sends thinking and clears successful model key without storing it locally (1.253284ms)
+✔ failed arrangement and model saves never display success (2.392897ms)
+✔ result page distinguishes empty successful history from network failure (1.285071ms)
+✔ empty classroom connection opens onboarding without sending requests (0.493022ms)
+✔ model save retains longer timeout than normal classroom requests (0.374252ms)
+✔ classroom and model forms live in settings, outside today practice form (0.204597ms)
+✔ failed candidate connection leaves the prior working connection unchanged (0.756767ms)
+✔ successful connection commits only after verification and ignores success after hiding (0.79207ms)
+✔ onboarding does not commit an invalid candidate or advance on a hidden response (0.776567ms)
+✔ scene navigation preserves unsaved plan fields and merges newly saved scene (1.25068ms)
+✔ draft plan never crosses classroom connection boundaries (0.680473ms)
+✔ late today status and save responses have no hidden-page effects (0.418148ms)
+✔ late settings model response cannot change a hidden page (0.448063ms)
+✔ late scene generation does not replace a hidden scene (0.849988ms)
+✔ scene template failure still loads the saved scene for editing (0.71874ms)
+✔ scene form rejects oversized and blank values before writing config (0.474393ms)
+✔ report never starts a config fetch after leaving during progress request (0.432941ms)
+✔ validation detail arrays become readable field messages (1.421316ms)
+✔ skip model explicitly switches to platform and cannot advance after failure or hide (0.554203ms)
+✔ editing model configuration while its load is pending keeps typed input (0.544008ms)
+✔ editing scene while initial load is pending keeps the typed form (0.595495ms)
+✔ pending arrangement save freezes every editor and accepts edits again after completion (0.956137ms)
+✔ missing-scene save confirmation can still open scene editor while general editing is frozen (0.47865ms)
+✔ switching classroom releases prior model busy state and old completion cannot release a newer save (0.742456ms)
+✔ failed classroom switch leaves original in-flight model save active (0.390167ms)
+✔ brain expires after sixty seconds, including settings row (4.126708ms)
+✔ future and malformed heartbeat timestamps never report online (0.358439ms)
+✔ SSH results expire and stale success does not claim the Pi is on (3.635925ms)
+✔ fresh active edge proves Pi power even when SSH is not configured (0.199871ms)
+✔ a late initial scene read cannot replace a scene that has just been saved (7.380014ms)
+✔ a late initial scene read cannot restore a scene after confirmed clearing (1.268707ms)
+✔ scene generation follows the unsaved plan grade without saving the plan (3.682796ms)
+✔ direct scene navigation and invalid draft grades use the saved grade (3.307301ms)
+✔ direct scene generation waits for the saved grade instead of guessing grade one (0.71835ms)
+✔ a failed saved-grade lookup cannot silently generate a first-grade scene (0.817529ms)
+✔ a draft grade belongs only to the classroom that opened the scene editor (0.97114ms)
+✔ listening cannot play the previous grade list while the new grade is loading (2.728371ms)
+✔ returning to listening clears the old classroom list before the grade lookup completes (0.79845ms)
+✔ the report labels history and cumulative evidence without presenting today as new mastery (1.178441ms)
+ℹ tests 63
+ℹ suites 0
+ℹ pass 63
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4753.465292

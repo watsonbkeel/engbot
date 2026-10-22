@@ -1,0 +1,92 @@
+✔ model fallback starts disabled and only an explicit switch is submitted (12.390896ms)
+✔ saved fallback choice and recent failed routing are shown in settings (0.662026ms)
+✔ late model load cannot undo a newly selected fallback preference (0.494904ms)
+✔ clearing own model resets fallback choice and clears its status (0.414473ms)
+✔ scene generation displays the actual fallback while preserving the five-field form (2.835372ms)
+✔ failed scene generation refreshes usage but leaves the edited scene intact (1.736901ms)
+✔ unavailable usage does not look like zero used or prevent manual scene editing (0.613372ms)
+✔ late usage response cannot cross classroom identity or hidden page (0.404128ms)
+✔ public API errors retain a safe support request id and stable code (0.702987ms)
+✖ editing description during generation refreshes consumed usage without replacing the new draft (1.644031ms)
+✖ editing field during generation refreshes consumed usage without replacing the new draft (1.222718ms)
+✖ editing template during generation refreshes consumed usage without replacing the new draft (2.116853ms)
+✖ editing example during generation refreshes consumed usage without replacing the new draft (0.861014ms)
+✔ a generation finishing after the classroom changes must not refresh the new classroom usage (0.459511ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 10
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117.725699
+
+✖ failing tests:
+
+test at tests_js/review-policy.test.js:95:3
+✖ editing description during generation refreshes consumed usage without replacing the new draft (1.644031ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:108:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:95:3
+✖ editing field during generation refreshes consumed usage without replacing the new draft (1.222718ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:108:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:95:3
+✖ editing template during generation refreshes consumed usage without replacing the new draft (2.116853ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:108:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/review-policy.test.js:95:3
+✖ editing example during generation refreshes consumed usage without replacing the new draft (0.861014ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_review_v034/Eng/aienglishhelper/tests_js/review-policy.test.js:108:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

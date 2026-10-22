@@ -1,0 +1,4 @@
+@import "../../utils/english-shared.wxss";
+.notice-bar { background: #E7F7EC; color: #1F7A3D; padding: 18rpx 22rpx; border-radius: 14rpx; margin: 16rpx 0; font-size: 28rpx; font-weight: 600; }
+/* today 页复用全局样式，本页只放少量专有样式 */
+.saving-disabled { opacity: 0.55; pointer-events: none; }

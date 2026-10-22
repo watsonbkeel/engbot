@@ -4,6 +4,8 @@ After=network-online.target sound.target
 Wants=network-online.target
 
 [Service]
+StateDirectory=english-class-edge
+StateDirectoryMode=0700
 Type=simple
 User=english-edge
 Group=english-edge

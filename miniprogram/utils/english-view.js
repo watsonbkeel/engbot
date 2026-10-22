@@ -1,14 +1,14 @@
 function statusText(row) {
-  if (row.status === 2) return '会说了'
-  if (row.status === 1) return '听懂了'
+  if (row.status === 2) return '曾独立说出'
+  if (row.status === 1) return '曾听懂'
   return row.last_practiced_date ? '继续练习' : '没练过'
 }
 function evidenceText(row) {
   // 旧记录没有这些字段时不显示，避免把“没有数据”说成“0 次”。
   if (!row.used_word_count && !row.imitated_count) return ''
-  // 两个计数是独立累计的（跟读时说出目标词两边都会加1），不是“其中”关系，分开写。
-  const own = `说出目标词 ${row.used_word_count || 0} 次`
-  return row.imitated_count ? `${own}；跟读/模仿 ${row.imitated_count} 次（跟读不算会说）` : own
+  // 两个计数来自历次记录，不能当作今天的表现、正确次数或发音评分。
+  const own = `累计回答含目标词 ${row.used_word_count || 0} 次`
+  return row.imitated_count ? `${own}；累计跟读/模仿记录 ${row.imitated_count} 次（不代表独立表达）` : own
 }
 function buildReport(payload) {
   if (!payload || !Array.isArray(payload.words) || typeof payload.today !== 'string') throw new Error('进度数据格式不正确')

@@ -8,7 +8,7 @@ Do not overwrite or stop existing aibot production automatically. This extension
 
 Use only original WordMaster dictionary data; positive unit means ordered practice group, not textbook unit. Keep original IDs, meanings and grade/semester. No provider secrets in student directories or mini-program.
 
-Keep separate student process state and credential checks. A request student_id is not authentication. Parent credential cannot write progress or call provider routes. Do not publish /internal/.
+Keep separate student process state and credential checks. A request student_id is not authentication. Parent credential cannot write progress or call /internal/ provider routes. The authenticated /api/llm validation and /api/scene/generate endpoints are explicit parent features under the v3 contract. Do not publish /internal/.
 
 An unclear recognition must not downgrade state. Echoed answers must not count as independent speech. ASR transcription is not a pronunciation score. UI must distinguish request failure from empty results.
 

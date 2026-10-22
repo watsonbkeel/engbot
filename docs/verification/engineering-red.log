@@ -1,0 +1,208 @@
+FFFFFF.FFFF......................................FFFFFFFFFFFFFFFFFF      [100%]
+=================================== FAILURES ===================================
+________ test_partial_commit_replays_first_judgment_after_brain_restart ________
+tests/test_v3_reliability.py:110: in test_partial_commit_replays_first_judgment_after_brain_restart
+    assert state.is_file(), 'resume must survive until next question commits'
+E   AssertionError: resume must survive until next question commits
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/pytest-of-root/pytest-8/test_partial_commit_replays_fi0/brain/resume.json').is_file
+_______________ test_lost_progress_response_reuses_stable_intent _______________
+tests/test_v3_reliability.py:136: in test_lost_progress_response_reuses_stable_intent
+    assert recovered.json()['phase'] == 'recall'
+E   AssertionError: assert 'idle' == 'recall'
+E     
+E     - recall
+E     + idle
+____ test_stale_audio_rejected_before_asr_but_exact_replay_survives_restart ____
+tests/test_v3_reliability.py:147: in test_stale_audio_rejected_before_asr_but_exact_replay_survives_restart
+    assert start.get('question_id'), 'brain must issue an opaque question version'
+E   AssertionError: brain must issue an opaque question version
+E   assert None
+E    +  where None = <built-in method get of dict object at 0x7fb004471480>('question_id')
+E    +    where <built-in method get of dict object at 0x7fb004471480> = {'active': True, 'dialog_count': 0, 'expected_language': 'zh', 'ok': True, ...}.get
+______________ test_legacy_identical_commands_are_distinct_events ______________
+tests/test_v3_reliability.py:166: in test_legacy_identical_commands_are_distinct_events
+    assert second['session_id'] != first['session_id']
+E   AssertionError: assert 'f5b61cd07b854933ac871fbf2347def9' != 'f5b61cd07b854933ac871fbf2347def9'
+________ test_brain_heartbeat_independent_of_pi_and_idle_tick_throttled ________
+tests/test_v3_reliability.py:174: in test_brain_heartbeat_independent_of_pi_and_idle_tick_throttled
+    assert False in local_io.heartbeats, 'brain startup announces itself without a Pi'
+E   AssertionError: brain startup announces itself without a Pi
+E   assert False in []
+E    +  where [] = <test_v3_reliability.DatabaseIO object at 0x7fb00442da90>.heartbeats
+___________ test_brain_derives_speech_speed_from_grade[1-elementary] ___________
+tests/test_v3_reliability.py:189: in test_brain_derives_speech_speed_from_grade
+    assert local_io.speech[-1][1:] == (True, speed)
+E   AssertionError: assert (True, 'middle') == (True, 'elementary')
+E     
+E     At index 1 diff: 'middle' != 'elementary'
+E     Use -v to get more diff
+_____________ test_brain_derives_speech_speed_from_grade[12-high] ______________
+tests/test_v3_reliability.py:189: in test_brain_derives_speech_speed_from_grade
+    assert local_io.speech[-1][1:] == (True, speed)
+E   AssertionError: assert (True, 'middle') == (True, 'high')
+E     
+E     At index 1 diff: 'middle' != 'high'
+E     Use -v to get more diff
+___________ test_pi_lost_reply_freezes_queue_and_recovers_same_event ___________
+tests/test_v3_reliability.py:227: in test_pi_lost_reply_freezes_queue_and_recovers_same_event
+    assert edge.pending['request_id'] == first['request_id']
+           ^^^^^^^^^^^^
+E   AttributeError: 'Edge' object has no attribute 'pending'
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:194 test: response lost after brain commit
+__________ test_pi_pending_survives_process_restart_with_private_file __________
+tests/test_v3_reliability.py:249: in test_pi_pending_survives_process_restart_with_private_file
+    assert path.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/pytest-of-root/pytest-8/test_pi_pending_survives_proce0/edge/pending-turn.json').is_file
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:194 test: offline
+_________________ test_pi_idle_tick_and_server_question_change _________________
+tests/test_v3_reliability.py:260: in test_pi_idle_tick_and_server_question_change
+    assert edge.submit_tick()
+E   assert False
+E    +  where False = submit_tick()
+E    +    where submit_tick = <pi.english_voice.Edge object at 0x7fb004427290>.submit_tick
+___________ test_llm_malformed_protocol_is_provider_error[payload0] ____________
+tests/test_providers.py:298: in test_llm_malformed_protocol_is_provider_error
+    await Providers(llm_key='test-only').chat([])
+english_class/providers.py:183: in chat
+    r.raise_for_status();obj=r.json();choice=obj['choices'][0]
+                                             ^^^^^^^^^^^^^^
+E   TypeError: list indices must be integers or slices, not str
+___________ test_llm_malformed_protocol_is_provider_error[payload1] ____________
+tests/test_providers.py:298: in test_llm_malformed_protocol_is_provider_error
+    await Providers(llm_key='test-only').chat([])
+english_class/providers.py:183: in chat
+    r.raise_for_status();obj=r.json();choice=obj['choices'][0]
+                                             ^^^^^^^^^^^^^^^^^
+E   TypeError: 'NoneType' object is not subscriptable
+___________ test_llm_malformed_protocol_is_provider_error[payload2] ____________
+tests/test_providers.py:298: in test_llm_malformed_protocol_is_provider_error
+    await Providers(llm_key='test-only').chat([])
+english_class/providers.py:184: in chat
+    if choice.get('finish_reason') not in ('stop',None): raise ProviderError('模型输出未正常完成，请重试这一轮')
+       ^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+___________ test_llm_malformed_protocol_is_provider_error[payload3] ____________
+tests/test_providers.py:298: in test_llm_malformed_protocol_is_provider_error
+    await Providers(llm_key='test-only').chat([])
+english_class/providers.py:185: in chat
+    content=choice['message']['content']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'NoneType' object is not subscriptable
+___________ test_llm_malformed_protocol_is_provider_error[payload4] ____________
+tests/test_providers.py:299: in test_llm_malformed_protocol_is_provider_error
+    assert exc.value.code == 'MalformedResponse'
+E   AssertionError: assert None == 'MalformedResponse'
+E    +  where None = ProviderError('模型调用失败；请检查公共层模型名、接口地址和凭证').code
+E    +    where ProviderError('模型调用失败；请检查公共层模型名、接口地址和凭证') = <ExceptionInfo ProviderError('模型调用失败；请检查公共层模型名、接口地址和凭证') tblen=2>.value
+___________ test_llm_malformed_protocol_is_provider_error[payload5] ____________
+tests/test_providers.py:299: in test_llm_malformed_protocol_is_provider_error
+    assert exc.value.code == 'MalformedResponse'
+E   AssertionError: assert None == 'MalformedResponse'
+E    +  where None = ProviderError('模型没有返回有效回答').code
+E    +    where ProviderError('模型没有返回有效回答') = <ExceptionInfo ProviderError('模型没有返回有效回答') tblen=2>.value
+_________________ test_custom_llm_thinking_is_forwarded[True] __________________
+tests/test_providers.py:309: in test_custom_llm_thinking_is_forwarded
+    assert json.loads(seen[-1].content)['thinking'] == {'type': 'enabled' if thinking else 'disabled'}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'thinking'
+_________________ test_custom_llm_thinking_is_forwarded[False] _________________
+tests/test_providers.py:309: in test_custom_llm_thinking_is_forwarded
+    assert json.loads(seen[-1].content)['thinking'] == {'type': 'enabled' if thinking else 'disabled'}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'thinking'
+_________ test_llm_dns_is_inside_total_timeout_and_does_not_block_loop _________
+tests/test_providers.py:330: in test_llm_dns_is_inside_total_timeout_and_does_not_block_loop
+    await asyncio.gather(call(), unrelated_request())
+tests/test_providers.py:326: in call
+    with pytest.raises(ProviderError) as exc:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'english_class.providers.ProviderError'>
+_______________ test_cancelled_dns_work_keeps_a_bounded_capacity _______________
+tests/test_providers.py:349: in test_cancelled_dns_work_keeps_a_bounded_capacity
+    results = await asyncio.gather(*(p.check_llm_url_async('https://example.test', timeout=.02)
+tests/test_providers.py:349: in <genexpr>
+    results = await asyncio.gather(*(p.check_llm_url_async('https://example.test', timeout=.02)
+                                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Providers' object has no attribute 'check_llm_url_async'
+_______________ test_concurrent_vosk_cold_start_loads_model_once _______________
+tests/test_providers.py:378: in test_concurrent_vosk_cold_start_loads_model_once
+    assert len(models) == 1
+E   AssertionError: assert 4 == 1
+E    +  where 4 = len(['/tmp/pytest-of-root/pytest-8/test_concurrent_vosk_cold_star0', '/tmp/pytest-of-root/pytest-8/test_concurrent_vosk_co...test-of-root/pytest-8/test_concurrent_vosk_cold_star0', '/tmp/pytest-of-root/pytest-8/test_concurrent_vosk_cold_star0'])
+____________ test_edge_tts_school_stage_rate[elementary-False--15%] ____________
+tests/test_providers.py:395: in test_edge_tts_school_stage_rate
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+______________ test_edge_tts_school_stage_rate[middle-False--8%] _______________
+tests/test_providers.py:395: in test_edge_tts_school_stage_rate
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+_______________ test_edge_tts_school_stage_rate[high-False-+0%] ________________
+tests/test_providers.py:395: in test_edge_tts_school_stage_rate
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+____________ test_edge_tts_school_stage_rate[elementary-True--25%] _____________
+tests/test_providers.py:395: in test_edge_tts_school_stage_rate
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+______________ test_edge_tts_school_stage_rate[middle-True--18%] _______________
+tests/test_providers.py:395: in test_edge_tts_school_stage_rate
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+_______________ test_edge_tts_school_stage_rate[high-True--10%] ________________
+tests/test_providers.py:395: in test_edge_tts_school_stage_rate
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+_______________________ test_http_tts_school_stage_rate ________________________
+tests/test_providers.py:404: in test_http_tts_school_stage_rate
+    await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=True, speed='middle')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Providers.speak() got an unexpected keyword argument 'speed'
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_partial_commit_replays_first_judgment_after_brain_restart
+FAILED tests/test_v3_reliability.py::test_lost_progress_response_reuses_stable_intent
+FAILED tests/test_v3_reliability.py::test_stale_audio_rejected_before_asr_but_exact_replay_survives_restart
+FAILED tests/test_v3_reliability.py::test_legacy_identical_commands_are_distinct_events
+FAILED tests/test_v3_reliability.py::test_brain_heartbeat_independent_of_pi_and_idle_tick_throttled
+FAILED tests/test_v3_reliability.py::test_brain_derives_speech_speed_from_grade[1-elementary]
+FAILED tests/test_v3_reliability.py::test_brain_derives_speech_speed_from_grade[12-high]
+FAILED tests/test_v3_reliability.py::test_pi_lost_reply_freezes_queue_and_recovers_same_event
+FAILED tests/test_v3_reliability.py::test_pi_pending_survives_process_restart_with_private_file
+FAILED tests/test_v3_reliability.py::test_pi_idle_tick_and_server_question_change
+FAILED tests/test_providers.py::test_llm_malformed_protocol_is_provider_error[payload0]
+FAILED tests/test_providers.py::test_llm_malformed_protocol_is_provider_error[payload1]
+FAILED tests/test_providers.py::test_llm_malformed_protocol_is_provider_error[payload2]
+FAILED tests/test_providers.py::test_llm_malformed_protocol_is_provider_error[payload3]
+FAILED tests/test_providers.py::test_llm_malformed_protocol_is_provider_error[payload4]
+FAILED tests/test_providers.py::test_llm_malformed_protocol_is_provider_error[payload5]
+FAILED tests/test_providers.py::test_custom_llm_thinking_is_forwarded[True]
+FAILED tests/test_providers.py::test_custom_llm_thinking_is_forwarded[False]
+FAILED tests/test_providers.py::test_llm_dns_is_inside_total_timeout_and_does_not_block_loop
+FAILED tests/test_providers.py::test_cancelled_dns_work_keeps_a_bounded_capacity
+FAILED tests/test_providers.py::test_concurrent_vosk_cold_start_loads_model_once
+FAILED tests/test_providers.py::test_edge_tts_school_stage_rate[elementary-False--15%]
+FAILED tests/test_providers.py::test_edge_tts_school_stage_rate[middle-False--8%]
+FAILED tests/test_providers.py::test_edge_tts_school_stage_rate[high-False-+0%]
+FAILED tests/test_providers.py::test_edge_tts_school_stage_rate[elementary-True--25%]
+FAILED tests/test_providers.py::test_edge_tts_school_stage_rate[middle-True--18%]
+FAILED tests/test_providers.py::test_edge_tts_school_stage_rate[high-True--10%]
+FAILED tests/test_providers.py::test_http_tts_school_stage_rate - TypeError: ...
+28 failed, 39 passed, 1 warning in 2.34s

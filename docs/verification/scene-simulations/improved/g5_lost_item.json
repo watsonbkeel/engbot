@@ -1,0 +1,299 @@
+{
+  "case": {
+    "id": "g5_lost_item",
+    "grade": 5,
+    "difficulty": "standard",
+    "chinese_help": true,
+    "description": "我在故事里的学校把蓝色水杯弄丢了，想去失物招领处问问。机器人是值班老师，我告诉它水杯的样子和最后见到的地方，再确认是不是我的。",
+    "probe_note": "日常求助与物品描述；观察颜色、位置和确认步骤是否连贯，是否追问已回答的信息，是否把一处语法错误自然重述。"
+  },
+  "scope": "Real local public/brain HTTP; GPT file actor at provider boundary; no microphone, external provider, or latency verification",
+  "steps": [
+    {
+      "step": "Save own model settings (declared local probe)",
+      "status": 200
+    },
+    {
+      "step": "Generate actual scene card",
+      "status": 200
+    },
+    {
+      "step": "Read config",
+      "status": 200
+    },
+    {
+      "step": "Save generated scene and select scene mode",
+      "status": 200
+    },
+    {
+      "step": "Turn start",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Read saved progress",
+      "status": 200
+    },
+    {
+      "step": "Read own-model status",
+      "status": 200
+    }
+  ],
+  "scene": {
+    "name": "找回蓝色水杯",
+    "robot_role": "失物招领处的值班老师（a teacher）",
+    "student_role": "丢了水杯的学生（a student）",
+    "goal": "1.告诉老师水杯丢了并请求帮助；2.描述水杯的颜色和一个明显特征；3.说出最后见到它的地方；4.看老师找到的水杯，确认是否是自己的；5.领回水杯并道谢。练习颜色、物品特征、地点和求助用语，所有学校情节均为虚构。",
+    "opening": "Hello, I lost my bottle."
+  },
+  "transcript": [
+    {
+      "action": "start",
+      "student": "",
+      "note": "",
+      "robot": [
+        {
+          "text": "现在进入场景「找回蓝色水杯」。你是丢了水杯的学生（a student），我是失物招领处的值班老师（a teacher）。请先说开场白：",
+          "language": "zh"
+        },
+        {
+          "text": "Hello, I lost my bottle.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "389fcdcc206146459f6783273f3ca333",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "现在进入场景「找回蓝色水杯」。你是丢了水杯的学生（a student），我是失物招领处的值班老师（a teacher）。请先说开场白：",
+            "language": "zh"
+          },
+          {
+            "text": "Hello, I lost my bottle.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": true,
+        "evidence_incomplete": false,
+        "request_id": "ab2f209e7e4d4c5d894b502ecbfc83b7",
+        "question_id": "a72d526629644bfe985096a449de9c9f"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Hello, I lost my bottle.",
+      "note": "Student says the generated opening",
+      "robot": [
+        {
+          "text": "I can help. What does your bottle look like?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "389fcdcc206146459f6783273f3ca333",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "I can help. What does your bottle look like?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "bff817f8eda14ea8aebf2aafbda20483",
+        "question_id": "85cc387f8a594a85ab1dd9e5c4d4d148"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "It's blue with a yellow star.",
+      "note": "Describes the original blue bottle and adds one clear fictional identifying feature.",
+      "robot": [
+        {
+          "text": "Where did you last see your blue bottle?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "389fcdcc206146459f6783273f3ca333",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Where did you last see your blue bottle?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "58ee8a8b86674a80ad25e3a6ad545d48",
+        "question_id": "01b4fc88be854887a18731f120f7c115"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "I see it on my desk this morning.",
+      "note": "One plausible past-tense error while supplying the last-seen location and time.",
+      "robot": [
+        {
+          "text": "You saw it on your desk this morning. Here's a blue bottle with a yellow star. Is this yours?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 2,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "389fcdcc206146459f6783273f3ca333",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "You saw it on your desk this morning. Here's a blue bottle with a yellow star. Is this yours?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 2,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "247a7e2a02b7456dbe91619c01433398",
+        "question_id": "3220d90247f04cb79a813b28d495dcea"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Yes, that's mine. Thank you!",
+      "note": "Recognizes the bottle by the established color and star and accepts the offered return.",
+      "robot": [
+        {
+          "text": "You're welcome. I'm glad you have your bottle back. Goodbye!",
+          "language": "en"
+        },
+        {
+          "text": "你用“blue”和“a yellow star”说明了水杯特征，并说出了最后见到它的地方。",
+          "language": "zh"
+        },
+        {
+          "text": "说过去看到时，用“I saw it on my desk.”。",
+          "language": "zh"
+        },
+        {
+          "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+          "language": "zh"
+        }
+      ],
+      "phase": "done",
+      "dialog_count": 3,
+      "result": {
+        "ok": true,
+        "active": false,
+        "phase": "done",
+        "session_id": "389fcdcc206146459f6783273f3ca333",
+        "expected_language": "zh",
+        "segments": [
+          {
+            "text": "You're welcome. I'm glad you have your bottle back. Goodbye!",
+            "language": "en"
+          },
+          {
+            "text": "你用“blue”和“a yellow star”说明了水杯特征，并说出了最后见到它的地方。",
+            "language": "zh"
+          },
+          {
+            "text": "说过去看到时，用“I saw it on my desk.”。",
+            "language": "zh"
+          },
+          {
+            "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+            "language": "zh"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 3,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "fe8b06c8a0dd4a8a8815f6c5f799af34",
+        "question_id": "0c58fcdb66334e028cca76f2b3c65a77"
+      }
+    }
+  ],
+  "progress": {
+    "today": "2026-10-21",
+    "words": []
+  },
+  "model_status": {
+    "mode": "custom",
+    "base_url": "https://gpt-actor.invalid/v1",
+    "model": "g5_lost_item",
+    "thinking": false,
+    "last_status": "ok",
+    "last_error": "",
+    "last_used_at": "2026-10-21T13:45:29+08:00",
+    "platform_model": "NO_PLATFORM_MODEL_IN_THIS_SIMULATION"
+  },
+  "passed": true,
+  "final_dialog_count": 3
+}

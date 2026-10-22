@@ -1,0 +1,52 @@
+<view class="page">
+  <view class="eyebrow">连接状态与配置</view>
+  <view class="title">设置</view>
+
+  <!-- 连接状态四行 -->
+  <view class="card">
+    <view class="card-title">连接状态</view>
+    <block wx:if="{{rows}}">
+      <view class="picker-row" wx:for="{{[rows.public, rows.brain, rows.piPower, rows.edge]}}" wx:key="label">
+        <view class="row-label">{{item.label}}</view>
+        <view class="row-value {{item.ok ? 'ok-text' : 'bad-text'}}">{{item.ok ? '●' : '○'}} {{item.text}}</view>
+      </view>
+    </block>
+    <view class="error" wx:if="{{statusError}}">公共服务读不到，检查网络和课堂连接。</view>
+  </view>
+
+  <!-- 课堂连接 -->
+  <view class="card">
+    <view class="card-title">课堂连接</view>
+    <view class="input-row"><view class="row-label">服务地址</view><input placeholder="https://class.example" value="{{connection.baseUrl}}" data-field="baseUrl" disabled="{{savingConn}}" bindinput="onConnInput" /></view>
+    <view class="input-row"><view class="row-label">学生编号</view><input placeholder="s001" value="{{connection.studentId}}" data-field="studentId" disabled="{{savingConn}}" bindinput="onConnInput" /></view>
+    <view class="input-row"><view class="row-label">家长凭证</view><input password placeholder="老师分配的本人凭证" value="{{connection.token}}" data-field="token" disabled="{{savingConn}}" bindinput="onConnInput" /></view>
+    <view class="note footnote" wx:if="{{connMsg}}">{{connMsg}}</view>
+    <button class="primary" loading="{{savingConn}}" disabled="{{savingConn}}" bindtap="onSaveConnection">验证并保存连接</button>
+  </view>
+
+  <!-- 大模型 -->
+  <view class="card">
+    <view class="card-title">大模型（当前：{{llm.mode === 'custom' ? '自己的模型' : '老师平台模型'}}）</view>
+    <view class="note">可填写支持 OpenAI 兼容接口的模型。具体名称以服务商控制台为准；推理模式可能增加等待时间。</view>
+    <view class="input-row"><view class="row-label">接口地址</view><input placeholder="https://api.example/v1" value="{{llmForm.base_url}}" data-field="base_url" disabled="{{llmBusy}}" bindinput="onLlmInput" /></view>
+    <view class="input-row"><view class="row-label">模型名</view><input placeholder="服务商提供的模型名" value="{{llmForm.model}}" data-field="model" disabled="{{llmBusy}}" bindinput="onLlmInput" /></view>
+    <view class="input-row"><view class="row-label">API Key</view><input password placeholder="留空 = 沿用已存的 Key" value="{{llmForm.api_key}}" data-field="api_key" disabled="{{llmBusy}}" bindinput="onLlmInput" /></view>
+    <view class="picker-row"><view class="row-label">深度推理</view><switch checked="{{thinking}}" disabled="{{llmBusy}}" bindchange="onThinking" color="#2F6FED" /></view>
+    <view class="note">此开关需要服务商支持 thinking 参数。不支持时请关闭；这类模型按服务商默认方式运行，具体推理能力和速度由所选模型决定。</view>
+    <view class="picker-row"><view class="row-label">自己的模型失败后使用平台模型</view><switch checked="{{allowPlatformFallback}}" disabled="{{llmBusy}}" bindchange="onFallback" color="#2F6FED" /></view>
+    <view class="note">默认关闭。开启并保存后，自己的模型失败时会把本次练习内容发送给老师平台模型，可能产生平台调用费用。</view>
+    <view class="note footnote" wx:if="{{modelStatusText}}">{{modelStatusText}}</view>
+    <view class="note footnote" wx:if="{{llmOk}}">{{llmOk}}</view>
+    <view class="error" wx:if="{{llmError}}">{{llmError}}</view>
+    <button class="primary" loading="{{llmBusy}}" disabled="{{llmBusy}}" bindtap="onSaveLlm">测试并保存大模型</button>
+    <button class="danger" wx:if="{{llm.mode === 'custom'}}" loading="{{llmBusy}}" disabled="{{llmBusy}}" bindtap="onClearLlm">删除自己的 Key，改用平台模型</button>
+  </view>
+
+  <!-- 关于 -->
+  <view class="card">
+    <view class="card-title">关于</view>
+    <view class="note">英语陪练家长端 · 四种练习模式、场景设置、磨耳朵和练习记录。</view>
+    <button class="secondary" bindtap="onReonboard">重新打开首次引导</button>
+  </view>
+  <include src="../../utils/english-nav.wxml" />
+</view>

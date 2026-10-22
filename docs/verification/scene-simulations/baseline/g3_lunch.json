@@ -1,0 +1,561 @@
+{
+  "case": {
+    "id": "g3_lunch",
+    "grade": 3,
+    "difficulty": "basic",
+    "chinese_help": true,
+    "description": "我想去一家小餐厅买午饭，我是顾客，机器人是服务员。我想选一个三明治和一杯喝的，问问多少钱，最后拿好午饭说谢谢。",
+    "probe_note": "低年级基础点餐；观察单词短答是否被接受、相关的价格提问是否先获回答，以及求助后的模仿是否被如实标为有帮助。"
+  },
+  "scope": "Real local public/brain HTTP; GPT file actor at provider boundary; no microphone, external provider, or latency verification",
+  "steps": [
+    {
+      "step": "Save own model settings (declared local probe)",
+      "status": 200
+    },
+    {
+      "step": "Generate actual scene card",
+      "status": 200
+    },
+    {
+      "step": "Read config",
+      "status": 200
+    },
+    {
+      "step": "Save generated scene and select scene mode",
+      "status": 200
+    },
+    {
+      "step": "Turn start",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn howtosay",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Read saved progress",
+      "status": 200
+    },
+    {
+      "step": "Read own-model status",
+      "status": 200
+    }
+  ],
+  "scene": {
+    "name": "小餐厅买午饭",
+    "robot_role": "友善的餐厅服务员（a server）",
+    "student_role": "来买午饭的小顾客（a customer）",
+    "goal": "1.向服务员打招呼；2.选择一个三明治，再选一种饮品；3.确认食物和饮品，问一共多少钱；4.付钱并拿好午饭；5.说谢谢和再见。练习食物、饮品、简单数字和礼貌用语，服务员一次只问一件事，用单词或短语回答也可以。",
+    "opening": "Hello, I am hungry."
+  },
+  "transcript": [
+    {
+      "action": "start",
+      "student": "",
+      "note": "",
+      "robot": [
+        {
+          "text": "现在进入场景「小餐厅买午饭」。你是来买午饭的小顾客（a customer），我是友善的餐厅服务员（a server）。请先说开场白：",
+          "language": "zh"
+        },
+        {
+          "text": "Hello, I am hungry.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "现在进入场景「小餐厅买午饭」。你是来买午饭的小顾客（a customer），我是友善的餐厅服务员（a server）。请先说开场白：",
+            "language": "zh"
+          },
+          {
+            "text": "Hello, I am hungry.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": true,
+        "evidence_incomplete": false,
+        "request_id": "5ca3ad3f258d496aaecc70e7cb3fa2a7",
+        "question_id": "a595e185f7214956b488c39009ecc161"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Hello, I am hungry.",
+      "note": "Student says the generated opening",
+      "robot": [
+        {
+          "text": "Hello! What would you like to eat?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Hello! What would you like to eat?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "b66d2142e26e4865ae14bdc680880eed",
+        "question_id": "9fe102fd743d422daaf0754d13a6a31e"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "A sandwich.",
+      "note": "Natural short food request; no unnecessary full sentence.",
+      "robot": [
+        {
+          "text": "One sandwich. What would you like to drink?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "One sandwich. What would you like to drink?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "24d0835fae04492fadc4d781aad213c2",
+        "question_id": "91c088498f0641fab24f9dd761bfe8ca"
+      }
+    },
+    {
+      "action": "howtosay",
+      "student": "",
+      "note": "Student asks how to express an intention",
+      "robot": [
+        {
+          "text": "你想说什么？用中文告诉我。",
+          "language": "zh"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "zh",
+        "segments": [
+          {
+            "text": "你想说什么？用中文告诉我。",
+            "language": "zh"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "asking_zh",
+        "help_turn": 1,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "111a4dd043bb4c4dac1ded113dd94e85",
+        "question_id": "947955a70eea4f25a01b9a5342f6a8ca"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "我想要一杯牛奶。",
+      "note": "Chinese intention requests milk for the current drink question.",
+      "robot": [
+        {
+          "text": "你想要一杯牛奶。 请跟读：",
+          "language": "zh"
+        },
+        {
+          "text": "I want a cup of milk.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "你想要一杯牛奶。 请跟读：",
+            "language": "zh"
+          },
+          {
+            "text": "I want a cup of milk.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "repeat",
+        "help_turn": 2,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "9e8fe46041744787b6d6b77b8b0a4989",
+        "question_id": "3c34885c069044018d1fe4132142936e"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "I want a cup of milk.",
+      "note": "Exact imitation of the help phrase; must not advance the conversation or claim independent speech",
+      "robot": [
+        {
+          "text": "现在回到刚才的问题，再试一次。",
+          "language": "zh"
+        },
+        {
+          "text": "One sandwich. What would you like to drink?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "现在回到刚才的问题，再试一次。",
+            "language": "zh"
+          },
+          {
+            "text": "One sandwich. What would you like to drink?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 3,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "f8e61bf978fe475a973120b8d76b529d",
+        "question_id": "76007224be9148048bf9598e16277cb1"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "I want a cup of milk.",
+      "note": "Student uses the modelled phrase in context with help still recorded",
+      "robot": [
+        {
+          "text": "One sandwich and one cup of milk. Is that right?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 2,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "One sandwich and one cup of milk. Is that right?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 2,
+        "help_stage": "",
+        "help_turn": 3,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "3756d872f35f4594ba3ed06a23f55f39",
+        "question_id": "5b3fbec0b4cc442b8227f23abf08a385"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "How much is it?",
+      "note": "Relevant price question tests whether the robot answers before continuing.",
+      "robot": [
+        {
+          "text": "It's ten yuan. Please pay here.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 3,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "It's ten yuan. Please pay here.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 3,
+        "help_stage": "",
+        "help_turn": 3,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "8d35b0b1932d4127b31421677712be07",
+        "question_id": "6eae423f0b6f4d2cbff24ef23e52f5d7"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Here you are.",
+      "note": "Natural short utterance while handing over the stated payment.",
+      "robot": [
+        {
+          "text": "Thank you. Here's your sandwich. Please take your milk, too.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 4,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Thank you. Here's your sandwich. Please take your milk, too.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 4,
+        "help_stage": "",
+        "help_turn": 3,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "5f696349bc7b46fc96d28d412babb52d",
+        "question_id": "d8c24f836f574d3a92c95d28aa7d37e4"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Thank you. Goodbye!",
+      "note": "Thanks the server after receiving both lunch items and gives a natural farewell.",
+      "robot": [
+        {
+          "text": "You're welcome. Enjoy your lunch!",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 5,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "You're welcome. Enjoy your lunch!",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 5,
+        "help_stage": "",
+        "help_turn": 3,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "01ca9c7b0ddc48f2ba324e2dee4844b5",
+        "question_id": "740c0df5129a42cfb5dee24f990a6fb4"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "Thanks!",
+      "note": "Brief acknowledgment of the server's closing wish; lunch goal is complete.",
+      "robot": [
+        {
+          "text": "You're welcome. Goodbye!",
+          "language": "en"
+        },
+        {
+          "text": "你用“A sandwich.”点了食物，在帮助下说出了想喝牛奶，还主动用“How much is it?”询问了价格。",
+          "language": "zh"
+        },
+        {
+          "text": "练习自己说“I want a cup of milk.”。",
+          "language": "zh"
+        },
+        {
+          "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+          "language": "zh"
+        }
+      ],
+      "phase": "done",
+      "dialog_count": 6,
+      "result": {
+        "ok": true,
+        "active": false,
+        "phase": "done",
+        "session_id": "a4337d617e4c41e280ec1937b16e0909",
+        "expected_language": "zh",
+        "segments": [
+          {
+            "text": "You're welcome. Goodbye!",
+            "language": "en"
+          },
+          {
+            "text": "你用“A sandwich.”点了食物，在帮助下说出了想喝牛奶，还主动用“How much is it?”询问了价格。",
+            "language": "zh"
+          },
+          {
+            "text": "练习自己说“I want a cup of milk.”。",
+            "language": "zh"
+          },
+          {
+            "text": "今天的练习结束了。已完成的记录可以在小程序中查看。",
+            "language": "zh"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 6,
+        "help_stage": "",
+        "help_turn": 3,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "0918f293b13c4b0e9a299735dd9642b3",
+        "question_id": "c3900381928646a991bb14840dc26c81"
+      }
+    }
+  ],
+  "progress": {
+    "today": "2026-10-21",
+    "words": []
+  },
+  "model_status": {
+    "mode": "custom",
+    "base_url": "https://gpt-actor.invalid/v1",
+    "model": "g3_lunch",
+    "thinking": false,
+    "last_status": "ok",
+    "last_error": "",
+    "last_used_at": "2026-10-21T13:40:22+08:00",
+    "platform_model": "NO_PLATFORM_MODEL_IN_THIS_SIMULATION"
+  },
+  "passed": true,
+  "final_dialog_count": 6
+}

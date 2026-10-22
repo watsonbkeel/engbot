@@ -1,0 +1,89 @@
+✔ shipped today page loads and saves the complete v3 contract only after success (10.8263ms)
+✔ shipped grade picker has nine grades and maps index eight to grade nine (0.720333ms)
+✔ settings sends thinking and clears successful model key without storing it locally (1.056527ms)
+✔ failed arrangement and model saves never display success (2.297668ms)
+✔ result page distinguishes empty successful history from network failure (1.37012ms)
+✔ empty classroom connection opens onboarding without sending requests (0.402325ms)
+✔ model save retains longer timeout than normal classroom requests (0.492289ms)
+✔ classroom and model forms live in settings, outside today practice form (0.309415ms)
+✔ failed candidate connection leaves the prior working connection unchanged (0.809276ms)
+✔ successful connection commits only after verification and ignores success after hiding (0.626091ms)
+✔ onboarding does not commit an invalid candidate or advance on a hidden response (0.662155ms)
+✔ scene navigation preserves unsaved plan fields and merges newly saved scene (1.353154ms)
+✔ draft plan never crosses classroom connection boundaries (0.62494ms)
+✔ late today status and save responses have no hidden-page effects (0.377718ms)
+✔ late settings model response cannot change a hidden page (0.354984ms)
+✔ late scene generation does not replace a hidden scene (0.945ms)
+✔ scene template failure still loads the saved scene for editing (0.6851ms)
+✔ scene form rejects oversized and blank values before writing config (0.384458ms)
+✔ report never starts a config fetch after leaving during progress request (0.362625ms)
+✔ validation detail arrays become readable field messages (0.473161ms)
+✔ skip model explicitly switches to platform and cannot advance after failure or hide (0.39255ms)
+✔ editing model configuration while its load is pending keeps typed input (0.287823ms)
+✔ editing scene while initial load is pending keeps the typed form (0.356225ms)
+✖ pending arrangement save freezes every editor and accepts edits again after completion (2.458074ms)
+✔ missing-scene save confirmation can still open scene editor while general editing is frozen (0.462535ms)
+✖ switching classroom releases prior model busy state and old completion cannot release a newer save (0.829447ms)
+✔ failed classroom switch leaves original in-flight model save active (0.362595ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 25
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39.11517
+
+✖ failing tests:
+
+test at tests_js/pages.test.js:141:1
+✖ pending arrangement save freezes every editor and accepts edits again after completion (2.458074ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+  +   chinese_help: false,
+  +   difficulty: 'challenge',
+  +   duration_minutes: 15,
+  +   grade: 9,
+  +   mode: 'zh2en',
+  +   practice_words: 5,
+  -   chinese_help: true,
+  -   difficulty: 'basic',
+  -   duration_minutes: 10,
+  -   grade: 1,
+  -   mode: 'full',
+  -   practice_words: 3,
+      scene: null,
+  +   semester: 2,
+  -   semester: 1,
+      unit: 0
+    }
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_fixed/Eng/aienglishhelper/tests_js/pages.test.js:149:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests_js/pages.test.js:161:1
+✖ switching classroom releases prior model busy state and old completion cannot release a newer save (0.829447ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/workspace/scratch/d3b03e9e7aea/eng_fixed/Eng/aienglishhelper/tests_js/pages.test.js:167:55)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

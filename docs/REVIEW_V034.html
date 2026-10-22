@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>英语口语陪练 v0.3.4 审查反馈核对与整改报告</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:#1f3042;background:#f5f7fa;font:16px/1.85 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.masthead{background:#14394d;color:#fff;padding:36px max(24px,calc((100vw - 1080px)/2))}.masthead p{margin:0;color:#d9e8ed;font-size:14px;letter-spacing:.06em}.masthead strong{font-size:25px;font-weight:650}main{max-width:1136px;margin:0 auto;padding:32px 28px 72px;background:white}h1{font-size:29px;line-height:1.4;color:#14394d;margin:0 0 16px}h2{font-size:23px;line-height:1.5;margin:40px 0 16px;padding-top:8px;border-bottom:2px solid #d8e6ec;color:#14394d}h3{font-size:18px;color:#205367;margin:28px 0 10px}a{color:#096b88;text-decoration-thickness:1px;text-underline-offset:3px}p{margin:12px 0}strong{font-weight:650}ul,ol{padding-left:25px}li{margin:7px 0}code{font:13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf3f6;padding:2px 4px;border-radius:3px;overflow-wrap:anywhere}pre{background:#102e40;color:#e6f0f5;padding:18px;border-radius:8px;overflow:auto;line-height:1.6}pre code{background:transparent;padding:0;color:inherit;overflow-wrap:normal}.table-wrap{overflow-x:auto;border:1px solid #d5e0e8;border-radius:7px;margin:20px 0}table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px;line-height:1.75}th,td{padding:12px 14px;border-bottom:1px solid #d5e0e8;vertical-align:top;text-align:left}th{background:#e9f1f5;color:#14394d}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f9fbfc}blockquote{border-left:4px solid #588d9f;margin:20px 0;padding:1px 18px;background:#f0f6f8}.note{font-size:13px;color:#596c7b;border-top:1px solid #d5e0e8;margin-top:32px;padding-top:12px}@media(max-width:650px){main{padding:24px 18px}h1{font-size:24px}.masthead{padding:24px 18px}.masthead strong{font-size:22px}}@media print{body,main{background:white}main{max-width:none;padding:0}.masthead{padding:12px 0;background:white;color:#14394d}.masthead p{color:#596c7b}h2{break-after:avoid}table{min-width:0}pre{white-space:pre-wrap;background:#f0f4f7;color:#1f3042}.table-wrap{overflow:visible}a{color:#14394d}}</style></head><body><header class="masthead"><p>ENGLISH SPEAKING PRACTICE · 2026-10-21</p><strong>v0.3.4 审查整改与复核</strong></header><main><h1 id="v034">英语口语陪练 v0.3.4 · 审查反馈核对与整改报告</h1>
+<p>2026-10-21 · 对应用户提供的 Mac codex-auto-review 报告</p>
+<h2 id="_1">结论</h2>
+<p>值得继续优化。本次已经针对可复现的问题直接修改代码、增加回归并交叉复核；原报告中“本机环境缺依赖”“真实缺陷”“已有保护但覆盖不足”分别处理，没有将每条建议都当成代码缺失。</p>
+<p>新包保留 v0.3.3 的场景教学改进。本次重点是让自带 API 的选择与失败行为透明、保护保存的模型凭证、让失败后恢复和测试结果更可靠。最终统一门禁结果：<strong>464条Python、113条Node全部通过，0失败、0跳过；1条既有第三方弃用警告</strong>。具体命令、环境和真实边界见本文后半部分与 <code>docs/TEST_REPORT.md</code>。</p>
+<h2 id="_2">逐项核对原审查</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>原条目</th>
+<th>核对结果</th>
+<th>v0.3.4 的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-1 缺少 pytest</td>
+<td>属于 Mac 当前解释器的依赖问题。精确 v0.3.3 基线在本次 Linux 环境仍是385条 Python、82条 Node 通过，不能据此说 Mac 通过。</td>
+<td>测试脚本明确选解释器、先检查依赖并打印版本；文档提供项目虚拟环境命令。</td>
+</tr>
+<tr>
+<td>P0-2 两条听力测试失败</td>
+<td>已用祖先目录为符号链接的 TMPDIR 复现。<code>2 !== 1</code> 是子进程退出码不符，不是两条生成失败记录。路径检查提前失败，也就不会走到摘要检查。</td>
+<td>测试只规范受信任系统临时目录；生产拒绝符号链接的边界保留。错误用 PATH_SYMLINK、ASSET_MISSING、ASSET_DIGEST_MISMATCH 等码区分。</td>
+</tr>
+<tr>
+<td>P1-1 SQLite 明文 Key</td>
+<td>成立。但专用服务用户、0700数据目录、systemd UMask0077，以及替换／删除入口原先就有。手工运行仍可能创建0644文件。</td>
+<td>认证加密、学生绑定、独立主密钥0600、应用层权限、可恢复旧库迁移；删除与替换继续可用。</td>
+</tr>
+<tr>
+<td>P1-2 自动平台回退</td>
+<td>原文档明确写过该策略，但缺少家长明确选择，界面也未完整显示实际路由。</td>
+<td>新旧学生默认不回退；严格布尔开关明确开启才回退。界面显示最近状态和场景实际模型；模型响应提供回退标记和安全提示，日志记录回退标记与错误码。</td>
+</tr>
+<tr>
+<td>P1-3 失败仍扣次数</td>
+<td>原合同一直是每天20次“尝试”，并非20次成功；已有测试验证失败占用。</td>
+<td>保留尝试上限防止无限成本重试，另记成功次数并显示剩余。格式错误、超时不算成功；手动编辑不占次数。</td>
+</tr>
+<tr>
+<td>P1-4 每次新建 HTTP 客户端</td>
+<td>成立，脑端高频请求可复用连接。</td>
+<td>每个 PublicClient 延迟创建一个池；同事件循环复用，脑端 lifespan 退出关闭。保持凭证隔离和幂等边界。</td>
+</tr>
+<tr>
+<td>P1-5 ASR 只限制字节</td>
+<td>“没有格式／时长校验”不准确：脑端和 providers 已验证16kHz、单声道、16bit PCM WAV、完整帧和0.01—30秒。</td>
+<td>修复畸形RIFF转500；公共路由提前验证类型与内容，增加上传10秒时限、4个并发槽和本地30秒等待上限。</td>
+</tr>
+<tr>
+<td>P1-6 异常处理不一致</td>
+<td>成立，非法URL、畸形音频、未知底层异常以及校验错误的诊断契约需要补齐。</td>
+<td>稳定错误码、请求ID、领域错误归一，未知错误保持安全500。参数校验去除可包含Key的input/ctx，不回显提交内容。</td>
+</tr>
+<tr>
+<td>P2-1 API职责集中</td>
+<td>有维护成本，但完整拆分所有router并非本轮发布前提。</td>
+<td>抽出ModelService；凭证、迁移、诊断分别成模块。路由仍保留少量编排，避免为了目录结构一次性改动全部业务。</td>
+</tr>
+<tr>
+<td>P2-2 迁移无版本</td>
+<td>成立。</td>
+<td>schema_migrations明确登记3个阶段，独立进程锁＋SQLite事务串行；清理中断后可继续，拒绝未知新版schema。</td>
+</tr>
+<tr>
+<td>P2-3 可观测性不足</td>
+<td>原ASR与脑端已有部分日志，公共模型与接口诊断不统一。</td>
+<td>公共HTTP、模型、ASR、TTS共享request_id、耗时、结果和错误码；学生标识按进程随机盐散列，不记录Key、原始音频或完整对话。</td>
+</tr>
+<tr>
+<td>P2-4 依赖管理</td>
+<td>原requirements已固定多项直接依赖，开发依赖也有单独入口。不是完全无版本管理。</td>
+<td>明确安装入口与版本，新增精确cryptography版本、统一Edge TTS版本，CI复用本地命令。本轮不另引入extras或全平台哈希锁。</td>
+</tr>
+<tr>
+<td>P2-5 重复轮询</td>
+<td>成立，setInterval在慢网络下容易重叠。</td>
+<td>共用轮询器；结束后再排下一次，失败20/40/60秒退避，成功恢复10秒，隐藏暂停，旧课堂回复失效。</td>
+</tr>
+<tr>
+<td>P2-6 小程序副本漂移</td>
+<td>风险存在，但从canonical目录构建独立包的脚本原先已具备。</td>
+<td>强化构建回归的文件集合与字节一致性；本包从最终源码重建，打包后再核对。</td>
+</tr>
+<tr>
+<td>P2-7 真实环境不足</td>
+<td>成立，无法用替身回归替代供应商和设备验收。</td>
+<td>保留并更新目标环境矩阵；新增Linux/macOS CI配置，但本次只实际执行Linux，未把配置文件当成Mac结果。</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="_3">家长和学生能感受到的变化</h2>
+<h3 id="_4">自带模型的选择清楚可见</h3>
+<p>设置页新增“自己的模型失败后使用平台模型”。默认关闭；学生自己的服务出错时，显示明确错误并保留当前任务，不静默把学习内容换发给平台。明确打开后，页面解释学习内容会发往老师平台模型、也可能产生平台成本。保存设置仍先执行真实JSON格式探测，成功才覆盖旧配置；失败保留旧值。</p>
+<p>场景生成成功时显示本次使用自己的模型、平台模型，或按已开启设置回退。场景JSON仍是原五字段，路由信息放在响应头，不破坏旧场景编辑合同。设置页可见最近成功、失败或回退状态。自己的Key可测试后替换，也可以删除并明确切回平台模式；删除本地副本不会替用户撤销供应商控制台的Key。</p>
+<h3 id="_5">生成次数不再含糊</h3>
+<p>场景页显示“已请求／每日上限、生成成功、剩余”。每天20次仍包含失败尝试。供应商超时也可能已执行计费调用，故没有改成无限失败退款。若只是调整场景文本，可手动编辑和保存，不占生成次数。</p>
+<p>成功计数只在生成结果通过全部五字段验证后增加；一次请求跨午夜完成，成功归原请求日。升级前没有可靠成功计数，因此界面明确从新统计启用后累计，不把旧尝试数减去新成功数当成“失败数”。读取次数失败时显示暂不可读，不伪装成0次。生成期间修改描述、字段、模板或示例，旧回复不覆盖新草稿，但会刷新同课堂已消耗次数。</p>
+<h3 id="_6">弱网状态与错误更容易判断</h3>
+<p>今日页和设置页不再固定每10秒同时追加请求，而是在上一次结束后才安排下一次。连续失败按20、40、60秒等待，成功回到10秒；页面隐藏和卸载暂停。微信接口适配层未暴露abort，所以课堂切换时旧网络请求可能仍在途，但它不能覆盖新课堂界面或重启旧计时器。</p>
+<p>公共服务错误提供可复制的反馈编号，与服务日志关联。401、403、422、429仍保留原含义；音频类型错误415、上传超时408、供应商不可用503、未知程序故障500分别处理，不把内部故障伪装成正常回答或成功保存。</p>
+<h2 id="_7">凭证、迁移和运行边界</h2>
+<p>模型Key以Fernet认证密文保存在SQLite，载荷绑定学生ID。主密钥默认放在<code>DATABASE_PATH + '.key'</code>，也可由<code>LLM_SECRET_KEY_FILE</code>指定独立路径。数据库及辅助文件、主密钥为0600；只为新目录设置0700，不修改已有共享父目录。</p>
+<p>这种设计保护“仅数据库被复制”的场景；若攻击者同时取得主密钥或控制公共服务进程，仍能解密。Fernet要求妥善保存原主密钥；丢失后无法凭密文恢复供应商Key，参见<a href="https://cryptography.io/en/stable/fernet/">官方Fernet文档</a>。本版没有把系统Keychain作为公共服务依赖，因为正式公共服务面向Linux服务器；也没有宣称已接入外部KMS。</p>
+<p>旧库迁移保留学生、课堂凭证、配置和学习进度，增加回退与成功计数。先提交模型Key加密阶段，再重建空闲页并截断WAL；清理未完成会阻止启动并允许重试。测试覆盖缺失／错误主密钥、损坏密文、旧读事务阻塞、真实子进程中断、并发初始化及学习进度逐字段保持。缺失或损坏主密钥会阻止已迁移库启动；错误主密钥在存在模型密文时可被验证并拒绝。若所有学生模型设置已删除，只能确认主密钥文件存在且格式有效，仍应保留原文件，不能把这一情况当作在线轮换能力。</p>
+<p>独立复核还发现并修正了新权限实现的一处隐患：对SQLite数据库inode另开再关文件描述符可能释放同进程记录锁。最终实现对现有DB/WAL/SHM只做lstat/chmod，迁移锁改用独立<code>.migration.lock</code>；真实父事务＋子进程写入回归确认互斥。该机制与<a href="https://sqlite.org/howtocorrupt.html">SQLite官方损坏排查文档</a>的2.2节一致。</p>
+<p><strong>升级前备份，升级后分别备份数据库与原主密钥。已经迁移的库不能直接交给v0.3.3使用。</strong> 回退旧代码必须恢复匹配的升级前备份；备份后的新记录不会自动合并。旧备份可能仍含明文，不会被本次迁移自动擦除。详细操作见包内<code>docs/UPGRADE.md</code>。</p>
+<p>PublicClient现在在一个学生、一个事件循环内复用连接池。自定义嵌入方须在同一事件循环中调用<code>await client.aclose()</code>；产品脑端已在lifespan结束时关闭。它没有给生成或进度POST增加无条件自动重试。</p>
+<p>ASR每个公共服务进程共用4个处理槽；多进程部署需按进程数估算总并发。云端默认8秒，本地Vosk默认30秒，公共路由总等待保留45—60秒边界，上传另有10秒上限。已超时但实际仍运行的本地识别任务不会提前释放槽，从而避免线程无限积压；这也意味着原生工作若永久挂住，可能需要运维重启服务。该实现不等于识别精度或真实延迟已经达标。</p>
+<h2 id="_8">本次如何验证</h2>
+<p>精确解压原v0.3.3包建立基线，先复跑385条Python与82条Node。随后用真实临时文件、SQLite、跨进程写事务、ASGI HTTP路由及真实Page脚本复现问题；外部模型、网络和微信wx边界使用可控适配器。已确认问题增加先失败后通过的回归，再执行统一门禁。</p>
+<p>最终实际环境：Linux、Python3.12.14、Node24.19.0、ffmpeg/ffprobe6.1.1。结果：<strong>464条Python、113条Node全部通过，0失败、0跳过；1条既有第三方弃用警告</strong>；Python与JavaScript语法检查、shell语法检查同一入口执行。测试包含场景生成、保存与安排练习、年级和草稿隔离、自带模型选择、接口权限、词汇／对话证据、音频边界与恢复。一个Starlette/AnyIO弃用警告按实保留，没有为了消除警告批量升级框架。</p>
+<p>角色分工包括Mac听力／测试入口复核、运行边界复核、凭证与回退复核。修复后由另一位审查者重新检查凭证实现和政策实现。专项及失败阶段日志保存在<code>docs/verification/</code>；带red的记录是修复前证据。v0.3.3的385／82报告移入<code>docs/history/</code>，不是本版测试数。</p>
+<p>原3919条词库、45段MP3和六页小程序保留。最终ZIP检查CRC、逐文件SHA-256、解压后摘要、独立小程序一致性、词库原始Git blob、音频清单／解码／非静音以及原连接凭证排除。打包结果在<code>docs/verification/release-package.json</code>。</p>
+<h2 id="mac">在Mac上自行复跑</h2>
+<p>先进入解压后的主工程目录。Python需3.11或更新；本次Linux验证为3.12。Node与ffmpeg/ffprobe也需要加入PATH。</p>
+<pre><code class="language-bash">cd /你的实际路径/Eng/aienglishhelper
+python3 --version
+node --version
+ffmpeg -version
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+bash scripts/test_all.sh
+</code></pre>
+<p>若<code>python3</code>版本不足，用已安装的<code>python3.12</code>创建虚拟环境。若已有自己的虚拟环境，可明确指定<code>PYTHON=/解释器完整路径 bash scripts/test_all.sh</code>。脚本不会擅自联网安装依赖，缺少pytest时会输出所选解释器和安装命令。Mac安装Node/ffmpeg可使用已配置的Homebrew；不要求在Mac运行Debian服务器安装脚本。</p>
+<p>新增CI配置为Linux/macOS × Python3.11/3.12，使用同一测试入口。<strong>本次没有运行远端CI，也没有实际进入你的Mac；Linux上的符号链接复现不能替代你的Mac复跑记录。</strong></p>
+<h2 id="_9">场景教学与真实验收仍需区分</h2>
+<p>本版没有更换场景教学目标或把预制答案塞进正式运行。v0.3.3随包的四组GPT场景模拟——买午餐、找水杯、太空水箱谜题、学生当店员——作为历史教学证据保留在<code>docs/SCENE_SIMULATION_REPORT.html</code>，此次没有重新宣称四组都是新调用。场景卡生成、角色分工、学生提问权、逐轮回应、求助后回任务和自然收尾的自动回归继续运行。</p>
+<p>真实供应商的地址、Key、模型ID、JSON稳定性与费用，儿童真实口音ASR、TTS听感、Pi耳麦／唤醒／停止，微信合法域名、开发者工具与手机渲染，以及连续对话延迟仍未在本次环境实测。自动测试通过可以支持代码合同和故障分支正确，不能据此宣称儿童已达到口语学习目标或发音评分有效。</p>
+<p>下载后先按安装文档完成一个学生的文字流程，再做设备和手机验收。至少包括：一次自己的模型成功、一次自己的模型失败且回退关闭、一次明确开启回退后的失败；设计一个由学生提问的场景并走到点评；记录实际耗时与请求编号。供应商测试使用本人有权限的测试凭证，结果只记录错误码、耗时和脱敏证据。</p>
+<h2 id="_10">暂不做的大规模改动</h2>
+<p>完整router/service/repository分层、外部密钥管理服务、全平台带哈希依赖锁和管理端回退统计面板均可后续推进。本版已经提供合理的模块边界、结构化回退日志和可重复安装入口；继续加框架不会自动证明真实学习体验更好。下一轮优先收集真实供应商、微信手机和Pi上的失败与延迟证据，再针对实际卡点改动。</p><p class="note">本报告来自本次代码、测试与独立复核证据。真实供应商、Mac、微信手机与Pi设备验收范围均按正文明确区分。</p></main></body></html>

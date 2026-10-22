@@ -1,0 +1,3 @@
+@import "../../utils/english-shared.wxss";
+.ok-text { color: #1F7A3D; }
+.bad-text { color: #B02640; }

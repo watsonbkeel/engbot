@@ -1,0 +1,24 @@
+..................FF...                                                  [100%]
+=================================== FAILURES ===================================
+_____________ test_finished_snapshot_does_not_keep_dialog_history ______________
+tests/test_v3_reliability.py:286: in test_finished_snapshot_does_not_keep_dialog_history
+    assert recovery['state']['state']['history'] == []
+E   AssertionError: assert [{'content': ...ole': 'user'}] == []
+E     
+E     Left contains one more item: {'content': 'private test conversation', 'role': 'user'}
+E     Use -v to get more diff
+______________ test_live_recovery_window_expires_without_restart _______________
+tests/test_v3_reliability.py:300: in test_live_recovery_window_expires_without_restart
+    assert response.status_code == 200
+E   assert 409 == 200
+E    +  where 409 = <Response [409 Conflict]>.status_code
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_finished_snapshot_does_not_keep_dialog_history
+FAILED tests/test_v3_reliability.py::test_live_recovery_window_expires_without_restart
+2 failed, 21 passed, 1 warning in 0.82s

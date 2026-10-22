@@ -1,0 +1,10 @@
+<view class="card english-nav" wx:if="{{embedded}}">
+  <view class="card-title">英语陪练</view>
+  <view class="chip-wrap">
+    <navigator class="chip" url="/pages/today/index" open-type="redirect">今日练习</navigator>
+    <navigator class="chip" url="/pages/listening/index" open-type="redirect">磨耳朵</navigator>
+    <navigator class="chip" url="/pages/english-result/index" open-type="redirect">练习记录</navigator>
+    <navigator class="chip" url="/pages/settings/index" open-type="redirect">设置</navigator>
+  </view>
+  <navigator class="note" wx:if="{{originHome}}" url="/{{originHome}}" open-type="{{originIsTab ? 'switchTab' : 'redirect'}}">返回原小程序主页 →</navigator>
+</view>

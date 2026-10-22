@@ -1,0 +1,3 @@
+@import "../../utils/english-shared.wxss";
+.notice-bar { background: #E7F7EC; color: #1F7A3D; padding: 18rpx 22rpx; border-radius: 14rpx; margin: 16rpx 0; font-size: 26rpx; }
+.grade-hint { color: #245AC2; background: #EDF3FF; border-radius: 12rpx; padding: 14rpx 18rpx; margin: 16rpx 0; font-size: 26rpx; }

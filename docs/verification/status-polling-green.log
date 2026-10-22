@@ -1,0 +1,26 @@
+COMMAND: node tests_js/status-poller.test.js
+EXIT: 0
+✔ settings waits for settlement before the next ten-second status delay (8.584935ms)
+✔ settings backs off 20/40/60 seconds, caps failures, and recovers to ten seconds (3.661905ms)
+✔ settings ignores an in-flight completion after hide and does not restart timers (1.110279ms)
+✔ settings clears a scheduled status timer on onHide (0.740253ms)
+✔ settings clears a scheduled status timer on onUnload (1.058702ms)
+✔ settings reopening resets failures and an older classroom cannot write or schedule (1.159773ms)
+✔ settings an identity change invalidates the old scheduled poll until the next show (0.79814ms)
+✔ today waits for settlement before the next ten-second status delay (2.28822ms)
+✔ today backs off 20/40/60 seconds, caps failures, and recovers to ten seconds (1.345002ms)
+✔ today ignores an in-flight completion after hide and does not restart timers (0.608635ms)
+✔ today clears a scheduled status timer on onHide (0.626993ms)
+✔ today clears a scheduled status timer on onUnload (0.560533ms)
+✔ today reopening resets failures and an older classroom cannot write or schedule (0.860063ms)
+✔ today an identity change invalidates the old scheduled poll until the next show (1.207515ms)
+✔ settings connection commit clears old backoff and immediately polls the new classroom (0.929357ms)
+✔ settings connection commit during a request rejects the old completion and keeps one new timer (0.623707ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34.709211

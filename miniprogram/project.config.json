@@ -1,5 +1,5 @@
 {
-  "description": "WordMaster SZ 英语陪练课程作品",
+  "description": "英语口语训练机器人 · 家长端小程序（四 Tab + 引导）",
   "miniprogramRoot": "./",
   "compileType": "miniprogram",
   "setting": {
@@ -28,8 +28,8 @@
     }
   },
   "appid": "wx063c5b7342f94300",
-  "projectname": "WordMaster-English-Class",
-  "libVersion": "trial",
+  "projectname": "English-Voice-Tutor",
+  "libVersion": "3.17.3",
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [],

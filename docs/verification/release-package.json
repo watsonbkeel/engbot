@@ -1,0 +1,23 @@
+{
+  "version": "0.3.4",
+  "date": "2026-10-21",
+  "original_dictionary_records": 3919,
+  "dictionary_git_blob_verified": true,
+  "canonical_miniprogram_files": 41,
+  "standalone_matches_canonical": true,
+  "known_original_credential_matches": 0,
+  "excluded_runtime_cache_and_personal_config": true,
+  "audio": {
+    "verified": 45,
+    "min_seconds": 65.62,
+    "max_seconds": 86.779,
+    "total_seconds": 3432.359,
+    "bytes": 27470237
+  },
+  "audio_decode_and_non_silence_verified": true,
+  "verification_scope": "final archive is rebuilt with this report, then checked again",
+  "zip_crc_verified": true,
+  "zip_extracted_file_hashes_verified": true,
+  "zip_extracted_audio_manifest_verified": true,
+  "zip_filename": "Eng-reviewed-v0.3.4-2026-10-21.zip"
+}

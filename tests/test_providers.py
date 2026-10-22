@@ -284,3 +284,122 @@ async def test_tencent_success_returns_request_id_and_logs(external_http,caplog)
     result=await p.transcribe(speech_like(),'en')
     assert result['request_id']=='r-ok' and result['provider']=='tencent'
     assert 'provider=tencent' in caplog.text and 'fallback=0' in caplog.text and 'r-ok' in caplog.text
+
+
+# ---- Audit regressions: provider protocol / whole deadline / cold cache ----
+@pytest.mark.asyncio
+@pytest.mark.parametrize('payload', [[], {'choices': None}, {'choices': [None]},
+                                    {'choices': [{'message': None}]}, {'choices': []},
+                                    {'choices': [{'message': {'content': 5}}]}])
+async def test_llm_malformed_protocol_is_provider_error(external_http, payload):
+    _, response = external_http
+    response['json'] = payload
+    with pytest.raises(ProviderError) as exc:
+        await Providers(llm_key='test-only').chat([])
+    assert exc.value.code == 'MalformedResponse'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('thinking', [True, False])
+async def test_custom_llm_thinking_is_forwarded(external_http, monkeypatch, thinking):
+    seen, _ = external_http
+    monkeypatch.setattr('english_class.providers._resolve_llm_endpoint', lambda url: (url, ('8.8.8.8',)))
+    await Providers().chat([], llm={'base_url': 'https://custom.example/v1',
+                                   'api_key': 'test-only', 'model': 'custom', 'thinking': thinking})
+    assert json.loads(seen[-1].content)['thinking'] == {'type': 'enabled' if thinking else 'disabled'}
+
+
+@pytest.mark.asyncio
+async def test_llm_dns_is_inside_total_timeout_and_does_not_block_loop(external_http, monkeypatch):
+    import asyncio
+    import time
+    def slow_resolve(url):
+        time.sleep(.20)
+        return url, ('8.8.8.8',)
+    monkeypatch.setattr('english_class.providers._resolve_llm_endpoint', slow_resolve)
+    pulse = []
+    start = time.monotonic()
+    async def unrelated_request():
+        await asyncio.sleep(.01)
+        pulse.append(time.monotonic() - start)
+    async def call():
+        with pytest.raises(ProviderError) as exc:
+            await Providers().chat([], llm={'base_url': 'https://custom.example',
+                                           'api_key': 'test-only', 'model': 'm'}, timeout=.04)
+        assert exc.value.code == 'Timeout'
+    await asyncio.gather(call(), unrelated_request())
+    assert time.monotonic() - start < .15
+    assert pulse[0] < .10
+    assert external_http[0] == []
+
+
+@pytest.mark.asyncio
+async def test_cancelled_dns_work_keeps_a_bounded_capacity(monkeypatch):
+    import asyncio
+    import threading
+    started = []
+    release = threading.Event()
+    def slow_resolve(url):
+        started.append(url)
+        release.wait(1)
+        return url
+    monkeypatch.setattr('english_class.providers.validate_llm_url', slow_resolve)
+    p = Providers()
+    try:
+        results = await asyncio.gather(*(p.check_llm_url_async('https://example.test', timeout=.02)
+                                         for _ in range(20)), return_exceptions=True)
+        assert len(started) <= 4
+        assert all(isinstance(x, ProviderError) for x in results)
+        assert any(x.code == 'ResolverBusy' for x in results)
+    finally:
+        release.set()
+
+
+@pytest.mark.asyncio
+async def test_concurrent_vosk_cold_start_loads_model_once(tmp_path, monkeypatch):
+    import asyncio
+    import sys
+    import time
+    from types import SimpleNamespace
+    models = []
+    class Model:
+        def __init__(self, path):
+            models.append(path)
+            time.sleep(.05)
+    class Recognizer:
+        def __init__(self, model, rate): pass
+        def SetWords(self, flag): pass
+        def AcceptWaveform(self, data): return False
+        def FinalResult(self): return '{"text":"apple","result":[{"conf":0.9}]}'
+    monkeypatch.setitem(sys.modules, 'vosk', SimpleNamespace(Model=Model, KaldiRecognizer=Recognizer))
+    p = Providers(vosk_en=str(tmp_path))
+    results = await asyncio.gather(*(p.transcribe(speech_like(), 'en') for _ in range(4)))
+    assert [x['text'] for x in results] == ['apple'] * 4
+    assert len(models) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('speed,slow,rate', [('elementary',False,'-15%'), ('middle',False,'-8%'),
+                                          ('high',False,'+0%'), ('elementary',True,'-25%'),
+                                          ('middle',True,'-18%'), ('high',True,'-10%')])
+async def test_edge_tts_school_stage_rate(monkeypatch, speed, slow, rate):
+    import sys
+    from types import SimpleNamespace
+    rates = []
+    class Communicate:
+        def __init__(self, text, voice, rate): rates.append(rate)
+        async def stream(self): yield {'type': 'audio', 'data': b'test-mp3'}
+    monkeypatch.setitem(sys.modules, 'edge_tts', SimpleNamespace(Communicate=Communicate))
+    p = Providers()
+    monkeypatch.setattr(p, '_decode_audio', lambda _: b'\0' * 320)
+    assert await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=slow, speed=speed)
+    assert rates == [rate]
+
+
+@pytest.mark.asyncio
+async def test_http_tts_school_stage_rate(external_http, monkeypatch):
+    seen, _ = external_http
+    p = Providers(tts_backend='http', tts_base='https://tts.test', tts_key='test-only', tts_model='m')
+    monkeypatch.setattr(p, '_decode_audio', lambda _: b'\0' * 320)
+    await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=True, speed='middle')
+    assert json.loads(seen[-1].content)['speed'] == .82

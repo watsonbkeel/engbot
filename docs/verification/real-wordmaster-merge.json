@@ -1,0 +1,10 @@
+{
+  "original_app_js_preserved": true,
+  "original_tabbar_preserved": true,
+  "original_pages_preserved": true,
+  "six_canonical_pages_added": true,
+  "every_page_has_js_wxml": true,
+  "original_page_count": 7,
+  "merged_page_count": 13,
+  "credential_file_excluded": true
+}

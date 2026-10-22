@@ -1,0 +1,32 @@
+<view class="page">
+  <view class="eyebrow">磨磨耳朵，不记进度</view>
+  <view class="title">磨耳朵</view>
+  <view class="card">
+    <picker range="{{grades}}" bindchange="onGrade" value="{{gradeIndex}}">
+      <view class="picker-row"><view class="row-label">年级</view><view class="row-value">{{grades[gradeIndex]}}<text class="picker-arrow">›</text></view></view>
+    </picker>
+    <view class="chip-wrap">
+      <view class="chip {{typeIndex === index ? 'active' : ''}}" wx:for="{{types}}" wx:key="value" data-index="{{index}}" bindtap="onType">{{item.label}}</view>
+    </view>
+  </view>
+  <view class="card" wx:if="{{error}}"><view class="error">{{error}}</view><button class="secondary" bindtap="loadList">重新加载</button></view>
+  <view class="loading-hint" wx:if="{{loading}}">正在加载素材…</view>
+  <view class="card" wx:if="{{notReady && !loading && !error}}">
+    <view class="card-title">这个年级还没有素材</view>
+    <view class="note">可以选择其他年级，或稍后重新加载。</view>
+  </view>
+  <view class="card" wx:for="{{shown}}" wx:key="id">
+    <view class="word-top"><view class="mode-name">{{item.title}}</view><view class="note">{{item.type === 'dialogue' ? '对话' : '短文'}} · {{item.durationLabel}}</view></view>
+    <button class="secondary" data-index="{{index}}" bindtap="onPlay">播放</button>
+  </view>
+  <view class="empty" wx:if="{{!shown.length && !notReady && !loading && !error}}">这个筛选下没有素材。</view>
+  <view class="player card" wx:if="{{hasCurrent}}">
+    <view class="mode-name">{{currentTitle}}</view>
+    <slider value="{{progress}}" activeColor="#2F6FED" bindchange="onSeek" />
+    <view class="note time-row"><text>{{positionText}}</text><text>{{durationText}}</text></view>
+    <view class="player-btns"><button class="mini" bindtap="onPrev">上一条</button><button class="mini main" bindtap="onToggle">{{playing ? '暂停' : '播放'}}</button><button class="mini" bindtap="onNext">下一条</button></view>
+    <view class="note" wx:if="{{transcript}}" bindtap="onToggleTranscript">{{transcriptOpen ? '收起文稿 ▲' : '展开文稿 ▼'}}</view>
+    <view class="transcript" wx:if="{{transcriptOpen}}">{{transcript}}</view>
+  </view>
+  <include src="../../utils/english-nav.wxml" />
+</view>

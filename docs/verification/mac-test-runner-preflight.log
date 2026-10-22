@@ -1,0 +1,49 @@
+RED: explicit invalid PYTHON must stop before default python runs.
+Observed exit=86; default_python_started=True
+
+GREEN invalid explicit PYTHON: exit=2; interpreter_marker=''
+找不到可执行的 Python：/tmp/test-runner-green-0bac5enr/missing-python
+请安装 Python 3.11+，创建 .venv，或设置 PYTHON=/解释器的完整路径。
+
+GREEN missing ffprobe: exit=2; interpreter_marker=''
+Python 3.12.14 (/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python)
+pytest 9.0.2
+缺少测试工具：ffprobe
+请安装 Node.js 和 ffmpeg（包含 ffprobe），并加入 PATH。
+macOS 可使用 brew install node ffmpeg；Linux 请使用系统包管理器。
+
+GREEN project .venv wins without override: exit=2; interpreter_marker='project-venv'
+Python 3.12.14 (/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python)
+pytest 9.0.2
+缺少测试工具：ffprobe
+请安装 Node.js 和 ffmpeg（包含 ffprobe），并加入 PATH。
+macOS 可使用 brew install node ffmpeg；Linux 请使用系统包管理器。
+
+GREEN explicit PYTHON wins over project .venv: exit=2; interpreter_marker=''
+Python 3.12.14 (/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python)
+pytest 9.0.2
+缺少测试工具：ffprobe
+请安装 Node.js 和 ffmpeg（包含 ffprobe），并加入 PATH。
+macOS 可使用 brew install node ffmpeg；Linux 请使用系统包管理器。
+
+GREEN python3 fallback: exit=2; interpreter_marker='python3-fallback'
+Python 3.12.14 (/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python)
+pytest 9.0.2
+缺少测试工具：ffprobe
+请安装 Node.js 和 ffmpeg（包含 ffprobe），并加入 PATH。
+macOS 可使用 brew install node ffmpeg；Linux 请使用系统包管理器。
+
+GREEN missing tool group: exit=2
+Python 3.12.14 (/workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python)
+pytest 9.0.2
+缺少测试工具：node
+缺少测试工具：ffmpeg
+缺少测试工具：ffprobe
+请安装 Node.js 和 ffmpeg（包含 ffprobe），并加入 PATH。
+macOS 可使用 brew install node ffmpeg；Linux 请使用系统包管理器。
+
+GREEN missing pytest: exit=2
+Python 3.12.14 (/tmp/test-runner-deps-bn70wmj5/without-test-dependencies/bin/python)
+所选 Python 无法导入 pytest。
+请在 Python 3.11+ 环境中安装测试依赖：
+  "/tmp/test-runner-deps-bn70wmj5/without-test-dependencies/bin/python" -m pip install -r requirements-dev.txt

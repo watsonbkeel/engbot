@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>口语训练机器人 · 小程序界面草图 v2</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9edf3; font-family: -apple-system, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif; color: #1f2d3d; }
+  .head { padding: 28px 32px 8px; }
+  .head h1 { margin: 0 0 6px; font-size: 22px; }
+  .head p { margin: 0; color: #5b6b7f; font-size: 14px; line-height: 1.7; }
+  .head ol { margin: 8px 0 0; padding-left: 20px; color: #3b4b60; font-size: 13.5px; line-height: 1.8; }
+  .legend { display: inline-flex; gap: 14px; margin-top: 10px; font-size: 13px; color: #5b6b7f; }
+  .board { display: flex; flex-wrap: wrap; gap: 28px; padding: 20px 32px 48px; align-items: flex-start; }
+
+  .phone { width: 390px; flex: 0 0 390px; background: #111; border-radius: 40px; padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.28); }
+  .screen { background: #f5f7fa; border-radius: 32px; overflow: hidden; height: 844px; display: flex; flex-direction: column; }
+  .statusbar { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-size: 13px; font-weight: 600; }
+  .navbar { height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; position: relative; }
+  .navbar .back { position: absolute; left: 16px; }
+  .navbar .capsule { position: absolute; right: 12px; width: 86px; height: 32px; border: 1px solid #d5dae2; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: space-around; font-size: 14px; color: #333; }
+  .page { flex: 1; overflow-y: auto; padding: 14px 16px 24px; }
+  .page::-webkit-scrollbar { width: 4px; } .page::-webkit-scrollbar-thumb { background: #c9d2de; border-radius: 2px; }
+  .screen-label { text-align: center; font-size: 14px; font-weight: 600; color: #3b4b60; margin: 10px 0 8px; }
+  .screen-sub { text-align: center; font-size: 12px; color: #7a8899; margin: -4px 0 8px; }
+
+  /* tab bar */
+  .tabbar { flex-shrink: 0; height: 84px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; padding-bottom: 20px; }
+  .tabbar div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 10.5px; color: #8795a7; }
+  .tabbar div span { font-size: 20px; line-height: 1; }
+  .tabbar .on { color: #245ccc; font-weight: 600; }
+
+  /* mirror of existing wxss */
+  .eyebrow { color: #48678c; font-size: 12px; letter-spacing: 1px; }
+  .title { font-size: 27px; font-weight: 750; margin: 6px 0; }
+  .subtitle { color: #647386; font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; margin: 12px 0; border: 1px solid #e2e8f0; position: relative; }
+  .section-title { font-size: 17px; font-weight: 650; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 50px; border-bottom: 1px solid #edf1f5; font-size: 15px; }
+  .row:last-child { border-bottom: 0; }
+  .choice { color: #245ccc; padding: 8px 0 8px 8px; white-space: nowrap; }
+  .field-label { margin: 12px 0 7px; font-size: 14px; display: flex; justify-content: space-between; }
+  .field-label .count { color: #9aa6b5; font-size: 12px; }
+  .box, .input { background: #f4f6fa; border-radius: 6px; padding: 11px; min-height: 22px; font-size: 13.5px; }
+  .input.placeholder { color: #a0a9b6; }
+  .textarea { min-height: 64px; line-height: 1.6; }
+  .note { color: #68778a; font-size: 12px; line-height: 1.7; margin: 6px 0; }
+  .preview { border-top: 1px solid #edf1f5; padding-top: 10px; color: #284669; font-size: 12.5px; line-height: 1.8; }
+  .btn { display: block; width: 100%; text-align: center; border-radius: 8px; padding: 12px; font-size: 15px; }
+  .primary { background: #245ccc; color: #fff; margin-top: 16px; }
+  .secondary { background: #eaf0fa; color: #245090; margin-top: 10px; font-size: 14.5px; }
+  .ghost { background: transparent; color: #526b8e; border: 1px dashed #c7d2e0; margin-top: 10px; font-size: 13.5px; padding: 9px; }
+  .start-tip { font-size: 12.5px; color: #65758a; line-height: 1.8; margin: 14px 2px; }
+  .quote { display: block; font-weight: 600; color: #314962; margin: 6px 0; }
+  .link { text-align: center; color: #315b9f; padding: 11px; font-size: 13.5px; }
+  .switch { width: 46px; height: 26px; border-radius: 13px; background: #245ccc; position: relative; flex-shrink: 0; }
+  .switch::after { content: ""; position: absolute; right: 2px; top: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; }
+  .switch.off { background: #cbd3de; } .switch.off::after { right: auto; left: 2px; }
+  .notice { background: #fff6e0; border: 1px solid #f1d49a; color: #7a4e00; border-radius: 8px; padding: 10px 12px; font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+
+  /* annotation */
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; line-height: 1.5; vertical-align: middle; }
+  .tag.new { background: #fff1d6; color: #9a5b00; border: 1px solid #f1d49a; }
+  .tag.mod { background: #e6f1ff; color: #1d4f9e; border: 1px solid #b9d2f5; }
+  .tag.mv { background: #efe6ff; color: #5a2ea6; border: 1px solid #d3c1f3; }
+  .card.new { border: 1.5px dashed #e6a93c; }
+  .card.mod { border: 1.5px dashed #5a8fe0; }
+  .callout { position: absolute; top: -10px; right: 12px; }
+  .annot { color: #9a5b00; font-size: 11.5px; line-height: 1.6; margin: 6px 0 0; }
+
+  /* online strip */
+  .online { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px dashed #e6a93c; border-radius: 10px; padding: 10px 12px; font-size: 13px; margin: 8px 0 4px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot.g { background: #2ebd6b; box-shadow: 0 0 0 3px #d9f3e4; } .dot.y { background: #f0b429; } .dot.x { background: #b8c0cc; } .dot.r { background: #e0553d; }
+  .online .st { font-weight: 600; } .online .ago { color: #8795a7; margin-left: auto; font-size: 12px; white-space: nowrap; }
+  .states { display: flex; gap: 10px; font-size: 11px; color: #68778a; margin: 4px 2px 8px; flex-wrap: wrap; }
+  .states span { display: inline-flex; align-items: center; gap: 4px; }
+  .states .dot { width: 7px; height: 7px; box-shadow: none; }
+
+  /* mode radio */
+  .modes { display: flex; flex-direction: column; gap: 8px; }
+  .mode { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 11px 12px; display: flex; gap: 10px; align-items: flex-start; background: #fafbfd; }
+  .mode.on { border-color: #245ccc; background: #eef3fd; }
+  .radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #b8c3d3; flex-shrink: 0; margin-top: 2px; background: #fff; }
+  .mode.on .radio { border: 5px solid #245ccc; }
+  .m-title { font-size: 14.5px; font-weight: 600; } .m-title .code { font-size: 11px; color: #8795a7; font-weight: 400; margin-left: 6px; font-family: Menlo, monospace; }
+  .m-desc { font-size: 12px; color: #68778a; line-height: 1.6; margin-top: 2px; }
+  .m-flow { font-size: 11px; color: #9aa6b5; margin-top: 3px; font-family: Menlo, monospace; }
+
+  /* chips */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .chip { border: 1px solid #c9d6ea; color: #245090; background: #f3f7fd; border-radius: 16px; padding: 6px 12px; font-size: 12.5px; }
+  .chip.on { background: #245ccc; color: #fff; border-color: #245ccc; }
+  .chip.add { border-style: dashed; background: #fff; color: #9a5b00; border-color: #e6a93c; }
+
+  /* help explanation */
+  .help-list { margin: 8px 0 0; padding: 0; list-style: none; }
+  .help-list li { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.65; color: #385675; padding: 7px 0; border-top: 1px solid #edf1f5; }
+  .help-list li b { color: #1f2d3d; }
+  .help-list .ic { flex-shrink: 0; }
+  .say { background: #f4f6fa; border-radius: 4px; padding: 0 5px; color: #245090; font-weight: 600; }
+
+  /* ai create */
+  .ai-box { background: #fbf7ee; border: 1px solid #f1d49a; border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .ai-box .t { font-size: 13.5px; font-weight: 600; color: #7a4e00; }
+  .tips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tips span { font-size: 11.5px; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px; padding: 3px 7px; color: #526b8e; }
+  .error-inline { color: #b0401f; font-size: 12px; margin-top: 6px; }
+
+  /* result */
+  .date { color: #6a778a; font-size: 12.5px; margin-bottom: 12px; }
+  .summary { background: #e9f0fc; padding: 15px; border-radius: 12px; margin: 13px 0; }
+  .number { font-size: 34px; color: #214f9c; font-weight: 700; } .number span { font-size: 14px; font-weight: 400; }
+  .line { font-size: 12.5px; line-height: 1.9; color: #385675; }
+  .word-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 11px; padding: 14px; margin: 10px 0; }
+  .word-top { display: flex; justify-content: space-between; align-items: center; }
+  .word { font-size: 20px; font-weight: 650; } .meaning { font-size: 14px; color: #67758a; margin-top: 5px; }
+  .badge { font-size: 11.5px; padding: 4px 7px; border-radius: 5px; }
+  .state-0 { background: #f7eee0; color: #845b24; } .state-1 { background: #e8effb; color: #2d599e; } .state-2 { background: #e5f3ea; color: #286545; }
+
+  /* listening */
+  .item { background: #fff; border: 1px solid #e2e8f0; border-radius: 11px; padding: 13px 14px; margin: 9px 0; display: flex; align-items: center; gap: 12px; }
+  .item.on { border-color: #245ccc; background: #eef3fd; }
+  .play { width: 36px; height: 36px; border-radius: 50%; background: #eaf0fa; color: #245ccc; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .item.on .play { background: #245ccc; color: #fff; }
+  .it { font-size: 14.5px; font-weight: 600; } .im { font-size: 12px; color: #68778a; margin-top: 3px; }
+  .kind { font-size: 10.5px; padding: 2px 6px; border-radius: 4px; margin-right: 6px; }
+  .kind.dlg { background: #e8effb; color: #2d599e; } .kind.art { background: #e5f3ea; color: #286545; }
+  .player { position: sticky; bottom: -24px; background: #fff; border-top: 1px solid #e2e8f0; border-radius: 16px 16px 0 0; padding: 14px 16px 18px; margin: 16px -16px -24px; box-shadow: 0 -6px 20px rgba(0,0,0,.06); }
+  .pt { font-size: 14.5px; font-weight: 600; }
+  .bar { height: 4px; background: #e6ebf3; border-radius: 2px; margin: 12px 0 6px; position: relative; }
+  .bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 38%; background: #245ccc; border-radius: 2px; }
+  .times { display: flex; justify-content: space-between; font-size: 11px; color: #9aa6b5; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 10px; }
+  .controls .big { width: 48px; height: 48px; border-radius: 50%; background: #245ccc; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .controls .small { color: #526b8e; font-size: 13px; }
+  .script { background: #f4f6fa; border-radius: 8px; padding: 10px 12px; font-size: 12.5px; line-height: 1.7; color: #385675; margin-top: 10px; }
+
+  /* wizard */
+  .steps { display: flex; align-items: center; gap: 6px; margin: 6px 0 16px; font-size: 12px; color: #8795a7; }
+  .steps .s { display: flex; align-items: center; gap: 6px; }
+  .steps .n { width: 22px; height: 22px; border-radius: 50%; background: #e2e8f0; color: #68778a; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+  .steps .done .n { background: #2ebd6b; color: #fff; } .steps .cur .n { background: #245ccc; color: #fff; } .steps .cur { color: #1f2d3d; font-weight: 600; }
+  .steps .ln { flex: 1; height: 1px; background: #d5dce6; }
+  .kv { display: flex; justify-content: space-between; font-size: 13.5px; padding: 10px 0; border-bottom: 1px solid #edf1f5; }
+  .kv:last-child { border-bottom: 0; } .kv .v { color: #526b8e; display: flex; align-items: center; gap: 6px; }
+  .ok { color: #1f8a4c; }
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>口语训练机器人 · 小程序界面草图 v2</h1>
+  <p>在 v1 基础上按 watson 的 5 条修改意见调整。改为<strong>底部 4 个 Tab</strong>（今日练习 / 磨耳朵 / 练习记录 / 设置），每屏固定高度，内容区上下滑动。</p>
+  <ol>
+    <li><strong>机器人在线状态</strong>：今日练习页顶部常驻，四种状态（在线 / 已开机但程序没运行 / 离线 / 大脑服务未连接）。黄色来自服务器 <code>ssh pi true</code> 探测。</li>
+    <li><strong>中文辅助</strong>：明确覆盖「听不懂」和「不会说」两种求助，写清孩子该说什么、机器人会怎么答。</li>
+    <li><strong>磨耳朵</strong>独立 Tab，按年级给短文和对话；<strong>练习记录</strong>也独立成 Tab。</li>
+    <li><strong>场景</strong>：预设之外加「自己创建」，一句话描述 → AI 生成 5 个格子，附写场景小贴士。</li>
+    <li><strong>首次使用引导</strong>：连接课堂 → 填大模型（地址 / Key / 模型名，深度推理默认关）→ 完成。大模型和连接设置从配置页移到「设置」Tab。</li>
+  </ol>
+  <div class="legend"><span><span class="tag new">新增</span>本次新做</span><span><span class="tag mod">改</span>现有内容调整</span><span><span class="tag mv">移位</span>从别处搬来</span><span>其余为现状，不动</span></div>
+</div>
+
+<div class="board">
+
+<!-- ================= 屏 0：首次引导 ================= -->
+<div>
+<div class="screen-label">屏 0 · 首次使用引导（pages/setup，新）</div>
+<div class="screen-sub">只在未完成连接或未配置大模型时出现；设置 Tab 里可重新打开</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar">开始使用<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 英语陪练 <span class="tag new">新增</span></div>
+    <div class="title">三步，让机器人开口</div>
+    <div class="steps">
+      <div class="s done"><div class="n">✓</div>连接课堂</div><div class="ln"></div>
+      <div class="s cur"><div class="n">2</div>配置大模型</div><div class="ln"></div>
+      <div class="s"><div class="n">3</div>完成</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">第 2 步 · 配置大模型 <span style="font-size:12px;color:#c0392b;font-weight:400">必填</span></div>
+      <div class="note">机器人靠大模型出题、对话和点评。填你自己申请的接口（兼容 OpenAI 格式）。推荐 <b>DeepSeek V4.1 Flash</b>：快、便宜、够用。</div>
+      <div class="field-label">接口地址</div>
+      <div class="input">https://api.deepseek.com</div>
+      <div class="field-label">API Key</div>
+      <div class="input">••••••••••••••••••••••••</div>
+      <div class="field-label">模型名</div>
+      <div class="input">deepseek-flash</div>
+      <div class="note">▲ 模型名以你开通的服务为准，草图里是代码默认值，保存时会实际调用一次验证。</div>
+      <div class="row" style="margin-top:6px"><div><div>深度推理</div><div class="note">默认关闭。开启后回答更慢、更贵，口语练习不需要。</div></div><div class="switch off"></div></div>
+      <div class="btn primary">测试并保存，下一步</div>
+      <div class="link">上一步：课堂连接</div>
+    </div>
+
+    <div class="card" style="opacity:.75">
+      <div class="section-title" style="font-size:14px">第 3 步长这样</div>
+      <div class="note">✓ 课堂服务已连接 · ✓ 大模型可用（deepseek-flash）<br>机器人就位后，对它说"小陈同学，学英语"。</div>
+      <div class="btn secondary" style="margin-top:8px">去设置今天的练习</div>
+    </div>
+  </div>
+</div></div>
+</div>
+
+<!-- ================= 屏 1：今日练习 ================= -->
+<div>
+<div class="screen-label">屏 1 · Tab「今日练习」（pages/english-config，改）</div>
+<div class="screen-sub">大模型 / 课堂连接两个折叠区移走，页面变短</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar">英语陪练<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 英语陪练</div>
+    <div class="title">今天，练什么？</div>
+
+    <div class="online"><div class="dot g"></div><span class="st">机器人在线</span><span class="tag new">新增</span><span class="ago">12 秒前有动静</span></div>
+    <div class="states"><span><i class="dot g"></i>在线：近 30 秒内有心跳</span><span><i class="dot y"></i>已开机，练习程序没运行</span><span><i class="dot x"></i>离线：最近 08:12</span><span><i class="dot r"></i>大脑服务未连接</span></div>
+
+    <div class="card mod">
+      <span class="tag mod callout">改</span>
+      <div class="section-title">学习范围</div>
+      <div class="row"><span>年级</span><span class="choice">3 年级 ›</span></div>
+      <div class="row"><span>学期</span><span class="choice">上学期 ›</span></div>
+      <div class="field-label">词库练习范围</div>
+      <div class="box">第 2 组（第 11–20 个词） ›</div>
+      <div class="preview">apple · banana · orange · grape · pear · peach · lemon · melon · mango · cherry</div>
+      <div class="annot">▲ 年级选择器只列 1–9 年级（后端不改）。</div>
+    </div>
+
+    <div class="card new">
+      <span class="tag new callout">新增</span>
+      <div class="section-title">练习模式</div>
+      <div class="modes">
+        <div class="mode on"><div class="radio"></div><div><div class="m-title">完整练习<span class="code">full · 默认</span></div><div class="m-desc">先复习单词，再做一个短对话。设了场景就进场景扮演。</div><div class="m-flow">听词 → 想词 → 跟读 → 对话</div></div></div>
+        <div class="mode"><div class="radio"></div><div><div class="m-title">听词答中文<span class="code">en2zh</span></div><div class="m-desc">机器人说英文单词，孩子用中文说意思。</div></div></div>
+        <div class="mode"><div class="radio"></div><div><div class="m-title">看中文说英文<span class="code">zh2en</span></div><div class="m-desc">机器人说中文意思，孩子说出英文单词。</div></div></div>
+        <div class="mode"><div class="radio"></div><div><div class="m-title">只练场景<span class="code">scene</span></div><div class="m-desc">跳过单词，直接角色扮演。需要先在下方设好场景。</div></div></div>
+      </div>
+    </div>
+
+    <div class="card new">
+      <span class="tag new callout">新增</span>
+      <div class="section-title">场景角色扮演<span style="font-size:12px;color:#8795a7;font-weight:400">（可选）</span></div>
+      <div class="chips"><div class="chip">丛林找水</div><div class="chip">诺曼底指挥室</div><div class="chip">核电站巡检</div><div class="chip on add">＋ 自己创建</div></div>
+
+      <div class="ai-box">
+        <div class="t">自己创建一个场景</div>
+        <div class="note">用一句话说清：<b>在哪里、机器人是谁、孩子是谁、要完成什么事</b>。AI 会帮你填好下面 5 个格子，你可以再改。</div>
+        <div class="input textarea" style="background:#fff">在太空站里，氧气机坏了。孩子是宇航员，机器人是地面指挥中心，孩子要报告故障并按指令修好它。</div>
+        <div class="btn primary" style="margin-top:10px;padding:10px">让 AI 帮我写成场景</div>
+        <div class="link" style="padding:8px 0 0">不想用这里的 AI？复制提示词，用别的 AI 生成后粘贴</div>
+        <div class="tips"><span>太空站修氧气机</span><span>森林里给迷路的小动物指路</span><span>餐厅点餐遇到没菜单</span><span>海底潜艇接到求救信号</span></div>
+        <div class="note" style="margin-top:8px">内容边界：不能有血腥、暴力细节和个人信息。保存时系统会检查，不合规会提示修改。</div>
+      </div>
+
+      <div class="field-label"><span>场景名</span><span class="count">7/40</span></div>
+      <div class="input">太空站修氧气机</div>
+      <div class="field-label"><span>机器人扮演</span><span class="count">6/40</span></div>
+      <div class="input">地面指挥中心</div>
+      <div class="field-label"><span>孩子扮演</span><span class="count">3/40</span></div>
+      <div class="input">宇航员</div>
+      <div class="field-label"><span>对话目标</span><span class="count">34/200</span></div>
+      <div class="input textarea">报告氧气机故障的现象，听指挥中心的步骤指令，逐步修好并确认氧气恢复。</div>
+      <div class="field-label"><span>开场白（英文，孩子先说这句才开始）</span><span class="count">21/60</span></div>
+      <div class="input">Hello, Mission Control</div>
+      <div class="note">结束方式：说到轮数上限（按难度 6 / 8 / 10 轮）、孩子说 "I want to stop"、或中文说"结束"。结束前机器人会用中文给最多 3 条建议。</div>
+      <div class="btn ghost">清空场景</div>
+    </div>
+
+    <div class="card mod">
+      <span class="tag mod callout">改</span>
+      <div class="section-title">练习方式</div>
+      <div class="row"><span>每次最长</span><span class="choice">10 分钟 ›</span></div>
+      <div class="row"><span>每次练几个词</span><span class="choice">5 个 ›</span></div>
+      <div class="field-label">难度</div>
+      <div class="box">标准 ›</div>
+      <div class="row" style="border-bottom:0"><div><div>中文辅助</div><div class="note">孩子求助时，机器人用中文帮一把</div></div><div class="switch"></div></div>
+      <ul class="help-list">
+        <li><span class="ic">🎧</span><div><b>听不懂</b>：孩子说 <span class="say">听不懂</span> / <span class="say">什么意思</span> / <span class="say">用中文解释</span><br>→ 机器人用中文解释刚才那句（单词阶段说词义，对话阶段翻译整句），再用英文重说一遍。</div></li>
+        <li><span class="ic">🗣</span><div><b>不会说</b>：孩子说 <span class="say">我不会</span> / <span class="say">不会说</span> / <span class="say">怎么说</span>，接着<b>用中文说想表达的意思</b><br>→ 机器人先用中文确认，再给英文说法，等孩子跟读一遍，然后继续。</div></li>
+        <li><span class="ic">🔇</span><div><b>关闭后</b>：机器人全程只说英文。求助时只会放慢、重说，或给英文提示。</div></li>
+      </ul>
+    </div>
+
+    <div class="btn primary">保存设置</div>
+    <div class="start-tip">保存后，对机器人说：<span class="quote">"小陈同学，学英语。"</span>新设置在下一轮开始时生效。换了模式或场景，上次没练完的进度会从头开始。</div>
+    <div class="annot">▲ 原来这里的「高级设置：自带大模型」和「课堂连接设置」移到了「设置」Tab。</div>
+  </div>
+  <div class="tabbar"><div class="on"><span>🎯</span>今日练习</div><div><span>🎧</span>磨耳朵</div><div><span>📈</span>练习记录</div><div><span>⚙️</span>设置</div></div>
+</div></div>
+</div>
+
+<!-- ================= 屏 2：磨耳朵 ================= -->
+<div>
+<div class="screen-label">屏 2 · Tab「磨耳朵」（pages/listening，新）</div>
+<div class="screen-sub">按年级给短文和对话；默认跟练习设置的年级一致</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar">磨耳朵<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 磨耳朵 <span class="tag new">新增</span></div>
+    <div class="title">听一听</div>
+    <div class="subtitle">家长用手机放给孩子听。不经过机器人，不计入练习记录。</div>
+
+    <div class="card" style="padding:4px 16px">
+      <div class="row"><span>年级</span><span class="choice">3 年级（跟练习设置一致）›</span></div>
+      <div class="row"><span>类型</span><span class="choice">全部 ›</span></div>
+    </div>
+
+    <div class="item on"><div class="play">❚❚</div><div><div class="it">At the Fruit Shop</div><div class="im"><span class="kind dlg">对话</span>1 分 40 秒 · 买水果、问价钱</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">My Little Garden</div><div class="im"><span class="kind art">短文</span>1 分 20 秒 · 我的小花园</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">What's for Breakfast?</div><div class="im"><span class="kind dlg">对话</span>1 分 30 秒 · 早餐吃什么</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">A Day at the Zoo</div><div class="im"><span class="kind art">短文</span>1 分 50 秒 · 动物园的一天</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">Lost and Found</div><div class="im"><span class="kind dlg">对话</span>1 分 35 秒 · 东西丢了</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">My Best Friend</div><div class="im"><span class="kind art">短文</span>1 分 25 秒 · 我的好朋友</div></div></div>
+
+    <div class="note" style="margin:12px 2px">素材由老师提前生成，按 1–9 年级分组，每个年级至少 5 条，每条 1–3 分钟。用到的词尽量来自该年级词库。</div>
+
+    <div class="player">
+      <div class="pt">At the Fruit Shop</div>
+      <div class="bar"></div>
+      <div class="times"><span>0:38</span><span>1:40</span></div>
+      <div class="controls"><span class="small">‹ 上一条</span><div class="big">❚❚</div><span class="small">下一条 ›</span></div>
+      <div class="link" style="padding:8px 0 0">收起文稿</div>
+      <div class="script">A: Hello! Can I have three apples, please?<br>B: Sure. Anything else?<br>A: Two bananas. How much are they?<br>B: Ten yuan in all.</div>
+    </div>
+  </div>
+  <div class="tabbar"><div><span>🎯</span>今日练习</div><div class="on"><span>🎧</span>磨耳朵</div><div><span>📈</span>练习记录</div><div><span>⚙️</span>设置</div></div>
+</div></div>
+</div>
+
+<!-- ================= 屏 3：练习记录 ================= -->
+<div>
+<div class="screen-label">屏 3 · Tab「练习记录」（pages/english-result，小改）</div>
+<div class="screen-sub">去掉 v1 里的磨耳朵入口卡，改为 Tab</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar">练习记录<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 真实练习记录</div>
+    <div class="title">今天的练习</div>
+    <div class="date">2026-10-08 · 日期以课堂服务器为准</div>
+    <div class="summary">
+      <div class="number">5<span> 个词</span></div>
+      <div class="note">今天实际练过</div>
+      <div class="line">当前会说 2 个 · 听懂 2 个 · 继续练习 1 个</div>
+      <div class="line" style="color:#9a5b00;margin-top:4px">模式：完整练习 · 场景：太空站修氧气机 <span class="tag new">新增</span></div>
+    </div>
+    <div class="word-card"><div class="word-top"><div class="word">apple</div><div class="badge state-2">会说了</div></div><div class="meaning">苹果</div></div>
+    <div class="word-card"><div class="word-top"><div class="word">banana</div><div class="badge state-1">听懂了</div></div><div class="meaning">香蕉</div></div>
+    <div class="word-card"><div class="word-top"><div class="word">orange</div><div class="badge state-0">继续练习</div></div><div class="meaning">橙子</div></div>
+    <div class="word-card"><div class="word-top"><div class="word">grape</div><div class="badge state-2">会说了</div></div><div class="meaning">葡萄</div></div>
+    <div class="word-card"><div class="word-top"><div class="word">pear</div><div class="badge state-1">听懂了</div></div><div class="meaning">梨</div></div>
+    <div class="note" style="margin:14px 2px">"会说了"是当前记录，不表示今天首次掌握或永远不会忘。跟读不会自动记成独立会说；系统没听清不会降低状态。</div>
+    <div class="link">查看全部已练记录（37）</div>
+    <div class="btn primary">刷新记录</div>
+  </div>
+  <div class="tabbar"><div><span>🎯</span>今日练习</div><div><span>🎧</span>磨耳朵</div><div class="on"><span>📈</span>练习记录</div><div><span>⚙️</span>设置</div></div>
+</div></div>
+</div>
+
+<!-- ================= 屏 4：设置 ================= -->
+<div>
+<div class="screen-label">屏 4 · Tab「设置」（pages/settings，新）</div>
+<div class="screen-sub">装下从配置页搬来的两块，加连接状态和大模型推理开关</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar">设置<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 设置</div>
+    <div class="title">连接与模型</div>
+
+    <div class="card new">
+      <span class="tag new callout">新增</span>
+      <div class="section-title">连接状态</div>
+      <div class="kv"><span>课堂公共服务</span><span class="v ok">✓ 已连接</span></div>
+      <div class="kv"><span>大脑服务</span><span class="v ok">✓ 运行中 · 刚刚</span></div>
+      <div class="kv"><span>树莓派开机</span><span class="v"><i class="dot g" style="width:8px;height:8px;box-shadow:none"></i>能连上 · 20 秒前探测</span></div>
+      <div class="kv"><span>练习程序</span><span class="v"><i class="dot g" style="width:8px;height:8px;box-shadow:none"></i>在跑 · 12 秒前心跳</span></div>
+      <div class="note">"开机"由服务器每 30 秒 ssh 探测一次；"练习程序"由树莓派心跳得出。开机能连上但程序没跑，就是黄色。</div>
+    </div>
+
+    <div class="card mod">
+      <span class="tag mv callout">移位</span>
+      <div class="section-title">课堂连接</div>
+      <div class="field-label">公共服务地址</div>
+      <div class="input">https://english.s001.example.com</div>
+      <div class="field-label">学生 ID</div>
+      <div class="input">s001</div>
+      <div class="field-label">家长端课堂凭证</div>
+      <div class="input">••••••••••••••••</div>
+      <div class="btn secondary">保存连接</div>
+    </div>
+
+    <div class="card mod">
+      <span class="tag mv callout">移位</span>
+      <div class="section-title">大模型</div>
+      <div class="note">当前使用自己的模型：deepseek-flash，密钥 sk-…a9f2。最近调用正常。</div>
+      <div class="field-label">接口地址（兼容 OpenAI 格式）</div>
+      <div class="input">https://api.deepseek.com</div>
+      <div class="field-label">模型名</div>
+      <div class="input">deepseek-flash</div>
+      <div class="field-label">API Key</div>
+      <div class="input placeholder">不改密钥可留空</div>
+      <div class="row" style="margin-top:6px"><div><div>深度推理 <span class="tag new">新增</span></div><div class="note">默认关闭。口语练习用不上，开了会更慢、更贵。</div></div><div class="switch off"></div></div>
+      <div class="btn secondary">测试并保存</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">关于</div>
+      <div class="kv"><span>唤醒词</span><span class="v">小陈同学，学英语</span></div>
+      <div class="kv"><span>版本</span><span class="v">v2 草图</span></div>
+      <div class="link" style="padding:8px 0 0">重新打开首次引导</div>
+    </div>
+  </div>
+  <div class="tabbar"><div><span>🎯</span>今日练习</div><div><span>🎧</span>磨耳朵</div><div><span>📈</span>练习记录</div><div class="on"><span>⚙️</span>设置</div></div>
+</div></div>
+</div>
+
+</div>
+</body>
+</html>

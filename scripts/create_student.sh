@@ -15,7 +15,7 @@ if grep -l -x "BRAIN_PORT=$PORT" /etc/english-class/students/*.env 2>/dev/null |
 if command -v ss >/dev/null && ss -lntH | awk '{print $4}' | grep -Eq ":${PORT}$"; then echo '端口已在监听'; exit 1; fi
 install -d -o english-public -g english-public -m 700 /var/lib/english-class/provision
 cd "$ROOT"
-runuser -u english-public -- "$ROOT/.venv/bin/python" -m english_class.cli --dictionary "$ROOT/data/dictionary.json" --database /var/lib/english-class/class.sqlite3 add-student \
+runuser -u english-public -- "$ROOT/.venv/bin/python" -m english_class.cli --env /etc/english-class/public.env add-student \
   --id "$SID" --port "$PORT" --public-url "http://127.0.0.1:$PUBLIC_PORT" --output "/var/lib/english-class/provision/$SID" --external-api-url "$PUBLIC_EXTERNAL" --brain-url "$BRAIN_EXTERNAL"
 getent passwd "english-$SID" >/dev/null || useradd --system --no-create-home --shell /usr/sbin/nologin "english-$SID"
 install -d -o "english-$SID" -g "english-$SID" -m 700 "$ROOT/students/$SID"

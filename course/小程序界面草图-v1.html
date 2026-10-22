@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>口语训练机器人 · 小程序界面草图 v1</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9edf3; font-family: -apple-system, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif; color: #1f2d3d; }
+  .head { padding: 28px 32px 8px; }
+  .head h1 { margin: 0 0 6px; font-size: 22px; }
+  .head p { margin: 0; color: #5b6b7f; font-size: 14px; line-height: 1.7; }
+  .legend { display: inline-flex; gap: 14px; margin-top: 10px; font-size: 13px; color: #5b6b7f; }
+  .legend .tag { margin-right: 4px; }
+  .board { display: flex; gap: 28px; padding: 20px 32px 48px; align-items: flex-start; overflow-x: auto; }
+
+  .phone { width: 390px; flex: 0 0 390px; background: #111; border-radius: 40px; padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,.28); }
+  .screen { background: #f5f7fa; border-radius: 32px; overflow: hidden; }
+  .statusbar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-size: 13px; font-weight: 600; background: #f5f7fa; }
+  .navbar { height: 44px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; background: #f5f7fa; position: relative; }
+  .navbar .back { position: absolute; left: 16px; color: #1f2d3d; }
+  .navbar .capsule { position: absolute; right: 12px; width: 86px; height: 32px; border: 1px solid #d5dae2; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: space-around; font-size: 14px; color: #333; }
+  .page { padding: 22px 16px 36px; }
+  .screen-label { text-align: center; font-size: 14px; font-weight: 600; color: #3b4b60; margin: 10px 0 8px; }
+
+  /* mirror of existing wxss, rpx/2 */
+  .eyebrow { color: #48678c; font-size: 12px; letter-spacing: 1px; }
+  .title { font-size: 29px; font-weight: 750; margin: 8px 0; }
+  .subtitle { color: #647386; font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 16px; margin: 12px 0; border: 1px solid #e2e8f0; position: relative; }
+  .section-title { font-size: 17px; font-weight: 650; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 50px; border-bottom: 1px solid #edf1f5; font-size: 15px; }
+  .row:last-child { border-bottom: 0; }
+  .choice { color: #245ccc; padding: 8px 0 8px 8px; }
+  .field-label { margin: 12px 0 7px; font-size: 14px; display: flex; justify-content: space-between; }
+  .field-label .count { color: #9aa6b5; font-size: 12px; }
+  .box, .input { background: #f4f6fa; border-radius: 6px; padding: 11px; min-height: 22px; font-size: 13.5px; }
+  .input.placeholder { color: #a0a9b6; }
+  .textarea { min-height: 64px; line-height: 1.6; }
+  .note { color: #68778a; font-size: 12px; line-height: 1.7; margin: 6px 0; }
+  .preview { border-top: 1px solid #edf1f5; padding-top: 10px; color: #284669; font-size: 12.5px; line-height: 1.8; }
+  .btn { display: block; width: 100%; text-align: center; border-radius: 8px; padding: 12px; font-size: 15px; }
+  .primary { background: #245ccc; color: #fff; margin-top: 16px; }
+  .secondary { background: #eaf0fa; color: #245090; margin-top: 10px; font-size: 14.5px; }
+  .ghost { background: transparent; color: #526b8e; border: 1px dashed #c7d2e0; margin-top: 10px; font-size: 13.5px; padding: 9px; }
+  .start-tip { font-size: 12.5px; color: #65758a; line-height: 1.8; margin: 14px 2px; }
+  .quote { display: block; font-weight: 600; color: #314962; margin: 6px 0; }
+  .connection-link { text-align: center; padding: 11px; color: #526b8e; font-size: 13px; }
+  .switch { width: 46px; height: 26px; border-radius: 13px; background: #245ccc; position: relative; flex-shrink: 0; }
+  .switch::after { content: ""; position: absolute; right: 2px; top: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; }
+
+  /* annotation tags */
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; line-height: 1.5; vertical-align: middle; }
+  .tag.new { background: #fff1d6; color: #9a5b00; border: 1px solid #f1d49a; }
+  .tag.mod { background: #e6f1ff; color: #1d4f9e; border: 1px solid #b9d2f5; }
+  .card.new { border: 1.5px dashed #e6a93c; }
+  .card.mod { border: 1.5px dashed #5a8fe0; }
+  .callout { position: absolute; top: -10px; right: 12px; }
+
+  /* mode radio cards */
+  .modes { display: flex; flex-direction: column; gap: 8px; }
+  .mode { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 11px 12px; display: flex; gap: 10px; align-items: flex-start; background: #fafbfd; }
+  .mode.on { border-color: #245ccc; background: #eef3fd; }
+  .radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #b8c3d3; flex-shrink: 0; margin-top: 2px; background: #fff; }
+  .mode.on .radio { border: 5px solid #245ccc; }
+  .mode .m-title { font-size: 14.5px; font-weight: 600; }
+  .mode .m-title .code { font-size: 11px; color: #8795a7; font-weight: 400; margin-left: 6px; font-family: Menlo, monospace; }
+  .mode .m-desc { font-size: 12px; color: #68778a; line-height: 1.6; margin-top: 2px; }
+  .mode .m-flow { font-size: 11px; color: #9aa6b5; margin-top: 3px; font-family: Menlo, monospace; }
+
+  /* templates */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .chip { border: 1px solid #c9d6ea; color: #245090; background: #f3f7fd; border-radius: 16px; padding: 6px 12px; font-size: 12.5px; }
+  .chip.on { background: #245ccc; color: #fff; border-color: #245ccc; }
+
+  /* result page */
+  .date { color: #6a778a; font-size: 12.5px; margin-bottom: 14px; }
+  .summary { background: #e9f0fc; padding: 15px; border-radius: 12px; margin: 13px 0; }
+  .number { font-size: 34px; color: #214f9c; font-weight: 700; }
+  .number span { font-size: 14px; font-weight: 400; }
+  .line { font-size: 12.5px; line-height: 1.9; color: #385675; }
+  .word-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 11px; padding: 14px; margin: 10px 0; }
+  .word-top { display: flex; justify-content: space-between; align-items: center; }
+  .word { font-size: 20px; font-weight: 650; }
+  .meaning { font-size: 14px; color: #67758a; margin-top: 5px; }
+  .badge { font-size: 11.5px; padding: 4px 7px; border-radius: 5px; }
+  .state-0 { background: #f7eee0; color: #845b24; } .state-1 { background: #e8effb; color: #2d599e; } .state-2 { background: #e5f3ea; color: #286545; }
+  .link { text-align: center; color: #315b9f; padding: 11px; font-size: 13.5px; }
+  .entry { display: flex; align-items: center; gap: 12px; background: #fff; border: 1.5px dashed #e6a93c; border-radius: 12px; padding: 14px; margin-top: 14px; }
+  .entry .icon { width: 40px; height: 40px; border-radius: 10px; background: #fff1d6; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .entry .t { font-size: 15px; font-weight: 600; }
+  .entry .d { font-size: 12px; color: #68778a; margin-top: 2px; }
+  .entry .arrow { margin-left: auto; color: #9aa6b5; }
+
+  /* listening page */
+  .seg { display: flex; background: #e6ebf3; border-radius: 10px; padding: 3px; margin: 6px 0 12px; }
+  .seg div { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 13.5px; color: #526b8e; }
+  .seg .on { background: #fff; color: #1f2d3d; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .item { background: #fff; border: 1px solid #e2e8f0; border-radius: 11px; padding: 13px 14px; margin: 9px 0; display: flex; align-items: center; gap: 12px; }
+  .item.on { border-color: #245ccc; background: #eef3fd; }
+  .play { width: 36px; height: 36px; border-radius: 50%; background: #eaf0fa; color: #245ccc; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .item.on .play { background: #245ccc; color: #fff; }
+  .item .it { font-size: 14.5px; font-weight: 600; }
+  .item .im { font-size: 12px; color: #68778a; margin-top: 3px; }
+  .kind { font-size: 10.5px; padding: 2px 6px; border-radius: 4px; margin-right: 6px; }
+  .kind.dlg { background: #e8effb; color: #2d599e; } .kind.art { background: #e5f3ea; color: #286545; }
+  .player { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #e2e8f0; border-radius: 16px 16px 0 0; padding: 14px 16px 18px; margin: 16px -16px -36px; box-shadow: 0 -6px 20px rgba(0,0,0,.06); }
+  .player .pt { font-size: 14.5px; font-weight: 600; }
+  .bar { height: 4px; background: #e6ebf3; border-radius: 2px; margin: 12px 0 6px; position: relative; }
+  .bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 38%; background: #245ccc; border-radius: 2px; }
+  .times { display: flex; justify-content: space-between; font-size: 11px; color: #9aa6b5; }
+  .controls { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 10px; }
+  .controls .big { width: 48px; height: 48px; border-radius: 50%; background: #245ccc; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .controls .small { color: #526b8e; font-size: 13px; }
+  .script { background: #f4f6fa; border-radius: 8px; padding: 10px 12px; font-size: 12.5px; line-height: 1.7; color: #385675; margin-top: 10px; }
+  .error { background: #fff0e9; border: 1px solid #eec9b4; color: #934117; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.7; }
+  .state-note { font-size: 11px; color: #9aa6b5; text-align: center; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>口语训练机器人 · 小程序界面草图 v1</h1>
+  <p>依据 <code>course/需求文档-口语训练机器人-学生版-v1.md</code>。沿用现有配置页 / 结果页的视觉，只画改动和新增。三屏从左到右：配置页（改）→ 结果页（小改）→ 磨耳朵页（新）。</p>
+  <div class="legend"><span><span class="tag new">新增</span>本次新做</span><span><span class="tag mod">改</span>现有内容调整</span><span>其余为现状，不动</span></div>
+</div>
+
+<div class="board">
+
+<!-- ================= 屏 1：配置页 ================= -->
+<div>
+<div class="screen-label">屏 1 · 配置页（pages/english-config）</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar">英语陪练<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 英语陪练</div>
+    <div class="title">今天，练什么？</div>
+    <div class="subtitle">家长设置，孩子用自己的机器人听和说。</div>
+
+    <div class="card mod">
+      <span class="tag mod callout">改</span>
+      <div class="section-title">学习范围</div>
+      <div class="row"><span>年级</span><span class="choice">3 年级 ›</span></div>
+      <div class="row"><span>学期</span><span class="choice">上学期 ›</span></div>
+      <div class="field-label">词库练习范围</div>
+      <div class="box">第 2 组（第 11–20 个词） ›</div>
+      <div class="note">直接使用 WordMaster SZ 词库。练习组按原词库顺序划分，不代表教材单元。</div>
+      <div class="preview">apple · banana · orange · grape · pear · peach · lemon · melon · mango · cherry</div>
+      <div class="note" style="color:#9a5b00">▲ 年级选择器只列 1–9 年级（后端不改）。</div>
+    </div>
+
+    <div class="card new">
+      <span class="tag new callout">新增</span>
+      <div class="section-title">练习模式</div>
+      <div class="modes">
+        <div class="mode on"><div class="radio"></div><div>
+          <div class="m-title">完整练习<span class="code">full · 默认</span></div>
+          <div class="m-desc">先复习单词，再做一个短对话。设了场景就进场景扮演。</div>
+          <div class="m-flow">听词 → 想词 → 跟读 → 对话</div>
+        </div></div>
+        <div class="mode"><div class="radio"></div><div>
+          <div class="m-title">听词答中文<span class="code">en2zh</span></div>
+          <div class="m-desc">机器人说英文单词，孩子用中文说意思。练完直接结束。</div>
+        </div></div>
+        <div class="mode"><div class="radio"></div><div>
+          <div class="m-title">看中文说英文<span class="code">zh2en</span></div>
+          <div class="m-desc">机器人说中文意思，孩子说出英文单词。练完直接结束。</div>
+        </div></div>
+        <div class="mode"><div class="radio"></div><div>
+          <div class="m-title">只练场景<span class="code">scene</span></div>
+          <div class="m-desc">跳过单词，直接角色扮演。需要先在下方设好场景。</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card new">
+      <span class="tag new callout">新增</span>
+      <div class="section-title">场景角色扮演<span style="font-size:12px;color:#8795a7;font-weight:400">（可选）</span></div>
+      <div class="note">选一个模板一键填入，也可以自己写。不设场景就按原来的单词对话。</div>
+      <div class="chips"><div class="chip on">丛林找水</div><div class="chip">诺曼底指挥室</div><div class="chip">核电站巡检</div></div>
+      <div class="field-label"><span>场景名</span><span class="count">4/40</span></div>
+      <div class="input">丛林找水</div>
+      <div class="field-label"><span>机器人扮演</span><span class="count">2/40</span></div>
+      <div class="input">军官</div>
+      <div class="field-label"><span>孩子扮演</span><span class="count">2/40</span></div>
+      <div class="input">士兵</div>
+      <div class="field-label"><span>对话目标</span><span class="count">21/200</span></div>
+      <div class="input textarea">向军官报告找到水源的位置，并请求下一步指令。</div>
+      <div class="field-label"><span>开场白（英文，孩子先说这句才开始）</span><span class="count">7/60</span></div>
+      <div class="input">Hi, sir</div>
+      <div class="note">结束方式：说到轮数上限（按难度 6 / 8 / 10 轮）、孩子说 "I want to stop"、或中文说"结束"。结束前机器人会用中文给最多 3 条建议。</div>
+      <div class="btn ghost">清空场景</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">练习方式</div>
+      <div class="row"><span>每次最长</span><span class="choice">10 分钟 ›</span></div>
+      <div class="row"><span>每次练几个词</span><span class="choice">5 个 ›</span></div>
+      <div class="field-label">难度</div>
+      <div class="box">标准 ›</div>
+      <div class="row"><div><div>中文辅助</div><div class="note">需要时提供中文解释</div></div><div class="switch"></div></div>
+      <div class="note">一次练习先复习几个词，再完成一个短对话。完成任务后可以提前结束。</div>
+    </div>
+
+    <div class="btn primary">保存设置</div>
+    <div class="btn secondary">看看练习结果</div>
+    <div class="start-tip">保存后，对机器人说：<span class="quote">"小陈同学，学英语。"</span>新设置在下一轮开始时生效。换了模式或场景，上次没练完的进度会从头开始。</div>
+    <div class="connection-link">展开高级设置：自带大模型（可选）</div>
+    <div class="connection-link">展开课堂连接设置</div>
+  </div>
+</div></div>
+</div>
+
+<!-- ================= 屏 2：结果页 ================= -->
+<div>
+<div class="screen-label">屏 2 · 结果页（pages/english-result）</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar"><span class="back">‹</span>练习结果<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 真实练习记录</div>
+    <div class="title">今天的练习</div>
+    <div class="date">2026-10-08 · 日期以课堂服务器为准</div>
+    <div class="summary">
+      <div class="number">5<span> 个词</span></div>
+      <div class="note">今天实际练过</div>
+      <div class="line">当前会说 2 个 · 听懂 2 个 · 继续练习 1 个</div>
+      <div class="line" style="color:#9a5b00;margin-top:4px">模式：完整练习 · 场景：丛林找水 <span class="tag new">新增</span></div>
+    </div>
+    <div class="word-card"><div class="word-top"><div class="word">apple</div><div class="badge state-2">会说了</div></div><div class="meaning">苹果</div></div>
+    <div class="word-card"><div class="word-top"><div class="word">banana</div><div class="badge state-1">听懂了</div></div><div class="meaning">香蕉</div></div>
+    <div class="word-card"><div class="word-top"><div class="word">orange</div><div class="badge state-0">继续练习</div></div><div class="meaning">橙子</div></div>
+    <div class="note" style="margin:14px 2px">"会说了"是当前记录，不表示今天首次掌握或永远不会忘。跟读不会自动记成独立会说；系统没听清不会降低状态。</div>
+    <div class="link">查看全部已练记录（37）</div>
+
+    <div class="entry">
+      <div class="icon">🎧</div>
+      <div><div class="t">磨耳朵 <span class="tag new">新增</span></div><div class="d">放英语对话或小文章给孩子听，不经过机器人</div></div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="btn primary">刷新记录</div>
+    <div class="btn secondary">返回练习设置</div>
+  </div>
+</div></div>
+</div>
+
+<!-- ================= 屏 3：磨耳朵页 ================= -->
+<div>
+<div class="screen-label">屏 3 · 磨耳朵页（pages/listening，新）</div>
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+  <div class="navbar"><span class="back">‹</span>磨耳朵<div class="capsule"><span>···</span><span>◎</span></div></div>
+  <div class="page">
+    <div class="eyebrow">我的课程作品 · 磨耳朵 <span class="tag new">新增</span></div>
+    <div class="title">听一听</div>
+    <div class="subtitle">家长用手机放给孩子听。不经过机器人，不计入练习记录。</div>
+
+    <div class="seg"><div>小学</div><div class="on">初中</div><div>高中</div></div>
+
+    <div class="item on"><div class="play">❚❚</div><div><div class="it">At the School Canteen</div><div class="im"><span class="kind dlg">对话</span>2 分 10 秒 · 点餐、问价格</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">My Weekend Plan</div><div class="im"><span class="kind art">文章</span>1 分 45 秒 · 周末计划</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">Asking for Directions</div><div class="im"><span class="kind dlg">对话</span>2 分 30 秒 · 问路</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">A Letter to My Pen Pal</div><div class="im"><span class="kind art">文章</span>2 分 05 秒 · 笔友来信</div></div></div>
+    <div class="item"><div class="play">▶</div><div><div class="it">In the Science Lab</div><div class="im"><span class="kind dlg">对话</span>1 分 55 秒 · 实验课</div></div></div>
+
+    <div class="note" style="margin:12px 2px">素材由老师提前生成，按学段分组。每组至少 5 条，每条 1–3 分钟。</div>
+
+    <div class="error" style="margin-top:10px">加载失败，请检查网络后下拉刷新。</div>
+    <div class="state-note">▲ 断网时的样子（区分"请求失败"和"没有内容"）</div>
+
+    <div class="player">
+      <div class="pt">At the School Canteen</div>
+      <div class="bar"></div>
+      <div class="times"><span>0:49</span><span>2:10</span></div>
+      <div class="controls"><span class="small">‹ 上一条</span><div class="big">❚❚</div><span class="small">下一条 ›</span></div>
+      <div class="link" style="padding:8px 0 0">收起文稿</div>
+      <div class="script">A: Hi, what would you like today?<br>B: I'd like some noodles, please. How much are they?<br>A: Eight yuan. Anything to drink?<br>B: A cup of milk tea, thank you.</div>
+    </div>
+  </div>
+</div></div>
+</div>
+
+</div>
+</body>
+</html>

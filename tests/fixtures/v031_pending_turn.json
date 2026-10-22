@@ -1,0 +1,427 @@
+{
+  "source_baseline": "98eaddd3c4a35ab23a5e02ba373f05f0c2d645c9",
+  "scenario": "Actual v0.3.1 recall committed; generating next dialog failed. Test-only dictionary/IO.",
+  "journal": {
+    "version": 1,
+    "pending": {
+      "request_id": "legacy-recall-032",
+      "fingerprint": "de0530a15c086ad8199e4127932421656b83178c717f463f05dec1810f99409a",
+      "at": 1792558708.0830126,
+      "before": {
+        "version": 1,
+        "saved_monotonic": 11863.965554969,
+        "saved_wall": 1792558708.0830142,
+        "state": {
+          "practice_size": 3,
+          "student_prompt": "",
+          "last_heard": 11863.954841049,
+          "quiet_since": 11863.954841049,
+          "reasks": 0,
+          "phase": "recall",
+          "config": {
+            "grade": 1,
+            "semester": 1,
+            "unit": 0,
+            "duration_minutes": 10,
+            "practice_words": 1,
+            "chinese_help": true,
+            "difficulty": "basic",
+            "mode": "full",
+            "scene": null
+          },
+          "words": [
+            {
+              "word_id": "1a_021",
+              "word": "apple",
+              "meaning": "苹果"
+            }
+          ],
+          "index": 0,
+          "known": {
+            "1a_021": 1
+          },
+          "started_at": 11863.948603152,
+          "pause_at": null,
+          "paused_seconds": 0.0,
+          "session_id": "cd4643176beb46119f58a982dee10786",
+          "dialog_count": 0,
+          "history": [],
+          "last_segments": [
+            {
+              "text": "对！",
+              "language": "zh"
+            },
+            {
+              "text": "现在试着自己说出这些词。",
+              "language": "zh"
+            },
+            {
+              "text": "苹果，用英语怎么说？",
+              "language": "zh"
+            }
+          ],
+          "last_demonstrated": {
+            "__tutor_set__": []
+          },
+          "slow": false,
+          "last_expected": "en",
+          "previous_phase": null,
+          "repeat_tries": 0,
+          "_dialog_modelled": [],
+          "explained": {
+            "__tutor_set__": [
+              "listen",
+              "recall"
+            ]
+          },
+          "question_full": [
+            {
+              "text": "苹果，用英语怎么说？",
+              "language": "zh"
+            }
+          ],
+          "question_short": [
+            {
+              "text": "苹果？",
+              "language": "zh"
+            }
+          ],
+          "help_stage": "",
+          "help_turn": 0,
+          "asking_zh": false,
+          "help_context": {},
+          "help_phrase": "",
+          "help_tries": 0,
+          "assisted_words": {
+            "__tutor_set__": []
+          },
+          "assisted_models": {
+            "__tutor_set__": []
+          },
+          "dialog_question": [],
+          "_dialog_word_evidence": {},
+          "evidence_incomplete": false,
+          "scene_opening_pending": false,
+          "scene_opening_tries": 0,
+          "_resume_change": null
+        }
+      },
+      "operations": [
+        {
+          "method": "chat",
+          "fingerprint": "e96416f15acb8515dbdc019e017272be035772c04f382e4029bde8631f6aabf3",
+          "done": true,
+          "result": "{\"correct\": true}"
+        },
+        {
+          "method": "record",
+          "fingerprint": "1c2742732c8456826f0f8f05102b9ef392532c4a1d146195507ddf29c8410b08",
+          "done": true,
+          "args": [
+            "1a_021",
+            2,
+            false,
+            "5a3727d88465a6748c4ca447985ad0140abe41d4a28fc1680b6bf7b492b4f97d",
+            {
+              "answer_valid": true,
+              "used_word": true,
+              "imitated": false
+            }
+          ],
+          "kwargs": {},
+          "result": {
+            "word_id": "1a_021",
+            "status": 2,
+            "unclear_count": 0,
+            "last_practiced_date": "2026-10-21",
+            "valid_count": 2,
+            "used_word_count": 1,
+            "imitated_count": 0,
+            "word": "apple",
+            "meaning": "苹果"
+          }
+        },
+        {
+          "method": "chat",
+          "fingerprint": "393a739996406e56374981d2c0822210fa18874530ca41b608231ed237c01ac8",
+          "done": false
+        }
+      ]
+    },
+    "replies": {
+      "legacy-start-032": {
+        "fingerprint": "6e1dc237956c74fc01baa1812229e3d4ca28939d61ded41aa93c379bd546be90",
+        "reply": {
+          "ok": true,
+          "active": true,
+          "phase": "listen",
+          "session_id": "cd4643176beb46119f58a982dee10786",
+          "expected_language": "zh",
+          "segments": [
+            {
+              "text": "开始今天的英语练习。先听词，再尝试自己说，最后完成一个小对话。",
+              "language": "zh"
+            },
+            {
+              "text": "apple.",
+              "language": "en"
+            },
+            {
+              "text": "这个英语词是什么意思？可以用中文回答。",
+              "language": "zh"
+            }
+          ],
+          "slow": false,
+          "speed": "elementary",
+          "word_index": 0,
+          "word_count": 1,
+          "dialog_count": 0,
+          "help_stage": "",
+          "help_turn": 0,
+          "scene_opening_pending": false,
+          "evidence_incomplete": false,
+          "request_id": "legacy-start-032",
+          "question_id": "2b2c24e8574a47d8b3bdcb7e7fad7626"
+        },
+        "at": 1792558708.0674963
+      },
+      "legacy-listen-032": {
+        "fingerprint": "3251f63cc00f16ba679593002b2209592eb69e9091f4fab63796fbcf9af76204",
+        "reply": {
+          "ok": true,
+          "active": true,
+          "phase": "recall",
+          "session_id": "cd4643176beb46119f58a982dee10786",
+          "expected_language": "en",
+          "segments": [
+            {
+              "text": "对！",
+              "language": "zh"
+            },
+            {
+              "text": "现在试着自己说出这些词。",
+              "language": "zh"
+            },
+            {
+              "text": "苹果，用英语怎么说？",
+              "language": "zh"
+            }
+          ],
+          "slow": false,
+          "speed": "elementary",
+          "word_index": 0,
+          "word_count": 1,
+          "dialog_count": 0,
+          "help_stage": "",
+          "help_turn": 0,
+          "scene_opening_pending": false,
+          "evidence_incomplete": false,
+          "request_id": "legacy-listen-032",
+          "question_id": "ff3f4777f07242fc97564424c5915e91"
+        },
+        "at": 1792558708.0793545
+      }
+    },
+    "state": {
+      "version": 1,
+      "saved_monotonic": 11863.961910385,
+      "saved_wall": 1792558708.0793695,
+      "state": {
+        "practice_size": 3,
+        "student_prompt": "",
+        "last_heard": 11863.954841049,
+        "quiet_since": 11863.954841049,
+        "reasks": 0,
+        "phase": "recall",
+        "config": {
+          "grade": 1,
+          "semester": 1,
+          "unit": 0,
+          "duration_minutes": 10,
+          "practice_words": 1,
+          "chinese_help": true,
+          "difficulty": "basic",
+          "mode": "full",
+          "scene": null
+        },
+        "words": [
+          {
+            "word_id": "1a_021",
+            "word": "apple",
+            "meaning": "苹果"
+          }
+        ],
+        "index": 0,
+        "known": {
+          "1a_021": 1
+        },
+        "started_at": 11863.948603152,
+        "pause_at": null,
+        "paused_seconds": 0.0,
+        "session_id": "cd4643176beb46119f58a982dee10786",
+        "dialog_count": 0,
+        "history": [],
+        "last_segments": [
+          {
+            "text": "对！",
+            "language": "zh"
+          },
+          {
+            "text": "现在试着自己说出这些词。",
+            "language": "zh"
+          },
+          {
+            "text": "苹果，用英语怎么说？",
+            "language": "zh"
+          }
+        ],
+        "last_demonstrated": {
+          "__tutor_set__": []
+        },
+        "slow": false,
+        "last_expected": "en",
+        "previous_phase": null,
+        "repeat_tries": 0,
+        "_dialog_modelled": [],
+        "explained": {
+          "__tutor_set__": [
+            "listen",
+            "recall"
+          ]
+        },
+        "question_full": [
+          {
+            "text": "苹果，用英语怎么说？",
+            "language": "zh"
+          }
+        ],
+        "question_short": [
+          {
+            "text": "苹果？",
+            "language": "zh"
+          }
+        ],
+        "help_stage": "",
+        "help_turn": 0,
+        "asking_zh": false,
+        "help_context": {},
+        "help_phrase": "",
+        "help_tries": 0,
+        "assisted_words": {
+          "__tutor_set__": []
+        },
+        "assisted_models": {
+          "__tutor_set__": []
+        },
+        "dialog_question": [],
+        "_dialog_word_evidence": {},
+        "evidence_incomplete": false,
+        "scene_opening_pending": false,
+        "scene_opening_tries": 0,
+        "_resume_change": null
+      }
+    },
+    "question_id": "ff3f4777f07242fc97564424c5915e91",
+    "saved_at": 1792558708.0830379
+  },
+  "retry": {
+    "action": "answer",
+    "request_id": "legacy-recall-032",
+    "text": "apple",
+    "session_id": "cd4643176beb46119f58a982dee10786",
+    "question_id": "ff3f4777f07242fc97564424c5915e91"
+  },
+  "completed_start": {
+    "body": {
+      "action": "start",
+      "request_id": "legacy-start-032"
+    },
+    "reply": {
+      "ok": true,
+      "active": true,
+      "phase": "listen",
+      "session_id": "cd4643176beb46119f58a982dee10786",
+      "expected_language": "zh",
+      "segments": [
+        {
+          "text": "开始今天的英语练习。先听词，再尝试自己说，最后完成一个小对话。",
+          "language": "zh"
+        },
+        {
+          "text": "apple.",
+          "language": "en"
+        },
+        {
+          "text": "这个英语词是什么意思？可以用中文回答。",
+          "language": "zh"
+        }
+      ],
+      "slow": false,
+      "speed": "elementary",
+      "word_index": 0,
+      "word_count": 1,
+      "dialog_count": 0,
+      "help_stage": "",
+      "help_turn": 0,
+      "scene_opening_pending": false,
+      "evidence_incomplete": false,
+      "request_id": "legacy-start-032",
+      "question_id": "2b2c24e8574a47d8b3bdcb7e7fad7626"
+    }
+  },
+  "committed_records": [
+    {
+      "args": [
+        "1a_021",
+        1,
+        false,
+        "2c042f39c954096a1725c761dc05137022aef84e367b25596f10cc11d37fd7a2",
+        {
+          "answer_valid": true,
+          "used_word": false,
+          "imitated": false
+        }
+      ],
+      "kwargs": {}
+    },
+    {
+      "args": [
+        "1a_021",
+        2,
+        false,
+        "5a3727d88465a6748c4ca447985ad0140abe41d4a28fc1680b6bf7b492b4f97d",
+        {
+          "answer_valid": true,
+          "used_word": true,
+          "imitated": false
+        }
+      ],
+      "kwargs": {}
+    }
+  ],
+  "resume": {
+    "saved_at": 1792558708.081267,
+    "config": {
+      "grade": 1,
+      "semester": 1,
+      "unit": 0,
+      "duration_minutes": 10,
+      "practice_words": 1,
+      "chinese_help": true,
+      "difficulty": "basic",
+      "mode": "full",
+      "scene": null
+    },
+    "words": [
+      {
+        "word_id": "1a_021",
+        "word": "apple",
+        "meaning": "苹果"
+      }
+    ],
+    "index": 0,
+    "phase": "recall",
+    "assisted_words": [],
+    "assisted_models": []
+  }
+}

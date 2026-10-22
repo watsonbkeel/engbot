@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_replacing_queued_stop_with_pause_does_not_deadlock_recovery _______
+tests/test_v3_reliability.py:477: in test_replacing_queued_stop_with_pause_does_not_deadlock_recovery
+    assert retried.wait(.5), 'worker must still confirm the original answer'
+E   AssertionError: worker must still confirm the original answer
+E   assert False
+E    +  where False = wait(0.5)
+E    +    where wait = <threading.Event at 0x7fb9451764e0: unset>.wait
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:281 test: temporarily offline
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_replacing_queued_stop_with_pause_does_not_deadlock_recovery
+1 failed, 1 warning in 0.90s

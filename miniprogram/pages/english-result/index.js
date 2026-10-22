@@ -1,21 +1,28 @@
+const navigation = require('../../utils/english-navigation')
 const api = require('../../utils/english-api')
+const life = require('../../utils/page-state')
 const { buildReport } = require('../../utils/english-view')
+const MODE_TEXT = { full: '完整练习', en2zh: '听词说中文', zh2en: '听中文说英文', scene: '场景对话' }
 Page({
-  data: { loading: false, error: '', loaded: false, today: '', todayWords: [], allWords: [], speakingCount: 0, listeningCount: 0, practicingCount: 0, showAll: false },
-  onLoad() { this._generation = 0 },
-  onShow() { this.refresh() },
-  onHide() { this._generation = (this._generation || 0) + 1 },
-  onUnload() { this._generation = (this._generation || 0) + 1 },
+  data: { loading: false, error: '', loaded: false, today: '', todayWords: [], allWords: [], speakingCount: 0, listeningCount: 0, practicingCount: 0, showAll: false, modeScene: '' },
+  onShow() { life.show(this); this.setData(navigation.pageData()); return this.refresh() },
+  onHide() { life.hide(this); this.setData({ loading: false }) },
+  onUnload() { life.hide(this) },
   async refresh() {
-    const n = ++this._generation
+    const active = life.begin(this, 'report')
     this.setData({ loading: true, error: '', loaded: false })
     try {
       const result = buildReport(await api.progress())
-      if (n === this._generation) this.setData(Object.assign({}, result, { loaded: true }))
-    } catch (e) { if (n === this._generation) this.setData({ error: e.message }) }
-    finally { if (n === this._generation) this.setData({ loading: false }); wx.stopPullDownRefresh() }
+      if (!active()) return
+      this.setData(Object.assign({}, result, { loaded: true }))
+      try {
+        const cfg = await api.config()
+        if (active()) this.setData({ modeScene: (MODE_TEXT[cfg.mode || 'full'] || '完整练习') + (cfg.scene ? ` · ${cfg.scene.name}` : '') })
+      } catch (e) { if (active()) this.setData({ modeScene: '' }) }
+    } catch (e) { if (active()) this.setData({ error: e.message }) }
+    finally { if (active()) { this.setData({ loading: false }); wx.stopPullDownRefresh() } }
   },
-  onPullDownRefresh() { this.refresh() },
+  onPullDownRefresh() { return this.refresh() },
   onToggleAll() { this.setData({ showAll: !this.data.showAll }) },
-  onConfig() { wx.navigateBack({ fail: () => wx.reLaunch({ url: '/pages/english-config/index' }) }) }
+  onToday() { navigation.open('/pages/today/index') }
 })

@@ -1,0 +1,21 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_pi_stop_after_lost_completed_reply_still_stops_current_lesson ______
+tests/test_v3_reliability.py:452: in test_pi_stop_after_lost_completed_reply_still_stops_current_lesson
+    assert app.state.tutor.phase == 'done'
+E   AssertionError: assert 'recall' == 'done'
+E     
+E     - done
+E     + recall
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:276 test: reply lost after changing question
+ERROR    english-edge:english_voice.py:276 脑端返回409：{'code': 'stale_question', 'message': '这段回答属于旧题，未识别或写入；请听当前题目再回答', 'current': {'ok': True, 'active': True, 'phase': 'recall', 'session_id': 'e0adc74cb9e94aecbd0d9d2d448b3082', 'expected_language': 'en', 'segments': [], 'slow': False, 'speed': 'elementary', 'word_index': 0, 'word_count': 1, 'dialog_count': 0, 'help_stage': '', 'help_turn': 0, 'scene_opening_pending': False, 'evidence_incomplete': False, 'question_id': '65d8546db7b94945acf8d0c5977620e1'}}
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_pi_stop_after_lost_completed_reply_still_stops_current_lesson
+1 failed, 1 warning in 0.44s

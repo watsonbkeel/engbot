@@ -1,0 +1,62 @@
+<view class="page">
+  <view class="eyebrow">你来设计，AI 帮你完善</view>
+  <view class="title">自己设计场景</view>
+  <view class="note">写下想法 → AI 生成 → 检查修改 → 保存并安排练习。</view>
+
+  <view class="loading-hint" wx:if="{{loading}}">正在读取…</view>
+  <view class="error" wx:if="{{error}}">{{error}}</view>
+  <view class="notice-bar" wx:if="{{notice}}">{{notice}}</view>
+
+  <!-- 当前场景 -->
+  <view class="card">
+    <view class="card-title">已保存的场景</view>
+    <view wx:if="{{current}}"><view class="mode-name">{{current.name}}</view><view class="mode-desc">开场白：{{current.opening}}</view></view>
+    <view class="empty" wx:else>还没有。先写一个你想扮演的场景。</view>
+  </view>
+
+  <!-- 自己创建：一句话描述 + AI 生成 -->
+  <view class="card">
+    <view class="card-title">1. 写下我的想法</view>
+    <view class="note">在哪 / 机器人是谁 / 我是谁 / 我想做什么。也可以点示例找灵感。</view>
+    <view class="grade-hint" wx:if="{{gradeReady}}">本次按 {{grade}} 年级生成；年级可在「今日练习」修改。</view>
+    <view class="note">AI 使用课堂已配置的模型；可以先到设置填写自己的接口地址、模型名和 API Key。</view>
+    <view class="note" wx:if="{{usage}}">今日请求 {{usage.attempts}} / {{usage.limit}} 次 · 已记录成功 {{usage.successes}} 次 · 剩余 {{usage.remaining}} 次</view>
+    <view class="note">每天最多请求 20 次，失败尝试也计入，手工填写不占次数。成功数仅含启用统计后的记录。</view>
+    <view class="note" wx:if="{{usageError}}">{{usageError}}；仍可编辑和手工保存场景。</view>
+    <button class="plain" disabled="{{saving || busy}}" bindtap="goModelSettings">填写 / 修改自己的 API</button>
+    <view class="chip-wrap">
+      <view class="chip" wx:for="{{examples}}" wx:key="*this" data-index="{{index}}" bindtap="onExample">示例 {{index + 1}}</view>
+    </view>
+    <textarea class="form-textarea" placeholder="例如：在图书馆，我是借书的学生，机器人是管理员，我想找到一本动物书。" value="{{description}}" disabled="{{saving}}" bindinput="onDescInput" maxlength="200"></textarea>
+    <view class="note" wx:if="{{!gradeReady}}">先读取当前年级，再生成适合你的场景。</view>
+    <button class="secondary" wx:if="{{!gradeReady && !loading}}" disabled="{{saving}}" bindtap="load">重新读取年级</button>
+    <button class="primary" loading="{{busy}}" disabled="{{busy || saving || !gradeReady}}" bindtap="onGenerate">让 AI 帮我写成场景</button>
+    <button class="plain" bindtap="onCopyPrompt">复制提示词，拿去别的 AI 生成</button>
+  </view>
+
+  <!-- 模板 chip（来自服务器 prompts/scenes.md，不硬编码） -->
+  <view class="card" wx:if="{{templates.length}}">
+    <view class="card-title">也可以从模板开始修改</view>
+    <view class="chip-wrap">
+      <view class="chip {{activeTemplate === (item.key || item.name) ? 'active' : ''}}" wx:for="{{templates}}" wx:key="key" data-index="{{index}}" bindtap="onTemplate">{{item.name}}</view>
+    </view>
+  </view>
+
+  <!-- 五字段表单 -->
+  <view class="card" wx:if="{{showForm}}">
+    <view class="card-title">2. 检查并修改我的场景</view>
+    <view class="input-row" wx:for="{{fields}}" wx:key="key">
+      <view class="row-label">{{item.label}}</view>
+      <input placeholder="必填，最多{{item.limit}}字" disabled="{{saving}}" value="{{form[item.key]}}" data-field="{{item.key}}" maxlength="{{item.limit}}" bindinput="onField" />
+    </view>
+    <view class="row-label" style="margin:18rpx 0 6rpx;">目标（我要完成的事，中文）</view>
+    <textarea class="form-textarea" placeholder="按顺序写3到5个小步骤，并写明要练习的词汇类型" value="{{form.goal}}" data-field="goal" disabled="{{saving}}" bindinput="onField" maxlength="200"></textarea>
+    <view class="note">目标 {{form.goal.length}} / 200 字；英文开场白最多 60 字。生成后请检查并保存。</view>
+    <button class="primary" loading="{{saving}}" disabled="{{saving || busy}}" bindtap="onSaveAndArrange">保存并去安排练习</button>
+    <view class="note">返回后会选中「场景对话」。再点「保存安排」，下次唤醒机器人就能直接进入角色。</view>
+    <button class="secondary" loading="{{saving}}" disabled="{{saving || busy}}" bindtap="onSave">仅保存场景</button>
+    <view class="note">仅保存不会切换练习模式；完整练习会先练词汇，再使用这个场景。</view>
+    <button class="danger" disabled="{{saving || busy}}" bindtap="onClear">清除当前场景</button>
+  </view>
+  <view class="empty" wx:else><text bindtap="toggleForm">手动展开表单填写</text></view>
+</view>

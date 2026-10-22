@@ -1,0 +1,47 @@
+g1_story_01: 已验证，继续使用
+g1_story_02: 已验证，继续使用
+g1_story_03: 已验证，继续使用
+g1_dialogue_01: 已验证，继续使用
+g1_dialogue_02: 已验证，继续使用
+g2_story_01: 已验证，继续使用
+g2_story_02: 已验证，继续使用
+g2_story_03: 已验证，继续使用
+g2_dialogue_01: 已验证，继续使用
+g2_dialogue_02: 已验证，继续使用
+g3_story_01: 已验证，继续使用
+g3_story_02: 已验证，继续使用
+g3_story_03: 已验证，继续使用
+g3_dialogue_01: 已验证，继续使用
+g3_dialogue_02: 已验证，继续使用
+g4_story_01: 已验证，继续使用
+g4_story_02: 已验证，继续使用
+g4_story_03: 已验证，继续使用
+g4_dialogue_01: 已验证，继续使用
+g4_dialogue_02: 已验证，继续使用
+g5_story_01: 已验证，继续使用
+g5_story_02: 已验证，继续使用
+g5_story_03: 已验证，继续使用
+g5_dialogue_01: 已验证，继续使用
+g5_dialogue_02: 已验证，继续使用
+[0;93m2026-10-21 11:49:12.733946746 [W:onnxruntime:Default, telemetry_1ds.cc:600 operator()] Failed to persist telemetry device ID; using an in-memory identifier[m
+g6_story_01: 已生成 77.349 秒
+g6_story_02: 已验证，继续使用
+g6_story_03: 已验证，继续使用
+g6_dialogue_01: 已验证，继续使用
+g6_dialogue_02: 已验证，继续使用
+g7_story_01: 已验证，继续使用
+g7_story_02: 已验证，继续使用
+g7_story_03: 已验证，继续使用
+g7_dialogue_01: 已生成 69.904 秒
+g7_dialogue_02: 已验证，继续使用
+g8_story_01: 已验证，继续使用
+g8_story_02: 已验证，继续使用
+g8_story_03: 已验证，继续使用
+g8_dialogue_01: 已验证，继续使用
+g8_dialogue_02: 已验证，继续使用
+g9_story_01: 已验证，继续使用
+g9_story_02: 已验证，继续使用
+g9_story_03: 已验证，继续使用
+g9_dialogue_01: 已验证，继续使用
+g9_dialogue_02: 已验证，继续使用
+{"generated": 2, "resumed": 43, "failed": 0, "ready": 45, "expected": 45}

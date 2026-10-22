@@ -1,0 +1,381 @@
+{
+  "case": {
+    "id": "g6_space_puzzle",
+    "grade": 6,
+    "difficulty": "standard",
+    "chinese_help": false,
+    "description": "我想在太空站里当小宇航员，机器人是站长。植物房要浇水，可水箱贴错了标签。我们按颜色、数字和房间位置找出正确的水箱，把水送过去，没有危险和打架。",
+    "probe_note": "非战斗的太空资源小谜题；观察标准难度下线索与目标是否一致、意外但相关的问题是否得到回答，以及关闭中文辅助后是否全程英文。"
+  },
+  "scope": "Real local public/brain HTTP; GPT file actor at provider boundary; no microphone, external provider, or latency verification",
+  "steps": [
+    {
+      "step": "Save own model settings (declared local probe)",
+      "status": 200
+    },
+    {
+      "step": "Generate actual scene card",
+      "status": 200
+    },
+    {
+      "step": "Read config",
+      "status": 200
+    },
+    {
+      "step": "Save generated scene and select scene mode",
+      "status": 200
+    },
+    {
+      "step": "Turn start",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn explain",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Turn answer",
+      "status": 200
+    },
+    {
+      "step": "Read saved progress",
+      "status": 200
+    },
+    {
+      "step": "Read own-model status",
+      "status": 200
+    }
+  ],
+  "scene": {
+    "name": "水箱标签小谜题",
+    "robot_role": "友善的太空站站长（a station leader）",
+    "student_role": "寻找浇花用水的小宇航员（an astronaut）",
+    "goal": "1.报告植物房需要水；2.描述两个水箱的颜色、编号和所在房间；3.根据站长的线索，发现标签对调并确认正确的水箱；4.把水送到植物房，报告完成并道谢。练习颜色、数字、房间位置、比较和确认问句，整个任务平静安全。",
+    "opening": "The plants need water, Captain."
+  },
+  "transcript": [
+    {
+      "action": "start",
+      "student": "",
+      "note": "",
+      "robot": [
+        {
+          "text": "Let us start the role play. Please say:",
+          "language": "en"
+        },
+        {
+          "text": "The plants need water, Captain.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Let us start the role play. Please say:",
+            "language": "en"
+          },
+          {
+            "text": "The plants need water, Captain.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": true,
+        "evidence_incomplete": false,
+        "request_id": "db30a017d4074df5867ddad12961401b",
+        "question_id": "6847179d82d0496aa7af5885927438e6"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "The plants need water, Captain.",
+      "note": "Student says the generated opening",
+      "robot": [
+        {
+          "text": "Let's find the right tank. What colors and numbers can you see on the two tanks?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 0,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Let's find the right tank. What colors and numbers can you see on the two tanks?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 0,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "51b91f1e9f154cc284f5494df8adbf91",
+        "question_id": "6da7abd22d8b411c8dcf215f7c44fda6"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "The green tank has 3. The yellow tank has 7.",
+      "note": "Reports both observed colors and label numbers without solving the unknown clue.",
+      "robot": [
+        {
+          "text": "Which room is each tank in?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Which room is each tank in?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 0,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "a28ebf0e89d54e3ebf591d8efb4ee452",
+        "question_id": "aed9bbda048946109ef5085c28d42ba0"
+      }
+    },
+    {
+      "action": "explain",
+      "student": "",
+      "note": "Explain this question with Chinese help disabled",
+      "robot": [
+        {
+          "text": "What room is the first tank in, and what room is the second tank in?",
+          "language": "en"
+        },
+        {
+          "text": "Which room is each tank in?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 1,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "What room is the first tank in, and what room is the second tank in?",
+            "language": "en"
+          },
+          {
+            "text": "Which room is each tank in?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 1,
+        "help_stage": "",
+        "help_turn": 1,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "58ab26b6220a4ee2a494efc6a014d2c8",
+        "question_id": "66e2d554cc8d46d1892ad1ee18dc90d3"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "The green one is in the kitchen. The yellow one is in the store room.",
+      "note": "Reports each tank's location after the actual English explanation.",
+      "robot": [
+        {
+          "text": "The list says the kitchen tank is 7 and the store room tank is 3. Plants need tank 3. Which tank has the water we need?",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 2,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "The list says the kitchen tank is 7 and the store room tank is 3. Plants need tank 3. Which tank has the water we need?",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 2,
+        "help_stage": "",
+        "help_turn": 1,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "6c2c7bddb87a4ac49ae7b592ae397ac7",
+        "question_id": "6e232b82e4b54027a187974352918ea7"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "The yellow tank? But its label says 7. Is the list right?",
+      "note": "Tentatively chooses using room information and asks about the conflicting label rather than assuming it correct.",
+      "robot": [
+        {
+          "text": "Yes, the list is right. The labels are swapped. The yellow tank is really number 3. Please take it to the plant room.",
+          "language": "en"
+        }
+      ],
+      "phase": "dialog",
+      "dialog_count": 3,
+      "result": {
+        "ok": true,
+        "active": true,
+        "phase": "dialog",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "Yes, the list is right. The labels are swapped. The yellow tank is really number 3. Please take it to the plant room.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 3,
+        "help_stage": "",
+        "help_turn": 1,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "d5d0a22eae084924b536d6db48f2e02f",
+        "question_id": "2fe4872245f5479c8a3d91e041c5d6c5"
+      }
+    },
+    {
+      "action": "answer",
+      "student": "The yellow tank is in the plant room now. Thank you, Captain.",
+      "note": "Reports completing the requested delivery and thanks the station leader.",
+      "robot": [
+        {
+          "text": "You're welcome. The right water is in the plant room. Mission complete!",
+          "language": "en"
+        },
+        {
+          "text": "You reported the tank colors and numbers, gave their locations with help, and checked the confusing label before reporting delivery.",
+          "language": "en"
+        },
+        {
+          "text": "Practice is finished. You can check your practice record in the mini program.",
+          "language": "en"
+        }
+      ],
+      "phase": "done",
+      "dialog_count": 4,
+      "result": {
+        "ok": true,
+        "active": false,
+        "phase": "done",
+        "session_id": "04d5b03570464b6396bbcd9e2c3c3b4c",
+        "expected_language": "en",
+        "segments": [
+          {
+            "text": "You're welcome. The right water is in the plant room. Mission complete!",
+            "language": "en"
+          },
+          {
+            "text": "You reported the tank colors and numbers, gave their locations with help, and checked the confusing label before reporting delivery.",
+            "language": "en"
+          },
+          {
+            "text": "Practice is finished. You can check your practice record in the mini program.",
+            "language": "en"
+          }
+        ],
+        "slow": false,
+        "speed": "elementary",
+        "word_index": 0,
+        "word_count": 3,
+        "dialog_count": 4,
+        "help_stage": "",
+        "help_turn": 1,
+        "scene_opening_pending": false,
+        "evidence_incomplete": false,
+        "request_id": "78fba93863744be98c0661ae87633ec1",
+        "question_id": "8cf0000ecff245328b05719cc640acfc"
+      }
+    }
+  ],
+  "progress": {
+    "today": "2026-10-21",
+    "words": []
+  },
+  "model_status": {
+    "mode": "custom",
+    "base_url": "https://gpt-actor.invalid/v1",
+    "model": "g6_space_puzzle",
+    "thinking": false,
+    "last_status": "ok",
+    "last_error": "",
+    "last_used_at": "2026-10-21T13:46:19+08:00",
+    "platform_model": "NO_PLATFORM_MODEL_IN_THIS_SIMULATION"
+  },
+  "passed": true,
+  "final_dialog_count": 4
+}

@@ -14,7 +14,7 @@ done
 [[ ! -e "$DEST" ]] || { echo "$DEST 已存在。为避免覆盖你的修改，本安装器已停止。请看部署说明的升级部分。"; exit 1; }
 command -v apt-get >/dev/null || { echo '自动安装器面向Debian/Ubuntu；其他系统请使用手工部署步骤'; exit 1; }
 apt-get update
-apt-get install -y python3 python3-venv python3-pip ffmpeg ca-certificates
+apt-get install -y python3 python3-venv python3-pip ffmpeg ca-certificates openssh-client
 python3 -c 'import sys; assert sys.version_info >= (3,11), "需要Python3.11+"'
 if [[ -n "$DICT_SOURCE" ]]; then
   python3 "$SOURCE/scripts/prepare_sources.py" --dictionary "$DICT_SOURCE"
@@ -34,7 +34,7 @@ install -o root -g english-public -m 640 "$DEST/deploy/public.env.example" /etc/
 install -m 644 "$DEST/deploy/english-public.service" /etc/systemd/system/english-public.service
 install -m 644 "$DEST/deploy/english-brain@.service" /etc/systemd/system/english-brain@.service
 cd "$DEST"
-runuser -u english-public -- "$DEST/.venv/bin/python" -m english_class.cli --dictionary "$DEST/data/dictionary.json" --database /var/lib/english-class/class.sqlite3 init
+runuser -u english-public -- "$DEST/.venv/bin/python" -m english_class.cli --env /etc/english-class/public.env init
 systemctl daemon-reload
 systemctl enable --now english-public.service
 PUBLIC_PORT=$(sed -n 's/^PUBLIC_PORT=\([0-9]\{1,5\}\)$/\1/p' /etc/english-class/public.env | tail -1)

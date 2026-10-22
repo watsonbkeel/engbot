@@ -1,0 +1,22 @@
+COMMAND: /workspace/scratch/d3b03e9e7aea/eng_audit/venv/bin/python -m pytest tests/test_listening_paths.py -q
+EXIT: 0
+.................                                                        [100%]
+17 passed in 0.12s
+
+COMMAND: node --test tests_js/listening_assets.test.js
+EXIT: 0
+✔ delivered listening assets pass independent manifest, digest, and ffprobe verification (2169.416909ms)
+✔ curated listening contains nine grades with five original texts and both types (1.860397ms)
+✔ generation rejects traversal in curated source before making any output (80.622406ms)
+✔ verification never rewrites the delivered manifest or audio (2475.359317ms)
+✔ missing real voice model produces a failure record without substitute audio (90.292389ms)
+✔ asset validation rejects tampered audio and atomic metadata preserves explicit permissions (84.402307ms)
+✔ listening fixtures work with a symlinked system temporary directory (255.937618ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5230.675319

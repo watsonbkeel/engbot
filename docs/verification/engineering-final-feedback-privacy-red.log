@@ -1,0 +1,94 @@
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+__ test_final_reply_replays_locally_after_failed_playback_and_idle_tick[tts] ___
+tests/test_v3_reliability.py:628: in test_final_reply_replays_locally_after_failed_playback_and_idle_tick
+    assert route(edge, chat, '再说一次', .99, b'') == 'repeat'
+E   AssertionError: assert None == 'repeat'
+E    +  where None = <function route at 0x7f9da5d58f40>(<pi.english_voice.Edge object at 0x7f9da5d7ca70>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f9da5d89080>), '再说一次', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:290 脑端返回503：test: final speech unavailable
+_ test_final_reply_replays_locally_after_failed_playback_and_idle_tick[playback] _
+tests/test_v3_reliability.py:628: in test_final_reply_replays_locally_after_failed_playback_and_idle_tick
+    assert route(edge, chat, '再说一次', .99, b'') == 'repeat'
+E   AssertionError: assert None == 'repeat'
+E    +  where None = <function route at 0x7f9da5d58f40>(<pi.english_voice.Edge object at 0x7f9da5db39b0>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f9da5de6a20>), '再说一次', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:290 test: playback interrupted
+_____ test_final_replay_yields_to_new_start_or_explicit_stop[start-queued] _____
+tests/test_v3_reliability.py:644: in test_final_replay_yields_to_new_start_or_explicit_stop
+    assert route(edge, chat, '再说一次', .99, b'') == 'repeat'
+E   AssertionError: assert None == 'repeat'
+E    +  where None = <function route at 0x7f9da5d58f40>(<pi.english_voice.Edge object at 0x7f9da5dd0b60>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f9da5de71a0>), '再说一次', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:290 脑端返回503：test: final speech unavailable
+__ test_final_replay_yields_to_new_start_or_explicit_stop[start-synthesizing] __
+tests/test_v3_reliability.py:644: in test_final_replay_yields_to_new_start_or_explicit_stop
+    assert route(edge, chat, '再说一次', .99, b'') == 'repeat'
+E   AssertionError: assert None == 'repeat'
+E    +  where None = <function route at 0x7f9da5d58f40>(<pi.english_voice.Edge object at 0x7f9da5dd2090>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f9da5de7600>), '再说一次', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:290 脑端返回503：test: final speech unavailable
+_____ test_final_replay_yields_to_new_start_or_explicit_stop[stop-queued] ______
+tests/test_v3_reliability.py:644: in test_final_replay_yields_to_new_start_or_explicit_stop
+    assert route(edge, chat, '再说一次', .99, b'') == 'repeat'
+E   AssertionError: assert None == 'repeat'
+E    +  where None = <function route at 0x7f9da5d58f40>(<pi.english_voice.Edge object at 0x7f9da5dd28d0>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f9da5de6200>), '再说一次', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:290 脑端返回503：test: final speech unavailable
+__ test_final_replay_yields_to_new_start_or_explicit_stop[stop-synthesizing] ___
+tests/test_v3_reliability.py:644: in test_final_replay_yields_to_new_start_or_explicit_stop
+    assert route(edge, chat, '再说一次', .99, b'') == 'repeat'
+E   AssertionError: assert None == 'repeat'
+E    +  where None = <function route at 0x7f9da5d58f40>(<pi.english_voice.Edge object at 0x7f9da5e1a0f0>, namespace(active=False, leave=<function idle_route_edge.<locals>.<lambda> at 0x7f9da5de7c40>), '再说一次', 0.99, b'')
+------------------------------ Captured log call -------------------------------
+ERROR    english-edge:english_voice.py:290 脑端返回503：test: final speech unavailable
+___________ test_default_edge_logs_metadata_without_robot_transcript ___________
+tests/test_v3_reliability.py:677: in test_default_edge_logs_metadata_without_robot_transcript
+    assert private_reply not in caplog.text
+E   AssertionError: assert '这是仅用于隐私回归的个性化点评原文。' not in 'INFO     en...归的个性化点评原文。\n'
+E     
+E     '这是仅用于隐私回归的个性化点评原文。' is contained here:
+E       y:284 机器人：这是仅用于隐私回归的个性化点评原文。
+------------------------------ Captured log call -------------------------------
+INFO     english-edge:english_voice.py:284 机器人：这是仅用于隐私回归的个性化点评原文。
+_____ test_text_mode_explicitly_displays_reply_without_logging_transcript ______
+tests/test_v3_reliability.py:684: in test_text_mode_explicitly_displays_reply_without_logging_transcript
+    edge = Edge(play_audio=False, start_worker=False, display_text=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Edge.__init__() got an unexpected keyword argument 'display_text'
+_________ test_default_voice_capture_log_does_not_keep_recognized_text _________
+tests/test_v3_reliability.py:725: in test_default_voice_capture_log_does_not_keep_recognized_text
+    assert private_utterance not in caplog.text
+E   assert '这句话只用于检查麦克风转写不进入日志' not in "INFO     en... conf=0.97\n"
+E     
+E     '这句话只用于检查麦克风转写不进入日志' is contained here:
+E       y:421 听到 '这句话只用于检查麦克风转写不进入日志' conf=0.97
+------------------------------ Captured log call -------------------------------
+INFO     english-edge:english_voice.py:421 听到 '这句话只用于检查麦克风转写不进入日志' conf=0.97
+____________ test_default_chat_handoff_log_does_not_keep_transcript ____________
+tests/test_v3_reliability.py:737: in test_default_chat_handoff_log_does_not_keep_transcript
+    assert utterance not in caplog.text
+E   AssertionError: assert '这句话只用于检查普通聊天转交日志' not in 'INFO     en...检查普通聊天转交日志\n'
+E     
+E     '这句话只用于检查普通聊天转交日志' is contained here:
+E       75 转交原机器人：这句话只用于检查普通聊天转交日志
+------------------------------ Captured log call -------------------------------
+INFO     english-edge:english_voice.py:75 转交原机器人：这句话只用于检查普通聊天转交日志
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_reliability.py::test_final_reply_replays_locally_after_failed_playback_and_idle_tick[tts]
+FAILED tests/test_v3_reliability.py::test_final_reply_replays_locally_after_failed_playback_and_idle_tick[playback]
+FAILED tests/test_v3_reliability.py::test_final_replay_yields_to_new_start_or_explicit_stop[start-queued]
+FAILED tests/test_v3_reliability.py::test_final_replay_yields_to_new_start_or_explicit_stop[start-synthesizing]
+FAILED tests/test_v3_reliability.py::test_final_replay_yields_to_new_start_or_explicit_stop[stop-queued]
+FAILED tests/test_v3_reliability.py::test_final_replay_yields_to_new_start_or_explicit_stop[stop-synthesizing]
+FAILED tests/test_v3_reliability.py::test_default_edge_logs_metadata_without_robot_transcript
+FAILED tests/test_v3_reliability.py::test_text_mode_explicitly_displays_reply_without_logging_transcript
+FAILED tests/test_v3_reliability.py::test_default_voice_capture_log_does_not_keep_recognized_text
+FAILED tests/test_v3_reliability.py::test_default_chat_handoff_log_does_not_keep_transcript
+10 failed, 38 deselected, 1 warning in 0.57s

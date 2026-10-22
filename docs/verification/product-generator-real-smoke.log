@@ -1,0 +1,3 @@
+[0;93m2026-10-21 11:48:42.601787130 [W:onnxruntime:Default, telemetry_1ds.cc:600 operator()] Failed to persist telemetry device ID; using an in-memory identifier[m
+g1_story_01: 已生成 82.416 秒
+{"generated": 1, "resumed": 0, "failed": 0, "ready": 1, "expected": 45}

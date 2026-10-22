@@ -20,7 +20,7 @@ from english_class.client import PublicClient
 @contextlib.contextmanager
 def running(app):
     sock=socket.socket();sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
-    server=uvicorn.Server(uvicorn.Config(app,log_level='error',lifespan='off',ws='none'))
+    server=uvicorn.Server(uvicorn.Config(app,log_level='error',lifespan='on',ws='none'))
     thread=threading.Thread(target=server.run,kwargs={'sockets':[sock]},daemon=True);thread.start()
     deadline=time.monotonic()+5
     while not server.started:
@@ -61,9 +61,10 @@ def test_real_http_lesson_config_audio_speech_and_progress(db):
                 speech=c.post(brain_url+'/voice/speech',headers=edge,json={'segments':start['segments']})
                 assert speech.status_code==200 and len(validate_wav(speech.content)[0])>0
                 wav=speech_like();key=uuid.uuid4().hex  # 全静音会被静音拦截，按没听清处理
-                r=c.post(brain_url+'/voice/audio',headers=edge,params={'request_id':key},content=wav)
+                identity={k:start[k] for k in ('session_id','question_id')}
+                r=c.post(brain_url+'/voice/audio',headers=edge,params={'request_id':key,**identity},content=wav)
                 assert r.status_code==200 and r.json()['word_index']==1,r.text
-                repeat=c.post(brain_url+'/voice/audio',headers=edge,params={'request_id':key},content=wav)
+                repeat=c.post(brain_url+'/voice/audio',headers=edge,params={'request_id':key,**identity},content=wav)
                 assert repeat.json()==r.json()
                 for answer in ['香蕉','书包','apple','banana','bag']: result=turn(answer)
                 assert result['phase']=='dialog'

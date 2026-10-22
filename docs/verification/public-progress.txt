@@ -1,0 +1,24 @@
+.........................F......                                         [100%]
+=================================== FAILURES ===================================
+______________ test_templates_are_valid_and_generation_is_scoped _______________
+
+v3 = (<starlette.testclient.TestClient object at 0x7fbb399672c0>, <english_class.store.Store object at 0x7fbb380e52e0>, <te...rovider object at 0x7fbb38216a80>, PosixPath('/tmp/pytest-of-root/pytest-7/test_templates_are_valid_and_g0/listening'))
+
+    def test_templates_are_valid_and_generation_is_scoped(v3):
+        c,_,p,_=v3
+        r=c.get('/api/scene/templates?student_id=s001',headers=headers())
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"1 validation error for SceneConfig\nrobot_role\n  String should have at most 40 characters [type=string_too_long, input_value='带队的军官（a calm...cer leading a patrol）', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_too_long"}
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/test_v3_public.py:77: AssertionError
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_v3_public.py::test_templates_are_valid_and_generation_is_scoped
+1 failed, 31 passed, 1 warning in 1.91s

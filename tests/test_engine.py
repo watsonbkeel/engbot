@@ -27,7 +27,11 @@ class MemoryIO:
             correct=answer==data['meaning'] if data['kind']=='listen' else answer in [word,word+'s']
             return json.dumps({'correct':correct})
         if 'ENGLISH_CUE' in prompt: return json.dumps({'cue':'Which fruit is often red?'})
-        return json.dumps({'reply':[{'text':'What do you like to eat?','language':'en'}],'relevant':True})
+        from english_class.engine import mentions_word
+        evidence=[{'word_id':w['word_id'],'correct':True,'independent':True}
+                  for w in data.get('target_words',[]) if mentions_word(data.get('answer') or '',w['word'])]
+        return json.dumps({'reply':[{'text':'What do you like to eat?','language':'en'}],
+                           'relevant':True,'modelled':[],'word_evidence':evidence})
 
 @pytest.mark.asyncio
 async def test_lesson_listen_recall_dialog_and_records():
@@ -57,7 +61,8 @@ async def test_repeat_after_help_does_not_count_as_independent_speech():
     io=MemoryIO();t=Tutor(io);await t.turn('',action='start',request_id='start-00')
     for i,a in enumerate(['苹果','香蕉','书包']): await t.turn(a,request_id=f'listen-{i}')
     help_result=await t.turn('',action='help',request_id='help-001')
-    assert help_result['phase']=='repeat'
+    # Legacy help now explains and returns to the same recall question.
+    assert help_result['phase']=='recall' and t.index==0
     await t.turn('apple',request_id='echo-001')
     assert io.rows['a']['status']==1
     assert t.phase=='recall' and t.index==1
@@ -270,6 +275,7 @@ async def test_audio_transcription_and_turn_are_one_serial_operation():
     import asyncio
     import httpx
     from english_class.brain_api import create_brain
+    from english_class.providers import pcm_wav
     io=MemoryIO();languages=[]
     async def transcribe(wav,language):
         languages.append(language)
@@ -279,8 +285,13 @@ async def test_audio_transcription_and_turn_are_one_serial_operation():
     app=create_brain(io,'edge-secret-1234567890',practice_size=1)
     h={'Authorization':'Bearer edge-secret-1234567890'}
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),base_url='http://test',headers=h) as c:
-        await c.post('/voice/turn',json={'action':'start','request_id':'start-001'})
-        results=await asyncio.gather(c.post('/voice/audio?request_id=audio-001',content=b'test1'),c.post('/voice/audio?request_id=audio-002',content=b'test2'))
+        current=(await c.post('/voice/turn',json={'action':'start','request_id':'start-001'})).json()
+        results=[]
+        # Each recording belongs to the question that was actually played.
+        for i in range(2):
+            response=await c.post('/voice/audio',params={'request_id':f'audio-{i:03}',
+                'session_id':current['session_id'],'question_id':current['question_id']},content=pcm_wav(b'\0'*3200))
+            results.append(response);current=response.json()
     assert all(r.status_code==200 for r in results)
     assert languages==['zh','en']
 
@@ -409,23 +420,23 @@ async def test_repeat_phase_checks_target_word_retries_once_then_skips():
     from english_class.engine import Tutor
     io=MemoryIO();t=Tutor(io);await t.turn('',action='start',request_id='start-00')
     for i,a in enumerate(['苹果','香蕉','书包']): await t.turn(a,request_id=f'listen-{i}')
-    await t.turn('',action='help',request_id='help-001')
+    await t.turn('orange',request_id='recall-wrong-001')
     r=await t.turn('banana',request_id='echo-wrong-1')
     assert t.phase=='repeat' and t.index==0 and 'apple' in _say(r)
     r=await t.turn('hello',request_id='echo-wrong-2')
     assert t.phase=='recall' and t.index==1
     assert io.rows['a']['status']==1
-    assert io.evidence[-1]==('a',None,{'answer_valid':False,'used_word':False,'imitated':True})
+    assert io.evidence[-1]==('a',None,{'answer_valid':False,'used_word':False,'imitated':False})
 
 @pytest.mark.asyncio
 async def test_repeat_phase_correct_echo_is_imitation_not_upgrade():
     from english_class.engine import Tutor
     io=MemoryIO();t=Tutor(io);await t.turn('',action='start',request_id='start-00')
     for i,a in enumerate(['苹果','香蕉','书包']): await t.turn(a,request_id=f'listen-{i}')
-    await t.turn('',action='help',request_id='help-001')
-    await t.turn('apples',request_id='echo-ok-1')
+    await t.turn('orange',request_id='recall-wrong-001')
+    await t.turn('APPLE!',request_id='echo-ok-1')
     assert io.rows['a']['status']==1 and t.index==1
-    assert io.evidence[-1]==('a',None,{'answer_valid':True,'used_word':True,'imitated':True})
+    assert io.evidence[-1]==('a',None,{'answer_valid':False,'used_word':False,'imitated':True})
 
 @pytest.mark.asyncio
 async def test_recall_records_evidence_fields():
@@ -457,7 +468,7 @@ async def test_dialog_explicit_model_answer_counts_as_imitation():
         t.result([{'text':text,'language':'en'}]);assert t.last_demonstrated=={'a'},text
     await t.turn('apple',request_id='dialog-01')
     assert io.rows['a']['status']<2
-    assert io.evidence[-1]==('a',None,{'answer_valid':True,'used_word':True,'imitated':True})
+    assert io.evidence[-1]==('a',None,{'answer_valid':False,'used_word':False,'imitated':True})
 
 @pytest.mark.asyncio
 async def test_dialog_llm_can_flag_modelled_words():

@@ -1,0 +1,131 @@
+........................................................................ [ 28%]
+....................................................F.F................. [ 56%]
+........................................................................ [ 84%]
+............F...........................                                 [100%]
+=================================== FAILURES ===================================
+__________________ test_miniprogram_merge_preserves_original ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-29/test_miniprogram_merge_preserv0')
+
+    def test_miniprogram_merge_preserves_original(tmp_path):
+        from english_class.sources import merge_miniprogram
+        src=tmp_path/'original';src.mkdir()
+        (src/'app.json').write_text(json.dumps({'pages':['pages/learn/index'],'tabBar':{'list':[{'pagePath':'pages/learn/index','text':'学习'}]}}))
+        (src/'app.js').write_text('App({original: true})')
+        dest=tmp_path/'merged'
+        overlay=Path(__file__).resolve().parents[1]/'miniprogram'
+>       merge_miniprogram(src,overlay,dest)
+
+tests/test_tools.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+english_class/sources.py:116: in merge_miniprogram
+    shutil.copytree(overlay/'pages'/name,dest/'pages'/name,dirs_exist_ok=False)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = PosixPath('/workspace/scratch/d3b03e9e7aea/eng_fixed/Eng/aienglishhelper/miniprogram/pages/english-config')
+dst = PosixPath('/tmp/pytest-of-root/pytest-29/test_miniprogram_merge_preserv0/merged/pages/english-config')
+symlinks = False, ignore = None
+copy_function = <function copy2 at 0x7f13cb2e8d60>
+ignore_dangling_symlinks = False, dirs_exist_ok = False
+
+    def copytree(src, dst, symlinks=False, ignore=None, copy_function=copy2,
+                 ignore_dangling_symlinks=False, dirs_exist_ok=False):
+        """Recursively copy a directory tree and return the destination directory.
+    
+        If exception(s) occur, an Error is raised with a list of reasons.
+    
+        If the optional symlinks flag is true, symbolic links in the
+        source tree result in symbolic links in the destination tree; if
+        it is false, the contents of the files pointed to by symbolic
+        links are copied. If the file pointed to by the symlink doesn't
+        exist, an exception will be added in the list of errors raised in
+        an Error exception at the end of the copy process.
+    
+        You can set the optional ignore_dangling_symlinks flag to true if you
+        want to silence this exception. Notice that this has no effect on
+        platforms that don't support os.symlink.
+    
+        The optional ignore argument is a callable. If given, it
+        is called with the `src` parameter, which is the directory
+        being visited by copytree(), and `names` which is the list of
+        `src` contents, as returned by os.listdir():
+    
+            callable(src, names) -> ignored_names
+    
+        Since copytree() is called recursively, the callable will be
+        called once for each directory that is copied. It returns a
+        list of names relative to the `src` directory that should
+        not be copied.
+    
+        The optional copy_function argument is a callable that will be used
+        to copy each file. It will be called with the source path and the
+        destination path as arguments. By default, copy2() is used, but any
+        function that supports the same signature (like copy()) can be used.
+    
+        If dirs_exist_ok is false (the default) and `dst` already exists, a
+        `FileExistsError` is raised. If `dirs_exist_ok` is true, the copying
+        operation will continue if it encounters existing directories, and files
+        within the `dst` tree will be overwritten by corresponding files from the
+        `src` tree.
+        """
+        sys.audit("shutil.copytree", src, dst)
+>       with os.scandir(src) as itr:
+             ^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/d3b03e9e7aea/eng_fixed/Eng/aienglishhelper/miniprogram/pages/english-config'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/shutil.py:598: FileNotFoundError
+________________ test_pi_command_and_vad_no_training_on_silence ________________
+
+    def test_pi_command_and_vad_no_training_on_silence():
+        from pi.audio import VoiceActivity, control_action
+        import array
+        v=VoiceActivity(threshold=100,silence_chunks=2,max_chunks=20)
+        assert all(v.feed(b'\x00'*3200) is None for _ in range(5))
+        speech=array.array('h',[1000]*1600).tobytes()
+        assert v.feed(speech) is None
+        assert v.feed(b'\x00'*3200) is None
+        wav=v.feed(b'\x00'*3200)
+        assert wav and wav.startswith(b'RIFF')
+>       assert control_action('我 不 会')=='help'
+E       AssertionError: assert 'howtosay' == 'help'
+E         
+E         - help
+E         + howtosay
+
+tests/test_tools.py:62: AssertionError
+_______________ test_lost_progress_response_reuses_stable_intent _______________
+
+local_io = <test_v3_reliability.DatabaseIO object at 0x7f13c96a7920>
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-29/test_lost_progress_response_re0')
+
+    def test_lost_progress_response_reuses_stable_intent(local_io, tmp_path):
+        state = tmp_path / 'brain' / 'resume.json'
+        with TestClient(create_brain(local_io, EDGE_TOKEN, state_path=state)) as client:
+            assert turn(client, 'start').status_code == 200
+            local_io.record_response_failures = 1
+            failed = turn(client, text='苹果', request_id='lost-progress-response')
+            assert failed.status_code == 503
+            judged = local_io.judgments
+        with TestClient(create_brain(local_io, EDGE_TOKEN, state_path=state)) as client:
+            recovered = turn(client, text='苹果', request_id='lost-progress-response')
+            assert recovered.status_code == 200
+            assert recovered.json()['phase'] == 'recall'
+            assert local_io.judgments == judged
+            rows = local_io.db.progress('s001')['words']
+            assert len(rows) == 1
+>           assert rows[0]['answer_valid_count'] == 1
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'answer_valid_count'
+
+tests/test_v3_reliability.py:140: KeyError
+=============================== warnings summary ===============================
+../../../eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45
+  /workspace/scratch/d3b03e9e7aea/eng_audit/venv/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_tools.py::test_miniprogram_merge_preserves_original - FileN...
+FAILED tests/test_tools.py::test_pi_command_and_vad_no_training_on_silence - ...
+FAILED tests/test_v3_reliability.py::test_lost_progress_response_reuses_stable_intent
+3 failed, 253 passed, 1 warning in 5.40s
