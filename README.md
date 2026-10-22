@@ -2,6 +2,15 @@
 
 本版在已交付 v0.3.3 上，核对 Mac 审查反馈并修复模型凭证、回退选择、场景次数、音频边界和轮询问题，补齐可重复测试环境。学生自定义场景与逐轮对话流程保留；前版四组 GPT 场景模拟作为历史教学证据随包提供。主工程只有这一份；`miniprogram/` 是与后端配套的六页小程序源码。
 
+## 仓库地址
+
+主工程当前托管在 GitHub：**https://github.com/watsonbkeel/engbot**
+
+```bash
+git clone https://github.com/watsonbkeel/engbot.git
+cd engbot
+```
+
 **首次使用看 [安装部署](docs/INSTALL.md)，已有服务升级看 [升级说明](docs/UPGRADE.md)，复核结果看 [测试报告](docs/TEST_REPORT.md)。**
 
 ## 已实现的主流程
