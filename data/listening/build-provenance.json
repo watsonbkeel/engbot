@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-21",
+  "engine": "piper-tts 1.3.0",
+  "voice": "en_US-ljspeech-medium",
+  "model_sha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+  "model_url": "https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/medium",
+  "model_card_url": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+  "dataset_url": "https://keithito.com/LJ-Speech-Dataset/",
+  "source_text": "curated.json; original stories and dialogues for this project",
+  "count": 45,
+  "min_seconds": 65.62,
+  "max_seconds": 86.779,
+  "total_minutes": 57.21,
+  "model_weights_included": false,
+  "build_notes": [
+    "Speaker labels are retained in transcripts but not spoken.",
+    "Actual spoken audio is slowed using ffmpeg atempo; no silence padding or repeated audio.",
+    "Edge TTS unavailable in build environment; Piper generated actual neural speech offline.",
+    "Final hash verification rejected two incomplete outputs; the official atomic generator regenerated them and reused the other 43 validated files."
+  ],
+  "curated_sha256": "2fefa1dbe3d086e4bdec299835fc404c18ceec86bded3909fe569ee70b8f8927"
+}

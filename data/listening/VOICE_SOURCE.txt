@@ -1,0 +1,5 @@
+Piper en_US-ljspeech-medium
+Model source: https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/medium
+Training dataset: https://keithito.com/LJ-Speech-Dataset/
+The source model card describes a US English female voice trained from scratch on LJ Speech; its dataset license is public domain.
+The model weights are not included in this release. See build-provenance.json for the exact model checksum and generation details.
