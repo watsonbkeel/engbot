@@ -29,6 +29,23 @@
 
 ## 前置要求
 
+### 硬件
+
+- **云端服务器**：
+  - **推荐：2核 8GB 内存**（阿里云/腾讯云/AWS 等）
+  - 系统：Ubuntu 20.04+ / Debian 11+
+  - 带宽：≥ 1Mbps（语音传输需求）
+  - 存储：≥ 20GB
+  - **资源评估（2核8G）**：
+    - 系统 + 基础服务：~2GB
+    - Python + FastAPI：~0.4GB
+    - Vosk ASR（英文）：~0.3GB
+    - Piper TTS（本地）：~0.5GB
+    - SQLite 数据库：~0.05GB
+    - 预留缓冲：~0.5GB
+    - **总计：~3.75GB**
+    - **剩余：~4.25GB**，**支持 1-3 个学生并发使用**
+
 ### 云端服务器
 - **系统**：Ubuntu 22.04+ 或 Debian 13+
 - **配置**：2 核 4GB 内存，20GB 硬盘
@@ -128,9 +145,21 @@ sudo nano /etc/english-class/students/s001.env
 **必须修改的配置项**：
 ```ini
 # /etc/english-class/public.env
-LLM_API_KEY=你的大模型API密钥
-ASR_API_KEY=你的语音识别API密钥（或留空用 Vosk）
-TTS_API_KEY=你的语音合成API密钥
+LLM_API_KEY=你的大模型API密钥（必填，推荐 DeepSeek）
+LLM_BASE_URL=https://api.deepseek.com/v1
+LLM_MODEL=deepseek-chat
+
+# ASR：使用本地 Vosk（免费，无需配置）
+# 或使用腾讯云（需要申请）
+# ASR_BACKEND=tencent
+# ASR_API_KEY=你的腾讯云密钥
+# ASR_API_SECRET=你的腾讯云密钥
+
+# TTS：推荐本地部署（见下方），或使用腾讯云
+# TTS_BACKEND=piper  # 本地部署（推荐）
+# TTS_BACKEND=tencent  # 腾讯云（备选）
+# TTS_API_KEY=你的腾讯云密钥
+# TTS_API_SECRET=你的腾讯云密钥
 
 # /etc/english-class/students/s001.env
 PUBLIC_URL=https://你的域名.com
@@ -143,7 +172,95 @@ EDGE_TOKEN=随机生成的64位字符串
 python3 -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
-### 2.5 初始化数据库
+### 2.5 部署本地 TTS 服务（推荐）
+
+**方案一：Piper TTS（推荐）**
+
+Piper 是一个高质量、低资源占用的本地 TTS 引擎，音质接近商业水平。
+
+**安装 Piper：**
+```bash
+# 安装 Piper
+cd /opt/english-class
+.venv/bin/pip install piper-tts
+
+# 下载中文和英文模型（共约 150MB）
+mkdir -p models/piper
+cd models/piper
+
+# 中文模型（推荐：zh_CN-huayan-medium）
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/huayan/medium/zh_CN-huayan-medium.onnx.json
+
+# 英文模型（推荐：en_US-lessac-high）
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/high/en_US-lessac-high.onnx
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/high/en_US-lessac-high.onnx.json
+```
+
+**创建 Piper TTS 服务：**
+```bash
+sudo nano /etc/systemd/system/english-tts.service
+```
+```ini
+[Unit]
+Description=English Class Piper TTS Service
+After=network.target
+
+[Service]
+Type=simple
+User=english-public
+Group=english-public
+WorkingDirectory=/opt/english-class
+ExecStart=/opt/english-class/.venv/bin/python -m piper_tts.server \
+    --host 127.0.0.1 \
+    --port 8100 \
+    --model-dir /opt/english-class/models/piper
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**启动服务：**
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now english-tts
+sudo systemctl status english-tts
+```
+
+**配置 public.env 使用本地 TTS：**
+```ini
+TTS_BACKEND=piper
+TTS_API_URL=http://127.0.0.1:8100
+```
+
+**资源评估：**
+- 内存占用：~500MB（运行时）
+- 模型文件：~150MB
+- CPU 占用：低（单次合成 < 1秒）
+- **2核8G 服务器完全够用，支持 1-3 个学生并发**
+
+---
+
+**方案二：腾讯云 TTS（备选）**
+
+如果服务器资源紧张或需要更多音色，可以使用腾讯云 TTS API：
+
+1. 申请腾讯云账号：https://cloud.tencent.com/
+2. 开通"语音合成"服务（每月 100 万字符免费额度）
+3. 获取 API 密钥：https://console.cloud.tencent.com/cam/capi
+
+**配置 public.env：**
+```ini
+TTS_BACKEND=tencent
+TTS_API_KEY=你的腾讯云 SecretId
+TTS_API_SECRET=你的腾讯云 SecretKey
+```
+
+---
+
+### 2.6 初始化数据库
 
 ```bash
 cd /opt/english-class
