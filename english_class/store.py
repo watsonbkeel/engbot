@@ -6,11 +6,11 @@ import os
 import re
 import sqlite3
 from contextlib import contextmanager
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from .dictionary import Dictionary
-from .models import LearningConfig
+from .models import LearningConfig, LessonRecordInput
 from .migrations import migrate, migration_lock
 from .secret_store import private_directory, secure_database_files
 
@@ -173,10 +173,54 @@ class Store:
         item.update(word=word.get('word',item['word_id']), meaning=word.get('meaning',''))
         return item
 
+    def lessons(self, student_id: str, limit: int = 100) -> list[dict]:
+        limit = min(100, max(1, int(limit)))
+        with self.connect() as con:
+            rows = con.execute('SELECT session_id,revision,started_at,ended_at,day,payload FROM lessons WHERE student_id=? ORDER BY started_at DESC LIMIT ?', (student_id, limit)).fetchall()
+        result=[]
+        for row in rows:
+            item=json.loads(row['payload'])
+            item['session_id']=row['session_id']; item['revision']=row['revision']; item['started_at']=row['started_at']; item['ended_at']=row['ended_at']; item['day']=row['day']
+            result.append(item)
+        return result
+
+    def record_lesson(self, student_id: str, payload: dict) -> dict:
+        obj = LessonRecordInput.model_validate(payload)
+        data = obj.model_dump(mode='json')
+        raw = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+        fingerprint = hashlib.sha256(raw.encode()).hexdigest()
+        day = obj.started_at.astimezone(self.timezone).date().isoformat()
+        with self.connect() as con:
+            con.execute('BEGIN IMMEDIATE')
+            prior = con.execute('SELECT * FROM lessons WHERE student_id=? AND session_id=?', (student_id, obj.session_id)).fetchone()
+            if prior:
+                if obj.revision < prior['revision']:
+                    return self._lesson_row(prior)
+                if obj.revision == prior['revision']:
+                    if prior['fingerprint'] != fingerprint: raise Conflict('同一课堂版本内容冲突')
+                    return self._lesson_row(prior)
+                old = json.loads(prior['payload'])
+                immutable = ('started_at', 'mode', 'scene_name')
+                if any(data[name] != old.get(name) for name in immutable):
+                    raise Conflict('课堂版本不能修改开始时间、模式或场景')
+                if old.get('status') != 'in_progress' and obj.status != old.get('status'):
+                    raise Conflict('已结束课堂不能修改关闭状态')
+                if old.get('status') == 'in_progress' and obj.status == 'in_progress' and obj.ended_at is not None:
+                    raise Conflict('进行中课堂不能关闭')
+            con.execute('''INSERT INTO lessons(student_id,session_id,revision,started_at,ended_at,day,payload,fingerprint) VALUES (?,?,?,?,?,?,?,?)
+                ON CONFLICT(student_id,session_id) DO UPDATE SET revision=excluded.revision,started_at=excluded.started_at,ended_at=excluded.ended_at,day=excluded.day,payload=excluded.payload,fingerprint=excluded.fingerprint''',
+                (student_id,obj.session_id,obj.revision,obj.started_at.isoformat(),obj.ended_at.isoformat() if obj.ended_at else None,day,raw,fingerprint))
+            row=con.execute('SELECT * FROM lessons WHERE student_id=? AND session_id=?',(student_id,obj.session_id)).fetchone()
+        return self._lesson_row(row)
+
+    @staticmethod
+    def _lesson_row(row):
+        item=json.loads(row['payload']); item.update(session_id=row['session_id'], revision=row['revision'], started_at=row['started_at'], ended_at=row['ended_at'], day=row['day']); return item
+
     def progress(self,student_id: str) -> dict:
         with self.connect() as con:
             rows=con.execute('SELECT * FROM progress WHERE student_id=? ORDER BY updated_at DESC, word_id',(student_id,)).fetchall()
-        return {'today':self.today(),'words':[self._decorate(r) for r in rows]}
+        return {'today':self.today(),'words':[self._decorate(r) for r in rows], 'lessons': self.lessons(student_id)}
 
     def record(self,student_id: str,word_id: str,status: int | None,unclear: bool,event_key: str | None=None,evidence: dict | None=None) -> dict:
         if word_id not in self.dictionary.by_id:

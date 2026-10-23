@@ -30,6 +30,29 @@ from .audio import VoiceActivity,find_usb_mic,control_action,split_wake,amplify,
 LOG=logging.getLogger('english-edge')
 TICK_SECONDS=5
 READY_MESSAGE='小陈同学已就绪。说，小陈同学，学英语，开始上课；只说小陈同学，就是普通聊天。'
+READY_AUDIO=os.environ.get('READY_AUDIO','/opt/english-class/data/replies/ready.wav')
+REPLY_AUDIO_DIR=os.environ.get('REPLY_AUDIO_DIR','/opt/english-class/data/replies')
+# 固定话术一律播预置音频：espeak-ng 的中文机械断续，这几种提示每次措辞都一样。
+# 改文案必须重新生成对应文件（生成脚本 make_kokoro.py），文件缺失时自动回退 espeak。
+MESSAGE_AUDIO={
+    '连接暂时有问题。正在确认上一轮，请先等待；也可以说结束练习。':'msg_conn_error.wav',
+    '这段录音属于上一题。请说，再说一次，听当前题目后再回答。':'msg_stale_turn.wav',
+    '这次请求未被接受。请重新回答当前题目。':'msg_rejected.wav',
+    '播报暂时没有完成。请说，再说一次，听当前题目。':'msg_playback_failed.wav',
+    '播报暂时没有完成。请说，再说一次，听结束点评。':'msg_playback_failed_final.wav',
+    '我在。普通聊天服务尚未连接，请说，小陈同学，学英语，进入英语课堂。':'msg_chat_offline.wav',
+}
+
+
+def read_reply_audio(path):
+    """固定话术的预置音频：命中就直接播，不用现场合成。
+    espeak-ng 的中文本身机械又断续，启动提示这类每次都一样的句子没必要现生成。"""
+    if not path: return None
+    try:
+        data=Path(path).read_bytes()
+    except OSError:
+        return None
+    return data if len(data)>44 else None
 
 
 class BrainRequestError(RuntimeError):
@@ -54,9 +77,15 @@ class Chat:
         self.remote= poll is None and bool(self.url and token)
         self.speak_audio=speak
         self.session_id=uuid.uuid4().hex
-        self.until=0.;self.guard_until=0.;self.last_poll=0.;self.history=[]
+        self.until=0.;self.guard_until=0.;self.last_poll=0.;self.history=[];self.muted=False
+
+    def local_ack(self):
+        """唤醒应答是固定话术“我在，你想聊什么？”，预置在本机直接播。
+        走云端要两次请求加一次合成（实测 3 秒），本地播只要 0.1 秒。"""
+        return read_reply_audio(os.environ.get('CHAT_ACK_AUDIO','/opt/english-class/data/replies/chat_ack.wav'))
 
     def _speak_result(self,result):
+        if self.muted: return
         if not self.remote or not self.speak_audio: return
         segments=result.get('segments',[]) if isinstance(result,dict) else []
         if not segments: return
@@ -84,11 +113,19 @@ class Chat:
     def active(self): return time.monotonic()<self.until
 
     def enter(self):
-        """听到单独的“小陈同学”：进入/延长聊天，让原机器人应一声“我在”。"""
+        """听到单独的“小陈同学”：进入/延长聊天。先在本机应一声“我在”，云端只负责建会话。"""
         self.until=time.monotonic()+self.timeout;self.guard_until=time.monotonic()+1.5
+        ack=self.local_ack()
+        if ack and self.speak_audio:
+            try: self.speak_audio(ack)
+            except Exception as exc: LOG.warning('本地应答播放失败：%s',exc);ack=None
+            else: self.guard_until=time.monotonic()+1.5
+        self.muted=bool(ack)  # 本机已经说过同一句，云端返回的这段不再重复播
         try: self.poll('POST','/command',{'cmd':'speak_ack'})
         except Exception as exc: LOG.warning('普通聊天没有应答：%s',exc);return False
-        LOG.info('进入普通聊天');return True
+        finally: self.muted=False
+        LOG.info('进入普通聊天 应答=%s',('本机' if ack else '云端'))
+        return True
 
     def say(self,text,had_wake):
         self.until=time.monotonic()+self.timeout
@@ -240,11 +277,20 @@ class Edge:
             except OSError: pass
         self.playing=False
 
-    def local_message(self,text):
+    def local_message(self,text,audio=None):
         LOG.info(text)
         if not self.audio_enabled: return
+        if audio is None:
+            name=MESSAGE_AUDIO.get(text)
+            if name: audio=os.path.join(REPLY_AUDIO_DIR,name)
         self.playing=True
         try:
+            wav=read_reply_audio(audio)
+            if wav:
+                LOG.info('预置音频 bytes=%d',len(wav))
+                self.play(wav)
+                return
+            if audio: LOG.warning('预置音频不可用，回退本机合成：%s',audio)
             # Use the same ALSA route as lesson audio. Direct hw USB output
             # rejected mono speech in deployment; plughw performs conversion.
             result=subprocess.run(['espeak-ng','--stdout','-v',os.environ.get('LOCAL_VOICE','cmn'),'-s','155',text],
@@ -357,9 +403,23 @@ class Edge:
                  sum(len(s['text']) for s in segments))
         if self.display_text: print('机器人：'+' '.join(s['text'] for s in segments),flush=True)
         if self.audio_enabled:
-            audio=self.request('/voice/speech',body={'segments':segments,'slow':result.get('slow',False)},raw=True)
-            if generation!=self.generation: return False
-            self.play(audio)
+            # 流式接收：边接收边播放，降低感知延迟
+            headers=dict(self.headers)
+            with httpx.Client(timeout=httpx.Timeout(110,connect=10)) as c:
+                with c.stream('POST', self.url+'/voice/speech', 
+                             headers=headers, 
+                             json={'segments':segments,'slow':result.get('slow',False)}) as stream:
+                    if stream.status_code>=400:
+                        stream.read()  # 消耗完响应
+                        try: detail=stream.json().get('detail','请求失败')
+                        except ValueError: detail='请求失败'
+                        raise BrainRequestError(stream.status_code,detail)
+                    
+                    # 流式播放：一次性收完再播（避免分段播放导致 WAV 头解析错误）
+                    # TODO: 真正的流式需要在第一段保留 WAV 头，后续段拼接纯 PCM
+                    data = stream.read()
+                    if generation==self.generation:
+                        self.play(data)
         return generation==self.generation
 
     def replay_final(self,item):
@@ -422,14 +482,20 @@ def route(edge,chat,text,confidence,wav,question=None):
     # 真人说话的平均置信度经常在 0.6-0.7 之间，0.70 会把正确的唤醒也丢掉。
     # 课中控制指令（停止/暂停等）保持 0.70，避免误触发。
     action=control_action(text)
-    if action in ('start','chat'):
+    had_wake,rest=split_wake(text)
+    if action=='start':
+        # 听到唤醒词后句子变长，Vosk 平均置信度常被拉到 0.5-0.6；此时意图已经很明确
+        # （必须带“英语/上课”），门槛跟着放宽，否则正确的“小陈同学，学英语”会被丢掉。
+        if confidence<(0.45 if had_wake else 0.60): action=None
+    elif action=='chat':
+        # 只喊唤醒词时保持原门槛：太低会把环境杂音当成“叫我了”，一直挂在聊天状态。
         if confidence<0.60: action=None
     elif confidence<0.70:
         action=None
-    had_wake,rest=split_wake(text)
     if action=='start':
         chat.leave()
-        if not edge.active and not edge.starting: edge.submit('start')
+        if not edge.active and not edge.starting:
+            edge.submit('start');LOG.info('进入英语课堂')
         return 'start'
     if action=='stop' and edge.starting:
         chat.leave()
@@ -465,9 +531,9 @@ def voice_loop(edge,chat=None):
     if capture=='auto': capture=find_usb_mic()
     gain=float(os.environ.get('MIC_GAIN','1'));threshold=float(os.environ.get('VAD_THRESHOLD','450'))
     if not 0.25<=gain<=8 or not 50<=threshold<=10000: raise ValueError('MIC_GAIN应在0.25—8，VAD_THRESHOLD应在50—10000')
-    vad=VoiceActivity(threshold=threshold)
+    vad=VoiceActivity(threshold=threshold,log=LOG.info)
     proc=subprocess.Popen(['arecord','-q','-D',capture,'-t','raw','-f','S16_LE','-r','16000','-c','1'],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
-    edge.local_message(READY_MESSAGE)
+    edge.local_message(READY_MESSAGE,audio=READY_AUDIO)
     guard_until=time.monotonic()+0.4;was_playing=False;last_tick=time.monotonic();recording_question=None
     try:
         while not edge.stop_event.is_set():
@@ -497,7 +563,10 @@ def voice_loop(edge,chat=None):
             if not was_recording and (vad.parts or wav): recording_question=captured_question
             if wav:
                 text,confidence=recognize_chinese(model,wav)
-                LOG.info('识别 chars=%d conf=%.2f',len(text),confidence)
+                # 10 字以内的短句基本都是唤醒/控制指令，记下正文便于排查识别偏差；
+                # 长句是对话正文，只记长度（项目约定不落对话内容）。
+                LOG.info('识别 chars=%d conf=%.2f%s',len(text),confidence,
+                         (' text='+text) if 0<len(text)<=10 else '')
                 route(edge,chat,text,confidence,wav,question=recording_question)
                 recording_question=None
             # 5 秒轮询一次，脑端据此判断 20 秒重问、3 分钟自动暂停（服务器决定，这里不计时）。

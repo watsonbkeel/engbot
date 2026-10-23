@@ -403,3 +403,27 @@ async def test_http_tts_school_stage_rate(external_http, monkeypatch):
     monkeypatch.setattr(p, '_decode_audio', lambda _: b'\0' * 320)
     await p.speak([{'text': 'Hello.', 'language': 'en'}], slow=True, speed='middle')
     assert json.loads(seen[-1].content)['speed'] == .82
+
+
+@pytest.mark.asyncio
+async def test_http_tts_synthesizes_segments_serially_and_keeps_order(monkeypatch):
+    """2 vCPU 实测并行合成比串行更慢（2 段 9.4s vs 7.7s），故串行；顺序不能乱。"""
+    import asyncio
+    p = Providers(tts_backend='http', tts_base='https://tts.test', tts_key='test-only', tts_model='m')
+    running = {'now': 0, 'max': 0}
+
+    async def fake_segment(segment, percent):
+        running['now'] += 1
+        running['max'] = max(running['max'], running['now'])
+        await asyncio.sleep(0.01)
+        running['now'] -= 1
+        return segment['text'].encode()
+
+    monkeypatch.setattr(p, '_synthesize_segment', fake_segment)
+    monkeypatch.setattr(p, '_decode_audio', lambda audio: audio)
+    out = await p.speak([{'text': 'alpha', 'language': 'en'},
+                         {'text': 'bravo', 'language': 'en'},
+                         {'text': 'charlie', 'language': 'en'}])
+    body = out[44:]
+    assert body.index(b'alpha') < body.index(b'bravo') < body.index(b'charlie')
+    assert running['max'] == 1, '合成应串行（本机 CPU 饱和时并行反而更慢）'

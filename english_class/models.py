@@ -1,6 +1,7 @@
 """Small, shared API contracts. Extra fields are rejected to catch classroom bugs."""
 from __future__ import annotations
 from typing import Literal
+from datetime import datetime
 import re
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, model_validator, field_validator
 
@@ -97,6 +98,46 @@ class ChatTurnInput(StrictModel):
     text: str = Field(default='', max_length=1000)
     request_id: str = Field(min_length=8, max_length=128)
     session_id: str = Field(min_length=8, max_length=64)
+
+
+class LessonRecordInput(StrictModel):
+    session_id: str = Field(min_length=8, max_length=64)
+    revision: StrictInt = Field(ge=1)
+    mode: Literal['full', 'en2zh', 'zh2en', 'scene']
+    scene_name: str = Field(default='', max_length=40)
+    started_at: datetime
+    ended_at: datetime | None = None
+    elapsed_seconds: StrictInt = Field(ge=0, le=86400)
+    dialog_count: StrictInt = Field(ge=0, le=10000)
+    status: Literal['in_progress', 'completed', 'stopped']
+    review_status: Literal['pending', 'success', 'failed', 'not_applicable']
+    review_segments: list[Segment] = Field(default_factory=list, max_length=4)
+    review_error: Literal['', 'ReviewProviderFailed', 'ReviewPromptInvalid', 'ReviewJsonInvalid', 'ReviewPraiseInvalid', 'ReviewTipsInvalid', 'ReviewLanguageInvalid'] = ''
+
+    @field_validator('started_at', 'ended_at')
+    @classmethod
+    def aware_datetime(cls, value):
+        if value is not None and value.tzinfo is None:
+            raise ValueError('时间必须包含时区')
+        return value
+
+    @model_validator(mode='after')
+    def validate_lesson(self):
+        if self.ended_at is not None and self.ended_at < self.started_at:
+            raise ValueError('结束时间不能早于开始时间')
+        if self.status == 'in_progress' and self.ended_at is not None:
+            raise ValueError('进行中的课堂不能有结束时间')
+        if self.status != 'in_progress' and self.ended_at is None:
+            raise ValueError('已结束课堂必须有结束时间')
+        if self.review_status == 'success' and not self.review_segments:
+            raise ValueError('review成功必须包含segments')
+        if self.review_status != 'success' and self.review_segments:
+            raise ValueError('非review成功不得包含segments')
+        if self.review_status == 'failed' and not self.review_error:
+            raise ValueError('review失败必须包含error')
+        if self.review_status != 'failed' and self.review_error:
+            raise ValueError('非review失败不得包含error')
+        return self
 
 
 class TurnInput(StrictModel):

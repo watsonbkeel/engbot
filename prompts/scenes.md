@@ -137,7 +137,8 @@ Write the review in {language}.
 
 Return only JSON:
 {{"praise":"one sentence that names something the learner did well","tips":["improvement 1","improvement 2","improvement 3"]}}
-- tips has 0 to 3 items, most important first. Each item is one sentence under 40 characters and quotes the learner's own words or gives a better phrase.
+- praise must be a non-empty string of at most 200 characters, including spaces and punctuation. Keep it brief.
+- tips must be an array of 0 to 3 strings, most important first. Each string must contain 1 to 40 characters TOTAL, including spaces, punctuation and quoted English. Use one concise phrase or short sentence; do not combine an explanation and a long example. Do not output objects or a numbered paragraph instead of this array.
 - Judge only words and sentence patterns from the transcript. Never comment on pronunciation or accent; you cannot hear it.
 - Do not score, do not rank, do not say the learner failed.
 - If the transcript has fewer than two learner lines, praise the effort and return an empty tips list.

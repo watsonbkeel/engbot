@@ -59,6 +59,8 @@ class PublicClient:
         body={'word_id':word_id,'status':status,'unclear':unclear}
         if evidence is not None: body['evidence']=evidence
         return await self.request('POST','/api/progress',body=body,event_key=key)
+    async def record_lesson(self,payload):
+        return await self.request('POST','/api/lessons',body=payload)
     async def chat(self,messages,json_output=True):
         return (await self.request('POST','/internal/chat',body={'messages':messages,'json_output':json_output}))['content']
     async def transcribe(self,wav,language):

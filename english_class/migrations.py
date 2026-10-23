@@ -60,7 +60,7 @@ def migrate(con: sqlite3.Connection, key_path: Path) -> CredentialCipher:
     try:
         con.execute('CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)')
         versions = {row['version'] for row in con.execute('SELECT version FROM schema_migrations')}
-        if any(version > 3 for version in versions):
+        if any(version > 4 for version in versions):
             raise SecretStorageError('数据库由更新版本迁移，请使用对应版本；未更改已有数据')
         if 1 not in versions:
             _original_schema(con)
@@ -84,6 +84,27 @@ def migrate(con: sqlite3.Connection, key_path: Path) -> CredentialCipher:
     except BaseException:
         con.rollback()
         raise
+
+    if 4 not in versions:
+        try:
+            con.execute('BEGIN IMMEDIATE')
+            con.execute('''CREATE TABLE IF NOT EXISTS lessons (
+                student_id TEXT NOT NULL REFERENCES students(id),
+                session_id TEXT NOT NULL,
+                revision INTEGER NOT NULL,
+                started_at TEXT NOT NULL,
+                ended_at TEXT,
+                day TEXT NOT NULL,
+                payload TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                PRIMARY KEY(student_id, session_id)
+            )''')
+            con.execute('CREATE INDEX IF NOT EXISTS lessons_recent ON lessons(student_id, started_at DESC)')
+            _record(con, 4)
+            con.commit()
+        except BaseException:
+            con.rollback()
+            raise
 
     if 3 not in versions:
         # secure_delete (set on Store connections) overwrites updated cells;

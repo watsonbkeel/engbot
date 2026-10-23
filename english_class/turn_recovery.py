@@ -134,11 +134,11 @@ class TurnRecovery:
     async def settle_records(self, io):
         """Confirm old write intents without replaying changed model/ASR code."""
         for index, operation in enumerate(self.pending['operations']):
-            if operation['method'] != 'record' or operation['done']:
+            if operation['method'] not in ('record','record_lesson') or operation['done']:
                 continue
-            # Exact original payload and key: a committed response may have been
-            # lost. Store.record deduplicates the retry; never infer a new result.
-            result = await io.record(*copy.deepcopy(operation['args']), **copy.deepcopy(operation['kwargs']))
+            # Exact original payload and key: progress and classroom summaries
+            # deduplicate the retry; never infer a new result from a failed response.
+            result = await getattr(io,operation['method'])(*copy.deepcopy(operation['args']), **copy.deepcopy(operation['kwargs']))
             candidate = copy.deepcopy(self.data)
             settled = candidate['pending']['operations'][index]
             settled['result'], settled['done'] = copy.deepcopy(result), True
@@ -152,6 +152,9 @@ class TurnRecovery:
         signature_args = list(args)
         if method == 'transcribe':
             signature_args[0] = {'sha256': hashlib.sha256(args[0]).hexdigest()}
+        if method=='record_lesson':
+            # Retry replays the original durable timestamp/payload, never a new write.
+            signature_args=[args[0]['session_id'],args[0]['revision']]
         signature = fingerprint([method, signature_args, kwargs])
         operations = self.pending['operations']
         index = self.cursor
@@ -161,18 +164,28 @@ class TurnRecovery:
             if operation['method'] != method or operation['fingerprint'] != signature:
                 raise ServiceError('恢复回合与当前程序状态不一致；请结束练习后重新开始')
             if operation['done']:
+                if operation.get('error')=='ReviewProviderFailed':
+                    raise ServiceError('点评服务暂不可用；未自动重复调用')
                 return copy.deepcopy(operation['result'])
         else:
             operation = {'method': method, 'fingerprint': signature, 'done': False}
             # The complete stable write intent is inspectable/recoverable even if
             # the process dies after SQLite commits but before HTTP responds.
-            if method == 'record':
+            if method in ('record','record_lesson'):
                 operation['args'], operation['kwargs'] = copy.deepcopy(list(args)), copy.deepcopy(kwargs)
             operations.append(operation)
             self.save()
-        if method == 'record':
+        if method in ('record','record_lesson'):
             args, kwargs = operation['args'], operation['kwargs']
-        result = await getattr(io, method)(*args, **kwargs)
+        try:
+            result = await getattr(io, method)(*args, **kwargs)
+        except ServiceError:
+            if method=='chat' and args and args[0] and 'SCENE_REVIEW' in args[0][0].get('content',''):
+                # A failed closing review must not be billed again when a later
+                # classroom-record write is retried after a disconnect.
+                operation.update(done=True,error='ReviewProviderFailed')
+                self.save()
+            raise
         operation['result'], operation['done'] = copy.deepcopy(result), True
         self.save()
         return copy.deepcopy(result)
@@ -222,7 +235,7 @@ class RecoverableIO:
         self.raw, self.recovery = io, recovery
 
     def __getattr__(self, name):
-        if name not in ('config', 'words', 'progress', 'record', 'chat', 'transcribe'):
+        if name not in ('config', 'words', 'progress', 'record', 'record_lesson', 'chat', 'transcribe'):
             return getattr(self.raw, name)
 
         async def call(*args, **kwargs):

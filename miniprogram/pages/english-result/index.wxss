@@ -7,3 +7,11 @@
 .badge.state-2 { background: #E7F7EC; color: #1F7A3D; }
 .word-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
 .line { margin-top: 8rpx; }
+.lesson-section { margin-top: 28rpx; }
+.section-title { font-size: 30rpx; font-weight: 700; margin-bottom: 12rpx; }
+.lesson-card { margin-bottom: 12rpx; }
+.lesson-status-in_progress { background: #FFF3D6; color: #996A00; }
+.lesson-status-completed { background: #E7F7EC; color: #1F7A3D; }
+.lesson-status-stopped { background: #EEF1F6; color: #5A6478; }
+.review-status { margin-top: 8rpx; }
+.review-segments { margin-top: 8rpx; padding: 10rpx 0; border-top: 1rpx solid #EEF1F6; }

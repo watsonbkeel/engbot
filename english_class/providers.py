@@ -188,6 +188,22 @@ class Providers:
     _models:dict=field(default_factory=dict,init=False,repr=False)
     _model_lock:threading.Lock=field(default_factory=threading.Lock,init=False,repr=False)
     _asr_down_until:float=field(default=0.0,init=False,repr=False)
+    # 复用 TTS 的 HTTP 连接：跨机部署后每段新建连接要多花 0.5-1s（Tailscale 建连）。
+    _tts_client:object=field(default=None,init=False,repr=False,compare=False)
+    _tts_loop:object=field(default=None,init=False,repr=False,compare=False)
+
+    def _tts_session(self):
+        """按事件循环缓存一个 keep-alive 的 TTS 客户端；换 loop 就重建。"""
+        loop=asyncio.get_running_loop()
+        if self._tts_client is not None and self._tts_loop is not loop:
+            self._tts_client=None
+        if self._tts_client is None:
+            import httpx
+            self._tts_client=httpx.AsyncClient(
+                timeout=httpx.Timeout(40,connect=8),
+                limits=httpx.Limits(max_connections=4,max_keepalive_connections=4,keepalive_expiry=60))
+            self._tts_loop=loop
+        return self._tts_client
 
     @classmethod
     def from_env(cls):
@@ -447,35 +463,51 @@ class Providers:
         except ProviderError: raise
         except Exception as exc: raise ProviderError('Vosk识别失败；本轮不计为答错') from exc
 
+    async def _synthesize_segment(self,segment:dict,percent:int) -> bytes:
+        if self.tts_backend=='edge':
+            try:
+                import edge_tts
+                voice=self.voice_zh if segment['language']=='zh' else self.voice_en
+                chunks=[]
+                async for chunk in edge_tts.Communicate(segment['text'],voice,rate=f'{percent:+d}%').stream():
+                    if chunk['type']=='audio': chunks.append(chunk['data'])
+                return b''.join(chunks)
+            except Exception as exc: raise ProviderError('Edge语音合成不可用；可由老师配置兼容TTS服务') from exc
+        elif self.tts_backend=='http':
+            if not (self.tts_base and self.tts_key and self.tts_model): raise ProviderError('兼容TTS服务尚未配置')
+            try:
+                c=self._tts_session()
+                r=await c.post(self.tts_base.rstrip('/')+'/audio/speech',headers={'Authorization':'Bearer '+self.tts_key},
+                    json={'model':self.tts_model,'input':segment['text'],'voice':self.tts_voice,'response_format':'mp3','speed':(100+percent)/100})
+                r.raise_for_status();return r.content
+            except httpx.InvalidURL as exc:
+                raise ProviderError('语音合成接口地址配置无效，请检查服务设置',code='InvalidConfiguration') from exc
+            except httpx.HTTPError as exc: raise ProviderError('TTS服务调用失败') from exc
+        else: raise ProviderError('TTS_BACKEND只能为edge或http')
+
     async def speak(self,segments:list[dict],slow:bool=False,speed:str='middle') -> bytes:
+        """兼容接口：返回完整拼接的 WAV，用于非流式调用"""
+        pcm_parts = []
+        async for pcm_chunk in self.speak_stream(segments, slow, speed):
+            pcm_parts.append(pcm_chunk)
+        return pcm_wav(b''.join(pcm_parts))
+    
+    async def speak_stream(self,segments:list[dict],slow:bool=False,speed:str='middle'):
+        """流式生成器：逐段 yield PCM 数据（16k/mono/s16le），每段后加 0.2s 静音"""
         if speed not in ('elementary','middle','high'): raise ValueError('无效学段语速')
         percent={'elementary':-15,'middle':-8,'high':0}[speed]-(10 if slow else 0)
-        pcm_parts=[]
-        for segment in segments:
-            if self.tts_backend=='edge':
-                try:
-                    import edge_tts
-                    voice=self.voice_zh if segment['language']=='zh' else self.voice_en
-                    chunks=[]
-                    async for chunk in edge_tts.Communicate(segment['text'],voice,rate=f'{percent:+d}%').stream():
-                        if chunk['type']=='audio': chunks.append(chunk['data'])
-                    audio=b''.join(chunks)
-                except Exception as exc: raise ProviderError('Edge语音合成不可用；可由老师配置兼容TTS服务') from exc
-            elif self.tts_backend=='http':
-                if not (self.tts_base and self.tts_key and self.tts_model): raise ProviderError('兼容TTS服务尚未配置')
-                try:
-                    async with httpx.AsyncClient(timeout=40) as c:
-                        r=await c.post(self.tts_base.rstrip('/')+'/audio/speech',headers={'Authorization':'Bearer '+self.tts_key},
-                            json={'model':self.tts_model,'input':segment['text'],'voice':self.tts_voice,'response_format':'mp3','speed':(100+percent)/100})
-                        r.raise_for_status();audio=r.content
-                except httpx.InvalidURL as exc:
-                    raise ProviderError('语音合成接口地址配置无效，请检查服务设置',code='InvalidConfiguration') from exc
-                except httpx.HTTPError as exc: raise ProviderError('TTS服务调用失败') from exc
-            else: raise ProviderError('TTS_BACKEND只能为edge或http')
+        started=time.monotonic()
+        stamps=[]
+        for index,segment in enumerate(segments):
+            seg_start=time.monotonic()
+            audio=await self._synthesize_segment(segment,percent)
             if not audio: raise ProviderError('TTS返回了空音频')
-            pcm_parts.append(await asyncio.to_thread(self._decode_audio,audio))
-            pcm_parts.append(b'\x00'*3200)
-        return pcm_wav(b''.join(pcm_parts))
+            pcm=await asyncio.to_thread(self._decode_audio,audio)
+            stamps.append((index,time.monotonic()-seg_start))
+            yield pcm + b'\x00'*3200  # 每段后加 0.2s 静音
+        print(f'[tts] backend={self.tts_backend} segments={len(segments)} speed={speed} slow={int(slow)} '
+              f'total={time.monotonic()-started:.2f}s each={",".join(f"{d:.2f}" for _,d in sorted(stamps))}',
+              flush=True)
 
     @staticmethod
     def _decode_audio(audio:bytes) -> bytes:

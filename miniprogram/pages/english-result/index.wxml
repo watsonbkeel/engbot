@@ -11,6 +11,24 @@
       <view class="line note" wx:if="{{modeScene}}">当前保存安排：{{modeScene}}</view>
       <view class="line note">这些词的历史最高记录：曾独立说出 {{speakingCount}} 个 · 曾听懂 {{listeningCount}} 个 · 继续练习 {{practicingCount}} 个</view>
     </view>
+    <view class="lesson-section">
+      <view class="section-title">今日课堂（{{todayLessons.length}}）</view>
+      <view class="empty" wx:if="{{!todayLessons.length}}">今天尚无课堂记录。词汇为空时也会单独显示课堂记录。</view>
+      <view class="card lesson-card" wx:for="{{todayLessons}}" wx:key="session_id">
+        <view class="word-top"><view class="mode-name">{{item.modeText}}{{item.scene_name ? ' · ' + item.scene_name : ''}}</view><view class="badge lesson-status-{{item.status}}">{{item.statusText}}</view></view>
+        <view class="note">{{item.timeText}}{{item.elapsedText ? ' · ' + item.elapsedText : ''}} · 对话 {{item.dialog_count || 0}} 轮</view>
+        <view class="note review-status">{{item.reviewStatusText}}</view>
+        <view wx:if="{{item.reviewStatus === 'success' && item.reviewSegments.length}}" class="review-segments">
+          <view wx:for="{{item.reviewSegments}}" wx:key="index" class="note">{{item.language}}：{{item.text}}</view>
+        </view>
+        <view class="note" wx:if="{{item.reviewStatus === 'failed'}}">点评未生成，课堂记录已保存{{item.review_error ? '：' + item.review_error : ''}}</view>
+        <view class="note" wx:if="{{item.reviewStatus === 'not_applicable'}}">本模式无AI点评</view>
+      </view>
+      <view class="chip" bindtap="onToggleAllLessons">{{showAllLessons ? '收起' : '查看'}}历史课堂（{{allLessons.length}}）</view>
+      <view class="card" wx:if="{{showAllLessons}}">
+        <view class="picker-row" wx:for="{{allLessons}}" wx:key="session_id"><view>{{item.modeText}} · {{item.statusText}}</view><view class="note">{{item.timeText}}</view></view>
+      </view>
+    </view>
     <view class="empty" wx:if="{{!todayWords.length}}">今天尚无词汇练习记录，这不等于没有上课。场景交流若未产生目标词记录，或只听「磨耳朵」，都可能没有新增词汇记录。口语练习后可刷新查看。</view>
     <view class="card word-card" wx:for="{{todayWords}}" wx:key="word_id">
       <view class="word-top"><view class="mode-name">{{item.word}}</view><view class="badge state-{{item.status}}">{{item.stateText}}</view></view>

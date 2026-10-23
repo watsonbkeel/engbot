@@ -362,3 +362,36 @@ def test_miniprogram_standalone_build_has_six_pages_and_no_local_credentials(tmp
     assert json.loads((out/'project.config.json').read_text())['setting']['urlCheck'] is True
     second=subprocess.run([sys.executable,str(root/'scripts/build_miniprogram.py'),'--output',str(out)],capture_output=True,text=True)
     assert second.returncode!=0
+
+
+def test_default_vad_ends_speech_after_point_six_seconds():
+    """每块 0.1s：默认 6 块静音（0.6s）判定说完，避免孩子说完干等一秒。"""
+    from pi.audio import VoiceActivity
+    import array
+    v = VoiceActivity(threshold=100)
+    speech = array.array('h', [1000] * 1600).tobytes()
+    assert v.feed(speech) is None
+    for _ in range(5):
+        assert v.feed(b'\x00' * 3200) is None
+    wav = v.feed(b'\x00' * 3200)
+    assert wav and wav.startswith(b'RIFF')
+
+
+def test_wake_word_tolerates_extra_words_before_it():
+    """唤醒词可能被 Vosk 多吐字或孩子带语气词，含在句中也要认出来。"""
+    from pi.audio import split_wake
+    assert split_wake('嗯小陈同学') == (True, '')
+    assert split_wake('哎，小陈同学，学英语') == (True, '学英语')
+    assert split_wake('今天天气不错') == (False, '今天天气不错')
+
+
+def test_start_command_tolerates_vosk_homophone_errors():
+    """“学英语”被听成同音字时仍要能上课；否定句不能误触发。"""
+    from pi.audio import control_action
+    assert control_action('小陈同学学英语') == 'start'
+    assert control_action('小陈同学，雪英语') == 'start'
+    assert control_action('小陈同学学英玉') == 'start'
+    assert control_action('学英语') == 'start'
+    assert control_action('小陈同学') == 'chat'
+    assert control_action('小陈同学我不想学英语') is None
+    assert control_action('小陈同学别学英语') is None

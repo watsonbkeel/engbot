@@ -1,6 +1,6 @@
 """The student-owned lesson: listen -> retrieve -> use in a short dialogue.
 
-Decision state is transient; only small, factual word records go to the public API.
+Decision state is transient; factual word and classroom summaries go to the public API.
 The LLM never gets a database write tool, a configuration tool, or provider keys.
 """
 from __future__ import annotations
@@ -11,9 +11,18 @@ import re
 import time
 import os
 import uuid
+import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 from .client import ServiceError
+
+LOG=logging.getLogger('english-class.lesson')
+
+class ReviewError(ServiceError):
+    def __init__(self,code,message):
+        super().__init__(message)
+        self.code=code
 
 
 def normalized(text:str) -> str:
@@ -196,6 +205,33 @@ class Tutor:
         self.scene_opening_pending=False;self.scene_opening_tries=0
         # The brain's durable turn journal applies this side effect only after committing its result.
         self.defer_resume_changes=False;self._resume_change=None
+        self.lesson_started_at=None;self.lesson_ended_at=None;self.lesson_revision=0
+        self.lesson_status='in_progress';self.review_status='not_applicable'
+        self.review_segments=[];self.review_error='';self.lesson_elapsed_seconds=0
+
+    def lesson_record(self):
+        """Factual classroom metadata, never a transcript or mastery inference."""
+        if not self.session_id or not self.lesson_started_at: return None
+        elapsed=self.lesson_elapsed_seconds if self.lesson_ended_at else max(0,self.clock()-self.started_at-self.paused_seconds-(self.clock()-self.pause_at if self.pause_at is not None else 0))
+        return {'session_id':self.session_id,'revision':self.lesson_revision,
+                'mode':self.config.get('mode','full'),'scene_name':(self.config.get('scene') or {}).get('name',''),
+                'started_at':self.lesson_started_at,'ended_at':self.lesson_ended_at,
+                'elapsed_seconds':min(86400,int(elapsed)),'dialog_count':self.dialog_count,
+                'status':self.lesson_status,'review_status':self.review_status,
+                'review_segments':copy.deepcopy(self.review_segments),'review_error':self.review_error}
+
+    def begin_lesson_record(self):
+        self.lesson_started_at=datetime.fromtimestamp(self.wall(),timezone.utc).isoformat()
+        self.lesson_ended_at=None;self.lesson_elapsed_seconds=0;self.lesson_revision=0
+        self.lesson_status='in_progress';self.review_segments=[];self.review_error=''
+        self.review_status='pending' if self.config.get('scene') else 'not_applicable'
+
+    def close_lesson_record(self,completed=False):
+        if not self.lesson_started_at or self.lesson_ended_at: return
+        self.lesson_elapsed_seconds=max(0,self.clock()-self.started_at-self.paused_seconds-(self.clock()-self.pause_at if self.pause_at is not None else 0))
+        self.lesson_ended_at=datetime.fromtimestamp(self.wall(),timezone.utc).isoformat()
+        self.lesson_status='completed' if completed else 'stopped'
+        if self.review_status=='pending': self.review_status='not_applicable'
 
     def export_state(self):
         """JSON-safe transient snapshot for the brain's bounded recovery journal."""
@@ -224,6 +260,11 @@ class Tutor:
         # contain observations or assistance from a failed, rolled-back turn.
         values.setdefault('task_helped',bool(values.get('assisted_words')))
         values.setdefault('lesson_observations',{})
+        # Old snapshots lack exact start times: do not invent a historical lesson.
+        for name,value in {'lesson_started_at':None,'lesson_ended_at':None,'lesson_revision':0,
+                           'lesson_elapsed_seconds':0,'lesson_status':'in_progress',
+                           'review_status':'not_applicable','review_segments':[],'review_error':''}.items():
+            values.setdefault(name,value)
         shift=self.clock()-float(snapshot['saved_monotonic'])
         for name in ('started_at','last_heard','quiet_since','pause_at'):
             if values.get(name) is not None: values[name]+=shift
@@ -326,6 +367,7 @@ class Tutor:
             self.known.update({r['word_id']:r.get('status',0) for r in progress['words'] if r['word_id'] in self.known})
             self.started_at=self.clock();self.pause_at=None;self.paused_seconds=0.
             self.dialog_count=0;self.history=[];self.slow=False;self.session_id=uuid.uuid4().hex
+            self.begin_lesson_record()
             self.explained=set();self.question_full=[];self.question_short=[];self.repeat_tries=0;self.last_demonstrated=set();self._dialog_modelled=[]
             self.assisted_words=set(saved.get('assisted_words',[]))
             self.assisted_models=set(saved.get('assisted_models',[]))
@@ -340,6 +382,7 @@ class Tutor:
         self.known={w['word_id']:old.get(w['word_id'],{}).get('status',0) for w in self.words}
         self.index=0;self.phase={'zh2en':'recall','scene':'dialog'}.get(mode,'listen');self.started_at=self.clock();self.pause_at=None;self.paused_seconds=0.
         self.dialog_count=0;self.history=[];self.slow=False;self.session_id=uuid.uuid4().hex
+        self.begin_lesson_record()
         self.explained=set();self.question_full=[];self.question_short=[];self.repeat_tries=0;self.last_demonstrated=set();self._dialog_modelled=[]
         if self.phase=='dialog':
             segments=self.scene_opening() if cfg.get('scene') else await self.dialogue(None)
@@ -540,31 +583,44 @@ class Tutor:
 
     async def scene_review(self):
         language='Chinese' if self.config['chinese_help'] else 'English'
-        system=prompt_block('scene_review',language=language)
+        try: system=prompt_block('scene_review',language=language)
+        except ServiceError as exc: raise ReviewError('ReviewPromptInvalid','点评提示词无效') from exc
         data={'scene':self.config['scene'],'history':self.history[-24:],'language':language,
               'session_word_observations':list(self.lesson_observations.values())}
-        obj=read_json(await self.io.chat([{'role':'system','content':system},
-            {'role':'user','content':json.dumps(data,ensure_ascii=False)}]))
+        try:
+            raw=await self.io.chat([{'role':'system','content':system},
+                {'role':'user','content':json.dumps(data,ensure_ascii=False)}])
+        except ServiceError as exc: raise ReviewError('ReviewProviderFailed','点评服务暂不可用') from exc
+        try: obj=read_json(raw)
+        except ServiceError as exc: raise ReviewError('ReviewJsonInvalid','点评JSON格式无效') from exc
         praise=obj.get('praise');tips=obj.get('tips')
-        if not isinstance(praise,str) or not 1<=len(praise.strip())<=200 or not isinstance(tips,list):
-            raise ServiceError('AI点评格式无效')
+        if not isinstance(praise,str) or not 1<=len(praise.strip())<=200:
+            raise ReviewError('ReviewPraiseInvalid','点评表扬字段无效')
+        if not isinstance(tips,list): raise ReviewError('ReviewTipsInvalid','点评建议列表无效')
         chosen=tips[:3]
         if any(not isinstance(tip,str) or not 1<=len(tip.strip())<=40 for tip in chosen):
-            raise ServiceError('AI点评建议格式无效')
+            raise ReviewError('ReviewTipsInvalid','点评建议长度或类型无效')
         if sum(item['role']=='user' for item in self.history)<2: chosen=[]
         texts=[praise.strip()]+[tip.strip() for tip in chosen]
         if not self.config['chinese_help'] and any(re.search('[\u4e00-\u9fff]',text) for text in texts):
-            raise ServiceError('AI点评未遵守英文设置')
+            raise ReviewError('ReviewLanguageInvalid','点评未遵守英文设置')
         return [{'text':text,'language':'zh' if self.config['chinese_help'] else 'en'} for text in texts]
 
     async def end_lesson(self,completed=False,feedback=None):
         is_scene=bool(self.config.get('scene')) and (self.phase=='dialog' or (self.phase=='paused' and self.previous_phase=='dialog'))
         review=[]
         if is_scene:
-            try: review=await self.scene_review()
-            except ServiceError:
-                # Provider failure must never trap a child who asked to stop, or invent a review.
+            try:
+                review=await self.scene_review()
+                self.review_status='success';self.review_segments=copy.deepcopy(review);self.review_error=''
+                LOG.info('lesson_review result=success')
+            except ServiceError as exc:
+                self.review_status='failed';self.review_segments=[]
+                self.review_error=exc.code if isinstance(exc,ReviewError) else 'ReviewProviderFailed'
+                # Error categories only: no learner text, raw model response or credentials.
+                LOG.warning('lesson_review result=failed code=%s',self.review_error)
                 review=self.message('点评暂时无法生成，先结束练习。','The review is unavailable. Let us finish now.')
+        self.close_lesson_record(completed=completed)
         ending=self.finish(completed=completed or is_scene)
         return self.result((feedback or [])+review+ending['segments'])
 
@@ -657,6 +713,7 @@ class Tutor:
 
     def finish(self,completed:bool=False):
         """completed=True 表示整节课走完，清除断点；否则（主动结束/超时）保存断点下次接着学。"""
+        self.close_lesson_record(completed=completed)
         if completed: self.clear_resume()
         elif self.phase not in ('idle','done'): self.save_resume()
         self.phase='done';self.last_expected='zh' if self.config.get('chinese_help',True) else 'en';self.pause_at=None
@@ -665,6 +722,7 @@ class Tutor:
         return self.result(self.message('今天的练习结束了。已完成的记录可以在小程序中查看。','Practice is finished. You can check your practice record in the mini program.'))
 
     def idle_pause(self):
+        self.close_lesson_record(completed=False)
         self.save_resume()
         self.phase='done';self.last_expected='zh' if self.config.get('chinese_help',True) else 'en';self.pause_at=None
         self.help_stage='';self.asking_zh=False;self.help_context={};self.help_phrase='';self.help_tries=0

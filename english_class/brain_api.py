@@ -12,7 +12,7 @@ import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, Header, HTTPException, Depends, Query, Request
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from .client import PublicClient, ServiceError
 from . import __version__
 from .engine import Tutor, learner_stage, command
@@ -186,6 +186,20 @@ def create_brain(io,edge_token:str,student_prompt:str='',practice_size:int=3,sta
         tutor.commit_resume_changes()  # Only after closure and replay results are durable.
         return reply
 
+    async def persist_lesson():
+        # Optional test IO stays compatible; production PublicClient always implements this.
+        if not hasattr(io,'record_lesson'): return
+        payload=tutor.lesson_record()
+        if payload is None: return
+        summary=fingerprint({k:payload[k] for k in ('session_id','status','dialog_count','review_status','review_segments','review_error')})
+        if getattr(tutor,'_lesson_saved_summary',None)==summary: return
+        tutor.lesson_revision+=1;payload['revision']=tutor.lesson_revision
+        stored=await tutor.io.record_lesson(payload)
+        # On replay use the original timestamps, not the retry clock.
+        for field,attribute in [('started_at','lesson_started_at'),('ended_at','lesson_ended_at'),('elapsed_seconds','lesson_elapsed_seconds')]:
+            if field in stored: setattr(tutor,attribute,stored[field])
+        tutor._lesson_saved_summary=summary
+
     async def run_turn_locked(body:TurnInput,digest=None,wav=None):
         digest=digest or fingerprint(body.model_dump())
         key=body.request_id
@@ -221,6 +235,9 @@ def create_brain(io,edge_token:str,student_prompt:str='',practice_size:int=3,sta
         before=question_signature()
         try:
             asr=None
+            if effective_action=='start' and tutor.lesson_started_at and tutor.phase not in ('idle','done'):
+                tutor.close_lesson_record(completed=False)
+                await persist_lesson()
             if wav is not None:
                 asr=await tutor.io.transcribe(wav,tutor.last_expected)
                 body=body.model_copy(update={'text':asr['text'],'confidence':asr.get('confidence'),
@@ -228,6 +245,10 @@ def create_brain(io,edge_token:str,student_prompt:str='',practice_size:int=3,sta
                 LOG.info('asr class_request=%s provider=%s fallback_reason=%s asr_request=%s unclear=%d',key,
                          asr.get('provider','-'),asr.get('fallback_reason') or '-',asr.get('request_id') or '-',int(bool(asr.get('unclear'))))
             reply=await tutor.turn(body.text,action=body.action,request_id=key,confidence=body.confidence,unclear=body.unclear)
+            if effective_action=='start':
+                tutor.session_id=hashlib.sha256(('lesson:'+key).encode()).hexdigest()[:32]
+                reply['session_id']=tutor.session_id
+            await persist_lesson()
             question_id=uuid.uuid4().hex if question_signature()!=before else recovery.question_id
             reply={**reply,'request_id':key,'question_id':question_id}
             if asr is not None:
@@ -262,16 +283,45 @@ def create_brain(io,edge_token:str,student_prompt:str='',practice_size:int=3,sta
         wav=b''.join(chunks)
         digest=fingerprint(['audio',session_id,question_id,hashlib.sha256(wav).hexdigest()])
         await heartbeat(pi=True)
+        started=time.monotonic()
         async with lock:
             body=TurnInput(request_id=request_id,session_id=session_id,question_id=question_id)
-            return await run_turn_locked(body,digest,wav)
+            reply=await run_turn_locked(body,digest,wav)
+        LOG.info('voice_audio ms=%d bytes=%d',int((time.monotonic()-started)*1000),len(wav))
+        return reply
 
     @app.post('/voice/speech',dependencies=[Depends(auth)])
     async def speech(body:SpeechInput):
         speed=learner_stage(tutor.config.get('grade'))[0].split()[0]
-        try: data=await io.speak([x.model_dump() for x in body.segments],body.slow,speed=speed)
-        except (ServiceError,ValueError) as exc: raise HTTPException(503,str(exc)) from exc
-        return Response(data,media_type='audio/wav',headers={'Cache-Control':'no-store'})
+        started=time.monotonic()
+        
+        async def stream_pcm():
+            """流式生成 PCM 数据：逐段合成，立刻 yield"""
+            try:
+                async for pcm_chunk in io.speak_stream([x.model_dump() for x in body.segments], body.slow, speed=speed):
+                    yield pcm_chunk
+            except (ServiceError, ValueError) as exc:
+                LOG.error('tts_speech error: %s', exc)
+                raise
+        
+        # 先 yield WAV 头（44 字节，采样数设为最大值占位，客户端自行修正或忽略）
+        wav_header = b'RIFF' + (0xFFFFFFFF - 8).to_bytes(4, 'little') + b'WAVEfmt ' + \
+                     (16).to_bytes(4, 'little') + (1).to_bytes(2, 'little') + (1).to_bytes(2, 'little') + \
+                     (16000).to_bytes(4, 'little') + (32000).to_bytes(4, 'little') + \
+                     (2).to_bytes(2, 'little') + (16).to_bytes(2, 'little') + b'data' + \
+                     (0xFFFFFFFF - 44).to_bytes(4, 'little')
+        
+        async def generate():
+            yield wav_header
+            total_bytes = 0
+            async for chunk in stream_pcm():
+                total_bytes += len(chunk)
+                yield chunk
+            LOG.info('tts_speech segments=%d bytes=%d ms=%d', 
+                     len(body.segments), total_bytes, int((time.monotonic()-started)*1000))
+        
+        return StreamingResponse(generate(), media_type='audio/wav', 
+                                headers={'Cache-Control':'no-store', 'X-Accel-Buffering':'no'})
 
     @app.post('/voice/push',dependencies=[Depends(auth)])
     async def legacy_push(request:Request):

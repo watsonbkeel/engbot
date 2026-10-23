@@ -11,7 +11,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response, FileResponse
 from . import __version__
 from .dictionary import Dictionary
-from .models import LearningConfig, LlmSettings, ProgressUpdate, ChatInput, SpeechInput, SceneConfig, SceneDraftInput, HeartbeatInput
+from .models import LearningConfig, LlmSettings, ProgressUpdate, ChatInput, SpeechInput, SceneConfig, SceneDraftInput, HeartbeatInput, LessonRecordInput
 from .store import Store, Conflict, RateLimit
 from .listening import ListeningLibrary, ListeningUnavailable
 from .scene_prompts import scene_templates, render_prompt, grade_hint
@@ -198,6 +198,14 @@ def create_app(store: Store, providers=None) -> FastAPI:
 
     @app.get('/api/progress')
     def progress(who=Depends(principal)): return store.progress(who['student_id'])
+
+    @app.post('/api/lessons')
+    def lessons_post(body: LessonRecordInput, who=Depends(brain)):
+        return store.record_lesson(who['student_id'], body.model_dump())
+
+    @app.get('/api/lessons')
+    def lessons_get(who=Depends(principal)):
+        return {'today': store.today(), 'lessons': store.lessons(who['student_id'])}
 
     @app.post('/api/progress')
     def update(body:ProgressUpdate,who=Depends(brain),idempotency_key:str|None=Header(default=None,max_length=128)):
